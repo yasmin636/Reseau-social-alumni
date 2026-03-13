@@ -6,7 +6,39 @@ from django.contrib.auth.decorators import login_required
 
 from .models import Post, Comment, Profile
 from .forms import CommentForm, PostForm
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.models import User
+from .models import Post   # et Message si tu as un modèle de chat
 
+def is_admin(user):
+    return user.is_staff or user.is_superuser
+
+@user_passes_test(is_admin)
+def admin_dashboard(request):
+    users = User.objects.select_related("profile").all().order_by("date_joined")
+    pending_posts = Post.objects.filter(status=0).select_related("auteur").order_by("-date_creation")
+
+    # Si tu n'as pas encore de modèle Message, laisse une liste vide
+    last_messages = []  # ou Message.objects.select_related("sender","receiver").order_by("-created_at")[:20]
+
+    return render(
+        request,
+        "admin.html",
+        {
+            "users": users,
+            "pending_posts": pending_posts,
+            "last_messages": last_messages,
+        },
+    )
+
+
+@user_passes_test(is_admin)
+def admin_user_toggle_active(request, user_id):
+    """Active/désactive un utilisateur puis revient sur le dashboard admin."""
+    user_obj = get_object_or_404(User, pk=user_id)
+    user_obj.is_active = not user_obj.is_active
+    user_obj.save()
+    return redirect("admin_dashboard")
 # ===============================
 # LISTE DES POSTS (PAGE ACCUEIL)
 # ===============================
@@ -171,19 +203,24 @@ def login_view(request):
 
             login(request, user)
 
-            # On récupère (ou crée) le profil associé à l'utilisateur
+            # 1) Si c'est un admin (staff ou superuser), on l'envoie vers le dashboard admin
+            if user.is_staff or user.is_superuser:
+                return redirect("admin_dashboard")
+
+            # 2) Sinon, on récupère (ou crée) le profil associé à l'utilisateur
             profile, created = Profile.objects.get_or_create(
                 user=user,
                 defaults={"role": "etudiant"}  # rôle par défaut si aucun profil
             )
 
-            # redirection selon le rôle
+            # 3) Redirection selon le rôle
             if profile.role == "etudiant":
                 return redirect("dashboard_etudiant")
 
             if profile.role == "alumni":
                 return redirect("dashboard_alumni")
 
+            # Fallback : dashboard générique
             return redirect("dashboard")
 
         else:
