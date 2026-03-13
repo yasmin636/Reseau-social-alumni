@@ -4,9 +4,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 
-from .models import Post
+from .models import Post, Comment, Profile
 from .forms import CommentForm, PostForm
-
 
 # ===============================
 # LISTE DES POSTS (PAGE ACCUEIL)
@@ -172,11 +171,17 @@ def login_view(request):
 
             login(request, user)
 
+            # On récupère (ou crée) le profil associé à l'utilisateur
+            profile, created = Profile.objects.get_or_create(
+                user=user,
+                defaults={"role": "etudiant"}  # rôle par défaut si aucun profil
+            )
+
             # redirection selon le rôle
-            if user.profile.role == "etudiant":
+            if profile.role == "etudiant":
                 return redirect("dashboard_etudiant")
 
-            if user.profile.role == "alumni":
+            if profile.role == "alumni":
                 return redirect("dashboard_alumni")
 
             return redirect("dashboard")
@@ -191,15 +196,14 @@ def login_view(request):
 
     return render(request, "login.html")
 
-
 # ===============================
 # DASHBOARD ETUDIANT
 # ===============================
 
 @login_required
 def dashboard_etudiant(request):
-
-    return render(request, "blog/dashboard_etudiant.html")
+    # charger les offres, etc.
+    return render(request, "blog/dashboard_etudiant.html", {"offres": offres})
 
 
 # ===============================

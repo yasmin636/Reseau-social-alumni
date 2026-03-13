@@ -1,0 +1,266 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alumni Connect - Université de Djibouti</title>
+
+    <!-- Bootstrap + icônes -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <style>
+        * { box-sizing: border-box; }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", Roboto, sans-serif;
+            background-color: #ffffff;
+            color: #333;
+            min-height: 100vh;
+        }
+
+        /* Barre de navigation */
+        .navbar-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 32px;
+            background-color: #0f3b26;
+            color: #fff;
+        }
+        .navbar-top .platform-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .navbar-top .nav-links {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+        }
+        .navbar-top .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        .navbar-top .nav-links a:hover {
+            color: #b7e4c7;
+        }
+        .navbar-top .navbar-logo img {
+            height: 50px;
+            width: auto;
+            display: block;
+        }
+
+        /* Bloc principal vert au centre */
+        .hero-wrapper {
+            background-color: #ffffff;
+            padding: 40px 0;
+        }
+        .hero-card {
+            max-width: 1100px;
+            margin: 0 auto;
+            background-color: #1f5b3b;
+            border-radius: 8px;
+            padding: 32px;
+            color: #fff;
+            display: flex;
+            gap: 32px;
+        }
+        .hero-left {
+            flex: 1;
+        }
+        .hero-right {
+            flex: 0 0 40%;
+            max-width: 40%;
+        }
+        .hero-right img {
+            width: 100%;
+            height: 260px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+        }
+
+        .hero-title-main {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .hero-text {
+            font-size: 0.98rem;
+            line-height: 1.6;
+            color: #e0f2e9;
+            margin-bottom: 10px;
+        }
+        .hero-subtitle {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 22px 0 10px;
+        }
+
+        .btn-wrap {
+            margin-top: 16px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .btn-alumni {
+            display: inline-block;
+            padding: 10px 26px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 4px;
+            text-decoration: none;
+            border: 2px solid #ffffff;
+        }
+        .btn-alumni-primary {
+            background-color: #0f3b26;
+            color: #fff;
+        }
+        .btn-alumni-secondary {
+            background-color: #ffffff;
+            color: #0f3b26;
+        }
+        .btn-alumni:hover {
+            opacity: 0.9;
+            text-decoration: none;
+        }
+
+        /* Blocs Offres / Mentorat / Stages */
+        .features {
+            background-color: #ffffff;
+            padding: 30px 24px 50px;
+        }
+        .features-row {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .feature-item {
+            text-align: center;
+            padding: 16px 8px;
+        }
+        .feature-item i {
+            font-size: 2.4rem;
+            color: #1f5b3b;
+            margin-bottom: 10px;
+        }
+        .feature-item span {
+            display: block;
+            font-weight: 600;
+            color: #1f5b3b;
+        }
+
+        /* Pied de page */
+        .footer-alumni {
+            background: #0f3b26;
+            color: #fff;
+            padding: 24px 24px;
+        }
+        .footer-alumni .row {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .footer-alumni a {
+            color: #b7e4c7;
+        }
+        .footer-alumni a:hover {
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar-top">
+        <span class="platform-name">Réseau social Alumni</span>
+        <div class="nav-links">
+            <a href="{% url 'home' %}">Accueil</a>
+            <a href="#">À propos</a>
+            <a href="#">Contact</a>
+        </div>
+        <div class="navbar-logo">
+            <!-- Logo de l'université -->
+            <img src="{% static 'blog/img/image.png' %}" width="100" height="100">
+        </div>
+    </nav>
+
+    <!-- BLOC PRINCIPAL -->
+    <section class="hero-wrapper">
+        <div class="hero-card">
+            <!-- Colonne gauche : texte -->
+            <div class="hero-left">
+                <h2 class="hero-title-main">Réseau social Alumni</h2>
+                <p class="hero-text">
+                    Bénéficiez d'offres professionnelles et développez votre réseau entre diplômés et étudiants.
+                </p>
+                <p class="hero-text">
+                    Plateforme de l'Université de Djibouti qui relie les diplômés et les étudiants actuels.
+                    Offres d'emploi, stages, mentorat et partage d'expériences pour accompagner chaque parcours.
+                </p>
+
+                <h3 class="hero-subtitle">Alumni Connect</h3>
+                <p class="hero-text">
+                    Pour plus d'opportunités professionnelles et de guides. Rapprochez les diplômés
+                    et les étudiants actuels pour partager offres d'emploi et stages.
+                </p>
+
+                <div class="btn-wrap">
+                    <a href="{% url 'register' %}" class="btn-alumni btn-alumni-primary">S'inscrire</a>
+                    <a href="{% url 'login' %}" class="btn-alumni btn-alumni-secondary">Se connecter</a>
+                </div>
+            </div>
+
+            <!-- Colonne droite : photo de l'université -->
+            <div class="hero-right">
+                <img src="{% static 'blog/img/universite.jpg' %}" alt="Université de Djibouti">
+            </div>
+        </div>
+    </section>
+
+    <!-- BLOCS INFOS -->
+    <section class="features">
+        <div class="row features-row">
+            <div class="col-md-4 feature-item">
+                <i class="fas fa-briefcase"></i>
+                <span>Offres d'emploi</span>
+            </div>
+            <div class="col-md-4 feature-item">
+                <i class="fas fa-handshake"></i>
+                <span>Mentorat & Réseau</span>
+            </div>
+            <div class="col-md-4 feature-item">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Stages & Conseils</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer-alumni">
+        <div class="row">
+            <div class="col-md-6">
+                <strong>Université de Djibouti</strong><br>
+                Boulaos, Route d'Arta, B.P. 1903
+            </div>
+            <div class="col-md-6 text-md-right">
+                <i class="fas fa-envelope"></i>
+                <a href="mailto:info@univ-djibouti.dj">info@univ-djibouti.dj</a><br>
+                <i class="fas fa-globe"></i>
+                <a href="https://www.univ-djibouti.dj" target="_blank" rel="noopener">
+                    www.univ-djibouti.dj
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+</body>
+</html>

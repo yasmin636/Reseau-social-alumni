@@ -1,123 +1,508 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-<title>Dashboard Étudiant</title>
+    <meta charset="UTF-8">
+    <title>Espace Étudiant – Réseau social alumni</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          crossorigin="anonymous">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-<link rel="stylesheet"
-href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Roboto, sans-serif;
+            background-color: #ffffff;
+        }
+        .app-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background: #144327;
+            color: #fff;
+            padding: 24px 16px;
+        }
+        .sidebar h2 {
+            font-size: 1.4rem;
+            margin-bottom: 24px;
+            font-weight: 600;
+        }
+        .sidebar-nav {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar-nav li {
+            margin-bottom: 8px;
+        }
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            color: #e4f5ea;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+        .sidebar-nav a i {
+            margin-right: 10px;
+            width: 18px;
+            text-align: center;
+        }
+        .sidebar-nav a.active,
+        .sidebar-nav a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
 
-<style>
+        /* Main area */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f3f5f7;
+        }
 
-body{
-background:#f5f5f5;
-}
+        /* Top bar */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 24px;
+            background: #1b5e3c;
+            color: #fff;
+        }
+        .topbar-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .topbar-right .notif {
+            position: relative;
+            margin-right: 8px;
+        }
+        .topbar-right .notif i {
+            font-size: 1.2rem;
+        }
+        .topbar-right .notif span {
+            position: absolute;
+            top: -4px;
+            right: -6px;
+            background: #ffbd2a;
+            color: #000;
+            font-size: 0.7rem;
+            padding: 0 5px;
+            border-radius: 999px;
+        }
+        .user-chip {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .user-chip img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 8px;
+        }
+        .user-chip span {
+            font-size: 0.95rem;
+        }
 
-.sidebar{
-height:100vh;
-background:#2f4f6f;
-color:white;
-padding:20px;
-}
+        /* Content layout */
+        .content {
+            flex: 1;
+            padding: 24px;
+        }
+        .content-header {
+            margin-bottom: 16px;
+        }
+        .content-header h1 {
+            font-size: 1.6rem;
+            margin-bottom: 4px;
+        }
+        .content-header p {
+            margin: 0;
+            color: #555;
+        }
 
-.sidebar a{
-color:white;
-display:block;
-margin:10px 0;
-text-decoration:none;
-}
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 1.35fr 1fr;
+            gap: 20px;
+        }
 
-.top{
-background:#2f4f6f;
-color:white;
-padding:10px;
-}
+        /* Liste des offres */
+        .offers-panel {
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(15, 60, 35, 0.10);
+            padding: 20px;
+        }
+        .offers-panel h2 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+        .offers-panel small {
+            color: #777;
+        }
+        .offer-card {
+            border-radius: 8px;
+            padding: 14px 16px;
+            margin-top: 12px;
+            background: #f8faf9;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .offer-card:hover {
+            background: #e7f2eb;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+        .offer-main {
+            flex: 1;
+        }
+        .offer-main .badge-stage {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #e0f2e9;
+            color: #0f5132;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .offer-title {
+            font-weight: 600;
+            font-size: 0.98rem;
+            margin-bottom: 4px;
+        }
+        .offer-company {
+            font-size: 0.88rem;
+            color: #555;
+        }
+        .offer-meta {
+            font-size: 0.8rem;
+            color: #888;
+        }
+        .offer-right {
+            text-align: right;
+            font-size: 0.8rem;
+            color: #777;
+            min-width: 90px;
+        }
 
-.card{
-margin-top:15px;
-}
+        /* Détail offre + profil + chat */
+        .detail-panel {
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(15, 60, 35, 0.10);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .detail-offer-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .detail-offer-company {
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 8px;
+        }
+        .detail-offer-meta {
+            font-size: 0.82rem;
+            color: #777;
+            margin-bottom: 12px;
+        }
+        .detail-offer-desc {
+            font-size: 0.9rem;
+            color: #444;
+            margin-bottom: 16px;
+        }
 
-</style>
+        .alumni-profile {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: #f5f7f6;
+            margin-bottom: 14px;
+        }
+        .alumni-profile img {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+        }
+        .alumni-profile-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .alumni-profile-meta {
+            font-size: 0.8rem;
+            color: #777;
+        }
+        .alumni-profile-actions a {
+            font-size: 0.8rem;
+            margin-right: 10px;
+        }
 
+        .chat-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-top: 1px solid #e0e5e2;
+            padding-top: 10px;
+            margin-top: 4px;
+        }
+        .chat-header {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .chat-messages {
+            flex: 1;
+            border-radius: 8px;
+            background: #f7f9f8;
+            padding: 8px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+        .chat-input {
+            display: flex;
+            gap: 6px;
+        }
+        .chat-input input {
+            flex: 1;
+            border-radius: 999px;
+            border: 1px solid #c7d2cc;
+            padding: 6px 10px;
+            font-size: 0.85rem;
+        }
+        .chat-input button {
+            border-radius: 999px;
+            border: none;
+            background: #1b5e3c;
+            color: #fff;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 992px) {
+            .app-wrapper { flex-direction: column; }
+            .sidebar { width: 100%; display: flex; align-items: center; justify-content: space-between; }
+            .dashboard-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
-
-
 <body>
+<div class="app-wrapper">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h2>Espace Étudiant</h2>
+        <ul class="sidebar-nav">
+            <li><a href="{% url 'dashboard_etudiant' %}" class="active">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a></li>
+            <li><a href="{% url 'offres' %}">
+                <i class="fas fa-briefcase"></i> Offres de stage
+            </a></li>
+            <li><a href="{% url 'favoris' %}">
+                <i class="fas fa-star"></i> Favoris
+            </a></li>
+            <li><a href="{% url 'notifications' %}">
+                <i class="fas fa-bell"></i> Notifications
+            </a></li>
+            <li><a href="#">
+                <i class="fas fa-user"></i> Profil
+            </a></li>
+        </ul>
+    </aside>
 
-<div class="container-fluid">
+    <!-- MAIN -->
+    <div class="main">
+        <!-- TOPBAR -->
+        <header class="topbar">
+            <div class="topbar-title">
+                Bienvenue Étudiant{% if user.is_authenticated %} {{ user.first_name }}{% endif %}
+            </div>
+            <div class="topbar-right">
+                <div class="notif">
+                    <i class="fas fa-bell"></i>
+                    <span>3</span>
+                </div>
+                <div class="user-chip">
+                    {% if user.is_authenticated and user.profile.photo_url %}
+                        <img src="{{ user.profile.photo_url }}" alt="{{ user.get_full_name }}">
+                    {% else %}
+                        <img src="https://via.placeholder.com/64x64.png?text=UD" alt="Profil">
+                    {% endif %}
+                    <span>{% if user.is_authenticated %}{{ user.get_full_name }}{% else %}Compte étudiant{% endif %}</span>
+                </div>
+            </div>
+        </header>
 
-<div class="row">
+        <!-- CONTENT -->
+        <main class="content">
+            <div class="content-header">
+                <h1>Dernières Offres de Stage</h1>
+                <p>Découvrez les opportunités publiées par les alumni de l’Université de Djibouti.</p>
+            </div>
 
-<!-- SIDEBAR -->
+            <div class="dashboard-layout">
+                <!-- Liste des offres -->
+                <section class="offers-panel">
+                    <h2>Offres récentes</h2>
+                    <small>Clique sur une offre pour voir les détails, le profil de l’alumni et discuter avec lui.</small>
 
-<div class="col-2 sidebar">
+                    {% for offre in offres %}
+                        <div class="offer-card"
+                             data-id="{{ offre.id }}"
+                             data-titre="{{ offre.titre|escapejs }}"
+                             data-entreprise="{{ offre.entreprise|escapejs }}"
+                             data-ville="{{ offre.ville|default:'Djibouti'|escapejs }}"
+                             data-date="{{ offre.created_at|date:'d/m/Y' }}"
+                             data-description="{{ offre.description|linebreaksbr|striptags|escapejs }}"
+                             data-alumni-nom="{{ offre.auteur.get_full_name|default:'Alumni'|escapejs }}"
+                             data-alumni-email="{{ offre.auteur.email|default:''|escapejs }}"
+                             data-profil-url="{% url 'profil_alumni' offre.auteur.id %}"
+                             data-chat-url="{% url 'chat_avec_alumni' offre.auteur.id %}">
+                            <div class="offer-main">
+                                <div class="badge-stage">Stage</div>
+                                <div class="offer-title">{{ offre.titre }}</div>
+                                <div class="offer-company">{{ offre.entreprise }}</div>
+                                <div class="offer-meta">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    {{ offre.ville|default:"Djibouti" }}
+                                </div>
+                            </div>
+                            <div class="offer-right">
+                                Publié le<br>{{ offre.created_at|date:"d/m/Y" }}
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p style="margin-top:16px;">Aucune offre disponible pour le moment.</p>
+                    {% endfor %}
+                </section>
 
-<h4>Espace Étudiant</h4>
+                <!-- Détails offre + profil + chat -->
+                <section class="detail-panel" id="detail-panel">
+                    <div id="detail-empty" {% if offres %}style="display:none;"{% endif %}>
+                        <p style="color:#666;">Sélectionne une offre dans la liste pour voir les détails ici.</p>
+                    </div>
 
-<a href="#">Dashboard</a>
-<a href="{% url 'offres' %}">Offres de stage</a>
-<a href="{% url 'favoris' %}">Favoris</a>
-<a href="{% url 'notifications' %}">Notifications</a>
-<a href="#">Profil</a>
+                    <div id="detail-content" {% if not offres %}style="display:none;"{% endif %}>
+                        <div class="detail-offer-header">
+                            <div class="detail-offer-title" id="detail-titre"></div>
+                            <div class="detail-offer-company" id="detail-entreprise"></div>
+                            <div class="detail-offer-meta" id="detail-meta"></div>
+                        </div>
+                        <div class="detail-offer-desc" id="detail-description"></div>
 
+                        <div class="alumni-profile">
+                            <img src="https://via.placeholder.com/80x80.png?text=UD" alt="Alumni" id="alumni-photo">
+                            <div>
+                                <div class="alumni-profile-name" id="alumni-nom"></div>
+                                <div class="alumni-profile-meta" id="alumni-email"></div>
+                                <div class="alumni-profile-actions">
+                                    <a href="#" id="alumni-profil-link">Voir le profil</a>
+                                    <a href="#" id="alumni-chat-link">Ouvrir le chat complet</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chat-panel">
+                            <div class="chat-header">
+                                Discussion rapide avec l’alumni
+                            </div>
+                            <div class="chat-messages" id="chat-messages">
+                                <div style="color:#777;">Ici, tu pourras voir les derniers messages avec cet alumni.</div>
+                            </div>
+                            <form class="chat-input" onsubmit="event.preventDefault();">
+                                <input type="text" id="chat-input-text" placeholder="Écrire un message…">
+                                <button type="submit" onclick="addLocalMessage()">Envoyer</button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
 </div>
 
+<script>
+    // Remplir le panneau de droite quand on clique sur une offre
+    const cards = document.querySelectorAll('.offer-card');
+    const detailEmpty = document.getElementById('detail-empty');
+    const detailContent = document.getElementById('detail-content');
 
-<!-- CONTENT -->
+    function selectOffer(card) {
+        const titre = card.dataset.titre;
+        const entreprise = card.dataset.entreprise;
+        const ville = card.dataset.ville;
+        const date = card.dataset.date;
+        const description = card.dataset.description;
+        const alumniNom = card.dataset.alumniNom;
+        const alumniEmail = card.dataset.alumniEmail;
+        const profilUrl = card.dataset.profilUrl;
+        const chatUrl = card.dataset.chatUrl;
 
-<div class="col-10">
+        document.getElementById('detail-titre').textContent = titre;
+        document.getElementById('detail-entreprise').textContent = entreprise;
+        document.getElementById('detail-meta').textContent = ville + " • Publié le " + date;
+        document.getElementById('detail-description').textContent = description;
 
-<div class="top">
-Bienvenue Étudiant {{ user.username }} 👋
-</div>
+        document.getElementById('alumni-nom').textContent = alumniNom;
+        document.getElementById('alumni-email').textContent = alumniEmail;
+        document.getElementById('alumni-profil-link').href = profilUrl;
+        document.getElementById('alumni-chat-link').href = chatUrl;
 
+        detailEmpty.style.display = 'none';
+        detailContent.style.display = 'block';
+    }
 
-<div class="row mt-3">
+    cards.forEach(card => {
+        card.addEventListener('click', () => selectOffer(card));
+    });
 
-<div class="col-md-4">
-<div class="card p-3">
+    // Charger automatiquement la première offre si disponible
+    if (cards.length > 0) {
+        selectOffer(cards[0]);
+    }
 
-<h5>Consulter les offres</h5>
-
-<a href="{% url 'offres' %}" class="btn btn-primary">
-Voir les offres
-</a>
-
-</div>
-</div>
-
-
-<div class="col-md-4">
-<div class="card p-3">
-
-<h5>Mes favoris</h5>
-
-<a href="{% url 'favoris' %}" class="btn btn-success">
-Voir favoris
-</a>
-
-</div>
-</div>
-
-
-<div class="col-md-4">
-<div class="card p-3">
-
-<h5>Notifications</h5>
-
-<a href="{% url 'notifications' %}" class="btn btn-warning">
-Voir notifications
-</a>
-
-</div>
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
+    // Chat local (simulé côté front)
+    function addLocalMessage() {
+        const input = document.getElementById('chat-input-text');
+        const text = input.value.trim();
+        if (!text) return;
+        const box = document.getElementById('chat-messages');
+        const div = document.createElement('div');
+        div.textContent = "Moi : " + text;
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
+        input.value = '';
+    }
+</script>
 </body>
 </html>
