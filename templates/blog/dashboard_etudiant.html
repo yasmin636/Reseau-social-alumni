@@ -1,0 +1,321 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Espace Étudiant – Réseau social alumni</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: "Segoe UI", Roboto, sans-serif; background: #0d1f14; }
+        .app-wrapper { display: flex; min-height: 100vh; }
+
+        /* SIDEBAR */
+        .sidebar { width: 240px; background: linear-gradient(180deg, #0a1a0f 0%, #102a18 100%); color: #fff; padding: 28px 16px; border-right: 1px solid rgba(255,255,255,0.06); }
+        .sidebar h2 { font-size: 1.1rem; margin-bottom: 8px; font-weight: 700; color: #43e97b; }
+        .sidebar-subtitle { font-size: 0.75rem; color: rgba(255,255,255,0.35); margin-bottom: 28px; }
+        .sidebar-nav { list-style: none; padding: 0; margin: 0; }
+        .sidebar-nav li { margin-bottom: 4px; }
+        .sidebar-nav a { display: flex; align-items: center; padding: 10px 14px; color: rgba(255,255,255,0.6); text-decoration: none; border-radius: 10px; font-size: 0.9rem; transition: all 0.2s; }
+        .sidebar-nav a i { margin-right: 10px; width: 18px; text-align: center; font-size: 0.85rem; }
+        .sidebar-nav a.active, .sidebar-nav a:hover { background: rgba(67,233,123,0.12); color: #43e97b; }
+        .sidebar-divider { border: none; border-top: 1px solid rgba(255,255,255,0.07); margin: 16px 0; }
+
+        /* MAIN */
+        .main { flex: 1; display: flex; flex-direction: column; }
+
+        /* TOPBAR */
+        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 14px 28px; background: rgba(0,0,0,0.3); border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .topbar-title { font-size: 1rem; font-weight: 500; color: rgba(255,255,255,0.8); }
+        .topbar-right { display: flex; align-items: center; gap: 16px; }
+        .notif-btn { position: relative; color: rgba(255,255,255,0.6); text-decoration: none; font-size: 1.1rem; }
+        .notif-btn:hover { color: #43e97b; }
+        .notif-btn .badge-count { position: absolute; top: -6px; right: -8px; background: #e53935; color: white; font-size: 0.65rem; font-weight: 700; min-width: 16px; height: 16px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 2px solid #0d1f14; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(229,57,53,0.5); } 70% { box-shadow: 0 0 0 5px rgba(229,57,53,0); } 100% { box-shadow: 0 0 0 0 rgba(229,57,53,0); } }
+        .user-chip { display: flex; align-items: center; gap: 10px; }
+        .avatar-initiale { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, #1b5e3c, #43e97b); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px; border: 2px solid rgba(67,233,123,0.4); }
+        .user-chip span { font-size: 0.9rem; color: rgba(255,255,255,0.8); }
+
+        /* CONTENT */
+        .content { flex: 1; padding: 28px; }
+        .content-header { margin-bottom: 20px; }
+        .content-header h1 { font-size: 1.4rem; color: #fff; font-weight: 700; margin-bottom: 4px; }
+        .content-header p { color: rgba(255,255,255,0.4); font-size: 0.88rem; margin: 0; }
+
+        /* INFO CARDS */
+        .info-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-bottom: 24px; }
+        .info-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 14px 16px; }
+        .info-card-label { font-size: 10px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+        .info-card-value { font-size: 14px; font-weight: 600; color: #fff; }
+
+        /* MAIN LAYOUT */
+        .main-layout { display: grid; grid-template-columns: 1fr 340px; gap: 24px; }
+
+        /* FEED INSTAGRAM */
+        .feed { display: flex; flex-direction: column; gap: 20px; max-height: calc(100vh - 240px); overflow-y: auto; padding-right: 4px; }
+        .feed::-webkit-scrollbar { width: 4px; }
+        .feed::-webkit-scrollbar-thumb { background: rgba(67,233,123,0.3); border-radius: 2px; }
+
+        .post-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; overflow: hidden; }
+        .post-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; }
+        .post-author { display: flex; align-items: center; gap: 10px; }
+        .post-author-avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #1b5e3c, #43e97b); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 15px; flex-shrink: 0; }
+        .post-author-name { font-weight: 600; font-size: 0.9rem; color: #fff; }
+        .post-author-role { font-size: 0.72rem; color: #43e97b; }
+        .post-date { font-size: 0.72rem; color: rgba(255,255,255,0.3); }
+
+        /* Bouton chat sur le post */
+        .btn-chat-post { background: rgba(67,233,123,0.1); border: 1px solid rgba(67,233,123,0.25); color: #43e97b; border-radius: 999px; padding: 5px 12px; font-size: 0.75rem; cursor: pointer; text-decoration: none; display: flex; align-items: center; gap: 5px; transition: all 0.2s; }
+        .btn-chat-post:hover { background: rgba(67,233,123,0.2); color: #43e97b; }
+
+        .post-body { padding: 0 16px 14px; }
+        .post-titre { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
+        .post-contenu { font-size: 0.88rem; color: rgba(255,255,255,0.65); line-height: 1.7; }
+
+        /* ACTIONS */
+        .post-actions { display: flex; align-items: center; gap: 4px; padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.06); }
+        .btn-post-action { background: none; border: none; color: rgba(255,255,255,0.45); cursor: pointer; font-size: 0.83rem; display: flex; align-items: center; gap: 5px; padding: 6px 10px; border-radius: 8px; transition: all 0.2s; }
+        .btn-post-action:hover { color: #fff; background: rgba(255,255,255,0.06); }
+        .btn-post-action.liked { color: #e53935; }
+        .btn-post-action.en-favori { color: #ffc107; }
+
+        /* COMMENTAIRES */
+        .comments-section { display: none; padding: 10px 16px 14px; border-top: 1px solid rgba(255,255,255,0.06); }
+        .comments-section.open { display: block; }
+        .comment-item { display: flex; gap: 8px; margin-bottom: 8px; }
+        .comment-avatar { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, #1b5e3c, #43e97b); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 11px; flex-shrink: 0; }
+        .comment-content { background: rgba(255,255,255,0.06); border-radius: 10px; padding: 7px 10px; flex: 1; }
+        .comment-author { font-weight: 600; font-size: 0.78rem; color: #43e97b; margin-bottom: 2px; }
+        .comment-text { font-size: 0.82rem; color: rgba(255,255,255,0.7); }
+        .comment-date { font-size: 0.68rem; color: rgba(255,255,255,0.25); margin-top: 2px; }
+        .comment-form { display: flex; gap: 8px; margin-top: 10px; }
+        .comment-form input { flex: 1; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 999px; padding: 7px 14px; color: #fff; font-size: 0.82rem; outline: none; }
+        .comment-form input::placeholder { color: rgba(255,255,255,0.25); }
+        .comment-form button { background: linear-gradient(135deg, #1b5e3c, #43e97b); border: none; border-radius: 999px; color: white; padding: 7px 14px; font-size: 0.82rem; cursor: pointer; }
+
+        /* PANEL DROIT */
+        .right-panel { display: flex; flex-direction: column; gap: 16px; max-height: calc(100vh - 240px); overflow-y: auto; }
+
+        /* OFFRES */
+        .offers-panel { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 16px; }
+        .panel-title { font-size: 0.9rem; font-weight: 700; color: #fff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .offer-item { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; }
+        .offer-item:hover { background: rgba(67,233,123,0.08); border-color: rgba(67,233,123,0.2); }
+        .offer-badge { display: inline-block; padding: 2px 8px; border-radius: 999px; background: rgba(67,233,123,0.15); color: #43e97b; font-size: 0.7rem; font-weight: 600; margin-bottom: 4px; }
+        .offer-titre { font-weight: 600; font-size: 0.88rem; color: #fff; margin-bottom: 3px; }
+        .offer-company { font-size: 0.78rem; color: rgba(255,255,255,0.45); }
+
+        @media (max-width: 992px) { .app-wrapper { flex-direction: column; } .sidebar { width: 100%; } .main-layout { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="app-wrapper">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h2>Réseau Alumni</h2>
+        <p class="sidebar-subtitle">Espace Étudiant</p>
+        <ul class="sidebar-nav">
+            <li><a href="{% url 'dashboard_etudiant' %}" class="active"><i class="fas fa-th-large"></i> Dashboard</a></li>
+            <li><a href="{% url 'offres' %}"><i class="fas fa-briefcase"></i> Offres de stage</a></li>
+            <li><a href="{% url 'favoris' %}"><i class="fas fa-star"></i> Favoris</a></li>
+            <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> Notifications</a></li>
+            <li><a href="{% url 'chat_page' %}"><i class="fas fa-comment-dots"></i> Chat</a></li>
+         <li><a href="{% url 'profil_etudiant' %}"><i class="fas fa-user"></i> Profil</a></li>
+        </ul>
+        <hr class="sidebar-divider"/>
+        <ul class="sidebar-nav">
+            <li><a href="/logout/"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+        </ul>
+    </aside>
+
+    <div class="main">
+        <!-- TOPBAR -->
+        <header class="topbar">
+            <div class="topbar-title">
+                Bienvenue{% if user.is_authenticated %}, <strong style="color:#43e97b;">{{ user.get_full_name|default:user.username }}</strong>{% endif %} 👋
+            </div>
+            <div class="topbar-right">
+                <a href="{% url 'notifications' %}" class="notif-btn">
+                    <i class="fas fa-bell"></i>
+                    {% if nb_notifications > 0 %}<span class="badge-count">{{ nb_notifications }}</span>{% endif %}
+                </a>
+                <div class="user-chip">
+                    {% if user.is_authenticated and user.profile.photo %}
+                        <img src="{{ user.profile.photo.url }}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid rgba(67,233,123,0.4);">
+                    {% else %}
+                        <div class="avatar-initiale">{{ user.get_full_name|default:user.username|first|upper }}</div>
+                    {% endif %}
+                    <span>{{ user.get_full_name|default:user.username }}</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="content">
+            <div class="content-header">
+                <h1>Mon Espace Étudiant</h1>
+                <p>Découvrez les publications, offres et alumni du réseau.</p>
+            </div>
+
+            {% if user.is_authenticated %}
+            <div class="info-cards">
+                <div class="info-card"><div class="info-card-label">Filière</div><div class="info-card-value">{{ user.profile.filiere|default:"—" }}</div></div>
+                <div class="info-card"><div class="info-card-label">Année</div><div class="info-card-value">{{ user.profile.annee_actuelle|default:"—" }}</div></div>
+                <div class="info-card"><div class="info-card-label">Statut</div><div class="info-card-value" style="color:#43e97b;">Actif</div></div>
+            </div>
+            {% endif %}
+
+            <div class="main-layout">
+
+                <!-- FEED POSTS -->
+                <div class="feed">
+                    {% for item in posts_data %}
+                    <div class="post-card">
+                        <div class="post-header">
+                            <div class="post-author">
+                                <div class="post-author-avatar">{{ item.post.auteur.get_full_name|default:item.post.auteur.username|first|upper }}</div>
+                                <div>
+                                    <div class="post-author-name">{{ item.post.auteur.get_full_name|default:item.post.auteur.username }}</div>
+                                    <div class="post-author-role">Alumni</div>
+                                </div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <span class="post-date">{{ item.post.date_creation|date:"d/m/Y" }}</span>
+                                <a href="{% url 'chat_avec' item.post.auteur.id %}" class="btn-chat-post">
+                                    <i class="fas fa-comment"></i> Écrire
+                                </a>
+                            </div>
+                        </div>
+                        <div class="post-body">
+                            <div class="post-titre">{{ item.post.titre }}</div>
+                            <div class="post-contenu">{{ item.post.contenu }}</div>
+                        </div>
+                        <div class="post-actions">
+                            <button class="btn-post-action {% if item.liked %}liked{% endif %}"
+                                    onclick="toggleLike({{ item.post.id }}, this)">
+                                <i class="fas fa-heart"></i>
+                                <span id="like-count-{{ item.post.id }}">{{ item.nb_likes }}</span>
+                            </button>
+                            <button class="btn-post-action {% if item.en_favori %}en-favori{% endif %}"
+                                    onclick="toggleFavori({{ item.post.id }}, this)">
+                                <i class="fas fa-star"></i>
+                                <span id="favori-count-{{ item.post.id }}">{{ item.nb_favoris }}</span>
+                            </button>
+                            <button class="btn-post-action" onclick="toggleComments({{ item.post.id }})">
+                                <i class="fas fa-comment-alt"></i>
+                                <span id="comment-count-{{ item.post.id }}">{{ item.nb_comments }}</span>
+                            </button>
+                        </div>
+                        <div class="comments-section" id="comments-{{ item.post.id }}">
+                            {% for comment in item.comments %}
+                            <div class="comment-item">
+                                <div class="comment-avatar">{{ comment.auteur.get_full_name|default:comment.auteur.username|first|upper }}</div>
+                                <div class="comment-content">
+                                    <div class="comment-author">{{ comment.auteur.get_full_name|default:comment.auteur.username }}</div>
+                                    <div class="comment-text">{{ comment.contenu }}</div>
+                                    <div class="comment-date">{{ comment.date_creation|date:"d/m H:i" }}</div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            <div class="comment-form">
+                                <input type="text" id="comment-input-{{ item.post.id }}" placeholder="Écrire un commentaire…">
+                                <button onclick="envoyerCommentaire({{ item.post.id }})"><i class="fas fa-paper-plane"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p style="color:rgba(255,255,255,0.3);text-align:center;padding:40px;">Aucune publication pour le moment.</p>
+                    {% endfor %}
+                </div>
+
+                <!-- PANEL DROIT -->
+                <div class="right-panel">
+                    <!-- OFFRES -->
+                    <div class="offers-panel">
+                        <div class="panel-title"><i class="fas fa-briefcase" style="color:#43e97b;"></i> Offres récentes</div>
+                        {% for offre in offres %}
+                        <div class="offer-item">
+                            <div class="offer-badge">Stage</div>
+                            <div class="offer-titre">{{ offre.titre }}</div>
+                            <div class="offer-company">{{ offre.entreprise }}</div>
+                        </div>
+                        {% empty %}
+                        <p style="color:rgba(255,255,255,0.3);font-size:0.85rem;">Aucune offre disponible.</p>
+                        {% endfor %}
+                    </div>
+
+                    <!-- ALUMNI -->
+                    <div class="offers-panel">
+                        <div class="panel-title"><i class="fas fa-users" style="color:#43e97b;"></i> Alumni du réseau</div>
+                        {% for alumni in alumni_list %}
+                        <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+                            <div class="post-author-avatar" style="width:36px;height:36px;font-size:14px;">
+                                {% if alumni.profile.photo %}<img src="{{ alumni.profile.photo.url }}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                                {% else %}{{ alumni.get_full_name|default:alumni.username|first|upper }}{% endif %}
+                            </div>
+                            <div style="flex:1;">
+                                <div style="font-size:0.85rem;font-weight:600;color:#fff;">{{ alumni.get_full_name|default:alumni.username }}</div>
+                                <div style="font-size:0.72rem;color:rgba(255,255,255,0.35);">{{ alumni.profile.filiere_alumni|default:"Alumni" }}</div>
+                            </div>
+                            <a href="{% url 'chat_avec' alumni.id %}" class="btn-chat-post" style="font-size:0.72rem;padding:4px 10px;">
+                                <i class="fas fa-comment"></i>
+                            </a>
+                        </div>
+                        {% empty %}
+                        <p style="color:rgba(255,255,255,0.3);font-size:0.85rem;">Aucun alumni.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+const CSRF = "{{ csrf_token }}";
+
+function toggleLike(postId, btn) {
+    fetch(`/post/${postId}/like/`, {method:'POST', headers:{'X-CSRFToken':CSRF}})
+    .then(r=>r.json()).then(data=>{
+        btn.classList.toggle('liked', data.liked);
+        document.getElementById(`like-count-${postId}`).textContent = data.total;
+    });
+}
+
+function toggleFavori(postId, btn) {
+    fetch(`/post/${postId}/favori/`, {method:'POST', headers:{'X-CSRFToken':CSRF}})
+    .then(r=>r.json()).then(data=>{
+        btn.classList.toggle('en-favori', data.favoris);
+        document.getElementById(`favori-count-${postId}`).textContent = data.total;
+    });
+}
+
+function toggleComments(postId) {
+    document.getElementById(`comments-${postId}`).classList.toggle('open');
+}
+
+function envoyerCommentaire(postId) {
+    const input = document.getElementById(`comment-input-${postId}`);
+    const text = input.value.trim();
+    if (!text) return;
+    fetch(`/post/${postId}/commenter/`, {
+        method:'POST',
+        headers:{'Content-Type':'application/x-www-form-urlencoded','X-CSRFToken':CSRF},
+        body:`contenu=${encodeURIComponent(text)}`
+    }).then(r=>r.json()).then(data=>{
+        if (data.success) {
+            const section = document.getElementById(`comments-${postId}`);
+            const div = document.createElement('div');
+            div.className = 'comment-item';
+            div.innerHTML = `<div class="comment-avatar">${data.auteur[0].toUpperCase()}</div><div class="comment-content"><div class="comment-author">${data.auteur}</div><div class="comment-text">${data.contenu}</div><div class="comment-date">${data.date}</div></div>`;
+            section.insertBefore(div, section.querySelector('.comment-form'));
+            input.value = '';
+            const c = document.getElementById(`comment-count-${postId}`);
+            c.textContent = parseInt(c.textContent) + 1;
+        }
+    });
+}
+</script>
+</body>
+</html>

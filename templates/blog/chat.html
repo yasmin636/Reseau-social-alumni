@@ -1,0 +1,267 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat – Réseau Alumni</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: "Segoe UI", Roboto, sans-serif; background: #0d1f14; color: #fff; height: 100vh; display: flex; }
+
+        .sidebar { width: 240px; background: linear-gradient(180deg, #0a1a0f, #102a18); padding: 28px 16px; border-right: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; }
+        .sidebar h2 { font-size: 1.1rem; font-weight: 700; color: #43e97b; margin-bottom: 4px; }
+        .sidebar-subtitle { font-size: 0.75rem; color: rgba(255,255,255,0.35); margin-bottom: 28px; }
+        .sidebar-nav { list-style: none; padding: 0; margin: 0; }
+        .sidebar-nav li { margin-bottom: 4px; }
+        .sidebar-nav a { display: flex; align-items: center; padding: 10px 14px; color: rgba(255,255,255,0.6); text-decoration: none; border-radius: 10px; font-size: 0.9rem; transition: all 0.2s; }
+        .sidebar-nav a i { margin-right: 10px; width: 18px; text-align: center; font-size: 0.85rem; }
+        .sidebar-nav a.active, .sidebar-nav a:hover { background: rgba(67,233,123,0.12); color: #43e97b; }
+        .sidebar-divider { border: none; border-top: 1px solid rgba(255,255,255,0.07); margin: 16px 0; }
+
+        .chat-layout { flex: 1; display: flex; height: 100vh; }
+
+        .contacts-panel { width: 300px; background: rgba(255,255,255,0.03); border-right: 1px solid rgba(255,255,255,0.07); display: flex; flex-direction: column; }
+        .contacts-header { padding: 18px 16px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+        .contacts-header h3 { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 12px; }
+        .search-box { display: flex; align-items: center; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 8px 12px; gap: 8px; }
+        .search-box input { background: none; border: none; color: #fff; font-size: 0.85rem; outline: none; flex: 1; }
+        .search-box input::placeholder { color: rgba(255,255,255,0.3); }
+        .search-box i { color: rgba(255,255,255,0.3); font-size: 0.85rem; }
+
+        .contacts-list { flex: 1; overflow-y: auto; }
+        .contact-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; cursor: pointer; transition: background 0.2s; border-bottom: 1px solid rgba(255,255,255,0.04); text-decoration: none; }
+        .contact-item:hover, .contact-item.active { background: rgba(67,233,123,0.08); }
+        .contact-avatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, #1b5e3c, #43e97b); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 16px; flex-shrink: 0; overflow: hidden; }
+        .contact-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .contact-info { flex: 1; min-width: 0; }
+        .contact-name { font-size: 0.9rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .contact-last { font-size: 0.75rem; color: rgba(255,255,255,0.35); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .contacts-section-title { padding: 10px 16px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255,255,255,0.3); font-weight: 600; }
+
+        .conversation-panel { flex: 1; display: flex; flex-direction: column; }
+        .conv-header { padding: 14px 20px; background: rgba(0,0,0,0.3); border-bottom: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; gap: 12px; }
+        .conv-header .contact-avatar { width: 36px; height: 36px; font-size: 14px; }
+        .conv-header-name { font-weight: 600; font-size: 0.95rem; color: #fff; }
+        .conv-header-status { font-size: 0.75rem; color: #43e97b; }
+
+        .conv-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .conv-messages::-webkit-scrollbar { width: 4px; }
+        .conv-messages::-webkit-scrollbar-thumb { background: rgba(67,233,123,0.3); border-radius: 2px; }
+
+        .msg-item { display: flex; flex-direction: column; max-width: 65%; }
+        .msg-moi { align-self: flex-end; align-items: flex-end; }
+        .msg-autre { align-self: flex-start; align-items: flex-start; }
+        .msg-bubble { padding: 10px 14px; border-radius: 18px; font-size: 0.88rem; line-height: 1.5; word-break: break-word; }
+        .msg-moi .msg-bubble { background: linear-gradient(135deg, #1b5e3c, #43e97b); color: white; border-bottom-right-radius: 4px; }
+        .msg-autre .msg-bubble { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.85); border-bottom-left-radius: 4px; }
+        .msg-date { font-size: 0.68rem; color: rgba(255,255,255,0.25); margin-top: 3px; padding: 0 4px; }
+
+        .conv-input { padding: 14px 20px; background: rgba(0,0,0,0.2); border-top: 1px solid rgba(255,255,255,0.07); display: flex; gap: 10px; align-items: center; }
+        .conv-input input { flex: 1; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); border-radius: 999px; padding: 10px 18px; color: #fff; font-size: 0.9rem; outline: none; }
+        .conv-input input::placeholder { color: rgba(255,255,255,0.25); }
+        .conv-input button { width: 40px; height: 40px; border-radius: 50%; border: none; background: linear-gradient(135deg, #1b5e3c, #43e97b); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+
+        .conv-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: rgba(255,255,255,0.2); gap: 12px; }
+        .conv-empty i { font-size: 48px; }
+        .conv-empty p { font-size: 0.9rem; text-align: center; padding: 0 20px; }
+
+        @media (max-width: 992px) { body { flex-direction: column; } .sidebar { width: 100%; height: auto; } .contacts-panel { width: 100%; height: 200px; } }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <h2>Réseau Alumni</h2>
+    {% if request.user.profile.role == 'alumni' %}
+    <p class="sidebar-subtitle">Espace Alumni</p>
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'dashboard_alumni' %}"><i class="fas fa-th-large"></i> Dashboard</a></li>
+        <li><a href="{% url 'post_create' %}"><i class="fas fa-pen"></i> Publier un post</a></li>
+        <li><a href="{% url 'offres' %}"><i class="fas fa-briefcase"></i> Publier une offre</a></li>
+        <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> Notifications</a></li>
+        <li><a href="{% url 'chat_page' %}" class="active"><i class="fas fa-comment-dots"></i> Chat</a></li>
+        <li><a href="{% url 'profil_alumni' %}"><i class="fas fa-user"></i> Profil</a></li>
+    </ul>
+    {% else %}
+    <p class="sidebar-subtitle">Espace Étudiant</p>
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'dashboard_etudiant' %}"><i class="fas fa-th-large"></i> Dashboard</a></li>
+        <li><a href="{% url 'offres' %}"><i class="fas fa-briefcase"></i> Offres de stage</a></li>
+        <li><a href="{% url 'favoris' %}"><i class="fas fa-star"></i> Favoris</a></li>
+        <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> Notifications</a></li>
+        <li><a href="{% url 'chat_page' %}" class="active"><i class="fas fa-comment-dots"></i> Chat</a></li>
+        <li><a href="{% url 'profil_etudiant' %}"><i class="fas fa-user"></i> Profil</a></li>
+    </ul>
+    {% endif %}
+    <hr class="sidebar-divider"/>
+    <ul class="sidebar-nav">
+        <li><a href="/logout/"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+    </ul>
+</aside>
+
+<!-- CHAT -->
+<div class="chat-layout">
+
+    <!-- CONTACTS -->
+    <div class="contacts-panel">
+        <div class="contacts-header">
+            <h3>Messages</h3>
+            {% if request.user.profile.role == 'etudiant' %}
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-input" placeholder="Chercher un alumni…" oninput="filtrerAlumni(this.value)">
+            </div>
+            {% endif %}
+        </div>
+        <div class="contacts-list" id="contacts-list">
+
+            {% if contacts %}
+            <div class="contacts-section-title">Conversations</div>
+            {% for contact in contacts %}
+            <a href="{% url 'chat_avec' contact.id %}" class="contact-item {% if selected_user and selected_user.id == contact.id %}active{% endif %}">
+                <div class="contact-avatar">
+                    {% if contact.profile.photo %}
+                        <img src="{{ contact.profile.photo.url }}"/>
+                    {% else %}
+                        {{ contact.get_full_name|default:contact.username|first|upper }}
+                    {% endif %}
+                </div>
+                <div class="contact-info">
+                    <div class="contact-name">{{ contact.get_full_name|default:contact.username }}</div>
+                    <div class="contact-last">
+                        {% if contact.profile.role == 'alumni' %}Alumni{% else %}Étudiant{% endif %}
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+            {% endif %}
+
+            <!-- Tous les alumni seulement pour les étudiants -->
+            {% if request.user.profile.role == 'etudiant' %}
+            <div class="contacts-section-title">Tous les alumni</div>
+            {% for alumni in tous_alumni %}
+            <a href="{% url 'chat_avec' alumni.id %}" class="contact-item alumni-item {% if selected_user and selected_user.id == alumni.id %}active{% endif %}"
+               data-nom="{{ alumni.get_full_name|default:alumni.username|lower }}">
+                <div class="contact-avatar">
+                    {% if alumni.profile.photo %}
+                        <img src="{{ alumni.profile.photo.url }}"/>
+                    {% else %}
+                        {{ alumni.get_full_name|default:alumni.username|first|upper }}
+                    {% endif %}
+                </div>
+                <div class="contact-info">
+                    <div class="contact-name">{{ alumni.get_full_name|default:alumni.username }}</div>
+                    <div class="contact-last">{{ alumni.profile.filiere_alumni|default:"Alumni" }}</div>
+                </div>
+            </a>
+            {% empty %}
+            <p style="padding:16px;color:rgba(255,255,255,0.3);font-size:0.85rem;">Aucun alumni disponible.</p>
+            {% endfor %}
+            {% endif %}
+
+            {% if not contacts and request.user.profile.role == 'alumni' %}
+            <div style="padding:20px;color:rgba(255,255,255,0.3);font-size:0.85rem;text-align:center;">
+                Aucun étudiant ne vous a encore contacté.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- CONVERSATION -->
+    <div class="conversation-panel">
+        {% if selected_user %}
+        <div class="conv-header">
+            <div class="contact-avatar">
+                {% if selected_user.profile.photo %}
+                    <img src="{{ selected_user.profile.photo.url }}"/>
+                {% else %}
+                    {{ selected_user.get_full_name|default:selected_user.username|first|upper }}
+                {% endif %}
+            </div>
+            <div>
+                <div class="conv-header-name">{{ selected_user.get_full_name|default:selected_user.username }}</div>
+                <div class="conv-header-status">
+                    {% if selected_user.profile.role == 'alumni' %}Alumni{% else %}Étudiant{% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="conv-messages" id="conv-messages">
+            {% for msg in conversation %}
+            <div class="msg-item {% if msg.expediteur == request.user %}msg-moi{% else %}msg-autre{% endif %}">
+                <div class="msg-bubble">{{ msg.contenu }}</div>
+                <div class="msg-date">{{ msg.date_envoi|date:"d/m/Y à H:i" }}</div>
+            </div>
+            {% empty %}
+            <div style="text-align:center;color:rgba(255,255,255,0.2);padding:40px;font-size:0.88rem;">
+                Démarrez la conversation !
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="conv-input">
+            <input type="text" id="msg-input" placeholder="Écrire un message…">
+            <button onclick="envoyerMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+
+        {% else %}
+        <div class="conv-empty">
+            <i class="fas fa-comment-dots"></i>
+            {% if request.user.profile.role == 'alumni' %}
+            <p>Sélectionne une conversation ou attends qu'un étudiant te contacte</p>
+            {% else %}
+            <p>Sélectionne un alumni pour démarrer une conversation</p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+const CSRF = "{{ csrf_token }}";
+{% if selected_user %}
+const DEST_ID = {{ selected_user.id }};
+{% endif %}
+
+function envoyerMessage() {
+    const input = document.getElementById('msg-input');
+    const text = input.value.trim();
+    if (!text) return;
+
+    fetch(`/chat/${DEST_ID}/envoyer/`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': CSRF},
+        body: `contenu=${encodeURIComponent(text)}`
+    }).then(r => r.json()).then(data => {
+        if (data.success) {
+            input.value = '';
+            const box = document.getElementById('conv-messages');
+            const div = document.createElement('div');
+            div.className = 'msg-item msg-moi';
+            div.innerHTML = `<div class="msg-bubble">${text}</div><div class="msg-date">maintenant</div>`;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+        }
+    });
+}
+
+document.getElementById('msg-input') && document.getElementById('msg-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') envoyerMessage();
+});
+
+const box = document.getElementById('conv-messages');
+if (box) box.scrollTop = box.scrollHeight;
+
+function filtrerAlumni(query) {
+    const items = document.querySelectorAll('.alumni-item');
+    items.forEach(item => {
+        const nom = item.dataset.nom || '';
+        item.style.display = nom.includes(query.toLowerCase()) ? 'flex' : 'none';
+    });
+}
+</script>
+</body>
+</html>

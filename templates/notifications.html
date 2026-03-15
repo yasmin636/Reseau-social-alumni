@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Notifications{% endblock %}
+{% block content %}
+<style>
+  .page-title {
+    font-size:22px; font-weight:700;
+    margin-bottom:24px; color:#fff;
+  }
+  .notif-list { display:flex; flex-direction:column; gap:12px; }
+  .notif-card {
+    background:rgba(8,28,21,0.7);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:12px; padding:16px 20px;
+    display:flex; gap:16px; align-items:flex-start;
+  }
+  .notif-card.non-lue {
+    background:rgba(52,168,83,0.1);
+    border-color:rgba(52,168,83,0.3);
+  }
+  .notif-dot {
+    width:10px; height:10px; border-radius:50%;
+    background:#34a853; margin-top:5px; flex-shrink:0;
+  }
+  .notif-msg {
+    font-size:14px; color:#f1f5f2;
+    line-height:1.6; flex:1;
+  }
+  .notif-date {
+    font-size:12px; color:rgba(255,255,255,0.35);
+    margin-top:6px;
+  }
+  .empty {
+    text-align:center; color:rgba(255,255,255,0.3);
+    padding:60px 0; font-size:15px;
+  }
+</style>
+
+<h1 class="page-title">Notifications</h1>
+
+{% if notifs %}
+  <div class="notif-list">
+    {% for notif in notifs %}
+    <div class="notif-card {% if not notif.lue %}non-lue{% endif %}">
+      {% if not notif.lue %}<div class="notif-dot"></div>{% endif %}
+      <div style="flex:1;">
+        <div class="notif-msg">{{ notif.message }}</div>
+        <div class="notif-date">{{ notif.date_creation|date:"d/m/Y à H:i" }}</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty">Aucune notification pour le moment.</div>
+{% endif %}
+
+{% endblock %}

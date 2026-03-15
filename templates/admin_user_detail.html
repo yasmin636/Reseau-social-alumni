@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}Détail — {{ u.username }}{% endblock %}
+{% block content %}
+<style>
+  .back-link { display:inline-block; color:#b7e4c7; text-decoration:none; font-size:14px; margin-bottom:24px; padding:8px 16px; background:rgba(255,255,255,0.07); border-radius:8px; }
+  .back-link:hover { background:rgba(255,255,255,0.12); }
+  .notif-success { background:rgba(52,168,83,0.2); border:1px solid rgba(52,168,83,0.4); color:#43e97b; border-radius:10px; padding:12px 18px; font-size:14px; margin-bottom:20px; font-weight:500; }
+  .detail-layout { display:grid; grid-template-columns:280px 1fr; gap:24px; color:#f1f5f2; }
+  .card-left { background:rgba(8,28,21,0.7); border-radius:14px; padding:28px 24px; text-align:center; }
+  .avatar-big { width:80px; height:80px; border-radius:50%; background:#40916c; display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:700; color:white; margin:0 auto 16px; overflow:hidden; }
+  .avatar-big img { width:100%; height:100%; object-fit:cover; }
+  .user-fullname { font-size:20px; font-weight:700; margin-bottom:4px; }
+  .user-username { color:rgba(255,255,255,0.4); font-size:13px; margin-bottom:14px; }
+  .role-badge { display:inline-block; padding:5px 14px; border-radius:20px; font-size:13px; font-weight:600; margin-bottom:16px; }
+  .role-etudiant { background:rgba(64,145,108,0.3); color:#b7e4c7; border:1px solid #40916c; }
+  .role-alumni { background:rgba(45,106,79,0.4); color:#d8f3dc; border:1px solid #2d6a4f; }
+  .role-admin { background:rgba(96,125,139,0.3); color:#b0bec5; border:1px solid #607d8b; }
+  .statut-actif { color:#43e97b; font-size:13px; font-weight:600; margin-bottom:20px; }
+  .statut-attente { color:#ffc107; font-size:13px; font-weight:600; margin-bottom:20px; }
+  .actions { display:flex; flex-direction:column; gap:10px; margin-top:8px; }
+  .btn-action { display:block; width:100%; padding:11px; border-radius:9px; font-size:13px; font-weight:600; text-align:center; text-decoration:none; border:none; cursor:pointer; transition:opacity 0.2s; }
+  .btn-action:hover { opacity:0.85; }
+  .btn-activer { background:#2d6a4f; color:white; }
+  .btn-desactiver { background:#b08900; color:white; }
+  .btn-role { background:#1b4332; color:#b7e4c7; border:1px solid #40916c; }
+  .btn-supprimer { background:#c92a2a; color:white; }
+  .card-right { background:rgba(8,28,21,0.7); border-radius:14px; padding:28px 24px; }
+  .section-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:rgba(255,255,255,0.35); margin-bottom:16px; margin-top:24px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.07); }
+  .section-title:first-child { margin-top:0; }
+  .info-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .info-label { font-size:11px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px; }
+  .info-value { font-size:15px; color:#f1f5f2; font-weight:500; }
+  .info-value.empty { color:rgba(255,255,255,0.2); font-style:italic; font-size:13px; }
+  .confirm-box { background:rgba(201,42,42,0.1); border:1px solid rgba(201,42,42,0.3); border-radius:10px; padding:16px; margin-top:12px; display:none; }
+  .confirm-box p { font-size:13px; color:#ff6b6b; margin-bottom:12px; }
+  .confirm-btns { display:flex; gap:10px; }
+  .btn-yes { background:#c92a2a; color:white; padding:8px 18px; border-radius:8px; border:none; cursor:pointer; font-size:13px; font-weight:600; }
+  .btn-no { background:rgba(255,255,255,0.1); color:white; padding:8px 18px; border-radius:8px; border:none; cursor:pointer; font-size:13px; }
+  @media(max-width:768px) { .detail-layout { grid-template-columns:1fr; } .info-grid { grid-template-columns:1fr; } }
+</style>
+
+<a href="{% url 'admin_dashboard' %}" class="back-link">← Retour au dashboard</a>
+
+{% if notif_message %}
+  <div class="notif-success">{{ notif_message }}</div>
+{% endif %}
+
+<div class="detail-layout">
+  <div class="card-left">
+    <div class="avatar-big">
+      {% if profile and profile.photo %}
+        <img src="{{ profile.photo.url }}"/>
+      {% else %}
+        {{ u.username|first|upper }}
+      {% endif %}
+    </div>
+    <div class="user-fullname">{{ u.get_full_name|default:u.username }}</div>
+    <div class="user-username">@{{ u.username }}</div>
+
+    {% if u.is_staff or u.is_superuser %}
+      <div class="role-badge role-admin">Administrateur</div>
+    {% elif profile and profile.role == "etudiant" %}
+      <div class="role-badge role-etudiant">Etudiant</div>
+    {% elif profile and profile.role == "alumni" %}
+      <div class="role-badge role-alumni">Alumni</div>
+    {% endif %}
+    <br/>
+    {% if profile and profile.compte_active %}
+      <div class="statut-actif">Compte actif</div>
+    {% else %}
+      <div class="statut-attente">En attente d'activation</div>
+    {% endif %}
+
+    {% if not u.is_staff and not u.is_superuser %}
+    <div class="actions">
+      {% if profile and profile.compte_active %}
+        <a href="{% url 'admin_user_toggle_active' u.id %}" class="btn-action btn-desactiver">Désactiver le compte</a>
+      {% else %}
+        <a href="{% url 'admin_user_toggle_active' u.id %}" class="btn-action btn-activer">Activer le compte</a>
+      {% endif %}
+      <a href="{% url 'admin_user_change_role' u.id %}" class="btn-action btn-role">
+        {% if profile and profile.role == "etudiant" %}Passer en Alumni{% else %}Passer en Etudiant{% endif %}
+      </a>
+      <button class="btn-action btn-supprimer" onclick="document.getElementById('confirm-delete').style.display='block'">
+        Supprimer le compte
+      </button>
+      <div class="confirm-box" id="confirm-delete">
+        <p>Etes-vous sur de vouloir supprimer ce compte ? Cette action est irreversible.</p>
+        <div class="confirm-btns">
+          <form method="POST" action="{% url 'admin_user_delete' u.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn-yes">Oui, supprimer</button>
+          </form>
+          <button class="btn-no" onclick="document.getElementById('confirm-delete').style.display='none'">Annuler</button>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="card-right">
+    <div class="section-title">Informations personnelles</div>
+    <div class="info-grid">
+      <div><div class="info-label">Nom complet</div><div class="info-value">{{ u.get_full_name|default:"Non renseigné" }}</div></div>
+      <div><div class="info-label">Nom d'utilisateur</div><div class="info-value">{{ u.username }}</div></div>
+      <div><div class="info-label">Email</div><div class="info-value">{{ u.email|default:"Non renseigné" }}</div></div>
+      <div><div class="info-label">Date d'inscription</div><div class="info-value">{{ u.date_joined|date:"d/m/Y à H:i" }}</div></div>
+      <div>
+        <div class="info-label">Derniere connexion</div>
+        <div class="info-value {% if not u.last_login %}empty{% endif %}">
+          {% if u.last_login %}{{ u.last_login|date:"d/m/Y à H:i" }}{% else %}Jamais connecté{% endif %}
+        </div>
+      </div>
+    </div>
+
+    {% if profile %}
+      {% if profile.role == "etudiant" %}
+        <div class="section-title">Informations académiques (Etudiant)</div>
+        <div class="info-grid">
+          <div><div class="info-label">Année actuelle</div><div class="info-value {% if not profile.annee_actuelle %}empty{% endif %}">{{ profile.annee_actuelle|default:"Non renseigné" }}</div></div>
+          <div><div class="info-label">Filière</div><div class="info-value {% if not profile.filiere %}empty{% endif %}">{{ profile.filiere|default:"Non renseigné" }}</div></div>
+        </div>
+      {% elif profile.role == "alumni" %}
+        <div class="section-title">Informations Alumni</div>
+        <div class="info-grid">
+          <div><div class="info-label">Année de licence</div><div class="info-value {% if not profile.annee_licence %}empty{% endif %}">{{ profile.annee_licence|default:"Non renseigné" }}</div></div>
+          <div><div class="info-label">Filière étudiée</div><div class="info-value {% if not profile.filiere_alumni %}empty{% endif %}">{{ profile.filiere_alumni|default:"Non renseigné" }}</div></div>
+          <div><div class="info-label">Situation professionnelle</div><div class="info-value">{% if profile.en_poste %}En poste{% else %}Sans emploi{% endif %}</div></div>
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Accueil - Réseau Alumni{% endblock %}
+
+{% block content %}
+<style>
+  .page-title { font-size:26px; font-weight:700; margin-bottom:24px; }
+  .post-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));
+    gap:20px;
+  }
+  .post-card {
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:16px; padding:24px;
+    transition:transform 0.2s, border-color 0.2s;
+  }
+  .post-card:hover {
+    transform:translateY(-3px);
+    border-color:rgba(255,255,255,0.2);
+  }
+  .post-title { font-size:17px; font-weight:600; margin-bottom:10px; }
+  .post-meta { color:rgba(255,255,255,0.4); font-size:12px; margin-bottom:12px; }
+  .post-content {
+    color:rgba(255,255,255,0.65); font-size:14px;
+    line-height:1.6;
+    display:-webkit-box; -webkit-line-clamp:3;
+    -webkit-box-orient:vertical; overflow:hidden;
+  }
+  .empty { text-align:center; color:rgba(255,255,255,0.3); padding:60px 0; font-size:16px; }
+</style>
+
+<h1 class="page-title">📰 Publications</h1>
+
+{% if post_list %}
+  <div class="post-grid">
+    {% for post in post_list %}
+    <div class="post-card">
+      <div class="post-title">{{ post.titre }}</div>
+      <div class="post-meta">
+        ✍️ {{ post.auteur.get_full_name|default:post.auteur.username }}
+        &nbsp;·&nbsp;
+        🕐 {{ post.date_creation|date:"d/m/Y" }}
+      </div>
+      <div class="post-content">{{ post.contenu }}</div>
+    </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty">Aucune publication pour le moment.</div>
+{% endif %}
+
+{% endblock %}

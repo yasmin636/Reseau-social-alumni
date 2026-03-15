@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Réseau Alumni{% endblock %}</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Segoe UI',sans-serif; background:#1b4332; color:#fff; min-height:100vh; }
+    .navbar {
+      background:rgba(8,28,21,0.8);
+      border-bottom:1px solid rgba(255,255,255,0.08);
+      padding:0 32px; height:60px;
+      display:flex; align-items:center; justify-content:space-between;
+      position:sticky; top:0; z-index:100;
+    }
+    .navbar-brand { font-size:18px; font-weight:700; color:#fff; text-decoration:none; }
+    .navbar-right { display:flex; align-items:center; gap:20px; }
+    .navbar-right a { color:rgba(255,255,255,0.7); text-decoration:none; font-size:14px; transition:color 0.2s; }
+    .navbar-right a:hover { color:#fff; }
+
+    /* ← AJOUTÉ : badge notification */
+    .notif-wrapper { position:relative; display:inline-flex; align-items:center; }
+    .notif-badge {
+      position:absolute; top:-8px; right:-14px;
+      background:#e53935; color:white;
+      font-size:10px; font-weight:700;
+      min-width:18px; height:18px; padding:0 4px;
+      border-radius:9px;
+      display:flex; align-items:center; justify-content:center;
+      border:2px solid #1b4332;
+      animation:pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow:0 0 0 0 rgba(229,57,53,0.5); }
+      70% { box-shadow:0 0 0 6px rgba(229,57,53,0); }
+      100% { box-shadow:0 0 0 0 rgba(229,57,53,0); }
+    }
+
+    .btn-logout {
+      background:rgba(229,57,53,0.2); border:1px solid rgba(229,57,53,0.4);
+      color:#ff6b6b !important; padding:6px 14px; border-radius:8px; font-size:13px;
+    }
+    .main-content { max-width:1200px; margin:0 auto; padding:32px 24px; }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <a href="/" class="navbar-brand">Réseau Alumni</a>
+  <div class="navbar-right">
+    {% if user.is_authenticated %}
+      <span style="color:rgba(255,255,255,0.5);font-size:13px;">
+        {{ user.get_full_name|default:user.username }}
+      </span>
+      {% if not user.is_staff and not user.is_superuser %}
+        <a href="/offres/">Offres</a>
+        <a href="/favoris/">Favoris</a>
+      {% endif %}
+      <!-- ← AJOUTÉ : badge rouge sur notifications -->
+      <div class="notif-wrapper">
+        <a href="{% url 'notifications' %}">Notifications</a>
+        {% if nb_notifications > 0 %}
+          <span class="notif-badge">{{ nb_notifications }}</span>
+        {% endif %}
+      </div>
+      {% if user.is_staff or user.is_superuser %}
+        <a href="{% url 'admin_dashboard' %}">Dashboard Admin</a>
+      {% endif %}
+      <a href="/logout/" class="btn-logout">Déconnexion</a>
+    {% else %}
+      <a href="{% url 'login' %}">Connexion</a>
+      <a href="{% url 'register' %}">S'inscrire</a>
+    {% endif %}
+  </div>
+</nav>
+<div class="main-content">
+  {% block content %}{% endblock %}
+</div>
+</body>
+</html>

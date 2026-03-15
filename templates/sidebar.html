@@ -1,0 +1,60 @@
+<!-- sidebar.html — inclure avec {% include 'sidebar.html' %} -->
+<style>
+  .sidebar {
+    width:240px; min-height:100vh;
+    background:rgba(255,255,255,0.04);
+    border-right:1px solid rgba(255,255,255,0.07);
+    padding:24px 16px;
+    display:flex; flex-direction:column; gap:6px;
+  }
+  .sidebar-title {
+    font-size:11px; font-weight:600;
+    text-transform:uppercase; letter-spacing:1px;
+    color:rgba(255,255,255,0.3); padding:8px 12px; margin-bottom:4px;
+  }
+  .sidebar-link {
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px; border-radius:10px;
+    text-decoration:none; color:rgba(255,255,255,0.6);
+    font-size:14px; transition:all 0.2s;
+  }
+  .sidebar-link:hover, .sidebar-link.active {
+    background:rgba(255,255,255,0.08);
+    color:#fff;
+  }
+  .sidebar-icon { font-size:16px; }
+</style>
+
+<div class="sidebar">
+  <div class="sidebar-title">Navigation</div>
+
+  {% if user.is_staff or user.is_superuser %}
+    <a href="{% url 'admin_dashboard' %}" class="sidebar-link">
+      <span class="sidebar-icon">⚙️</span> Dashboard Admin
+    </a>
+  {% endif %}
+
+  {% if user.is_authenticated %}
+    {% if user.profile.role == "etudiant" %}
+      <a href="{% url 'dashboard_etudiant' %}" class="sidebar-link">
+        <span class="sidebar-icon">🎓</span> Mon espace
+      </a>
+    {% elif user.profile.role == "alumni" %}
+      <a href="{% url 'dashboard_alumni' %}" class="sidebar-link">
+        <span class="sidebar-icon">🏆</span> Mon espace
+      </a>
+    {% endif %}
+    <a href="{% url 'offres' %}" class="sidebar-link">
+      <span class="sidebar-icon">💼</span> Offres
+    </a>
+    <a href="{% url 'favoris' %}" class="sidebar-link">
+      <span class="sidebar-icon">⭐</span> Favoris
+    </a>
+    <a href="{% url 'notifications' %}" class="sidebar-link">
+      <span class="sidebar-icon">🔔</span> Notifications
+    </a>
+    <a href="{% url 'post_create' %}" class="sidebar-link">
+      <span class="sidebar-icon">✏️</span> Créer un post
+    </a>
+  {% endif %}
+</div>

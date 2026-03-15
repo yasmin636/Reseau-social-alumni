@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Inscription - Réseau Alumni</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family:'Segoe UI',sans-serif;
+      background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+      min-height:100vh;
+      display:flex; align-items:center; justify-content:center;
+      padding:24px;
+    }
+    .card {
+      background:rgba(255,255,255,0.06);
+      backdrop-filter:blur(16px);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:20px;
+      padding:44px 40px;
+      width:100%; max-width:520px;
+      box-shadow:0 30px 60px rgba(0,0,0,0.4);
+    }
+    .logo { text-align:center; font-size:48px; margin-bottom:8px; }
+    h1 { color:#fff; text-align:center; font-size:22px; font-weight:700; margin-bottom:6px; }
+    .subtitle { color:rgba(255,255,255,0.4); text-align:center; font-size:13px; margin-bottom:28px; }
+
+    /* TABS */
+    .tabs {
+      display:flex; background:rgba(255,255,255,0.06);
+      border-radius:12px; padding:4px; margin-bottom:28px; gap:4px;
+    }
+    .tab {
+      flex:1; text-align:center; padding:11px;
+      border-radius:9px; font-size:13px; font-weight:600;
+      cursor:pointer; color:rgba(255,255,255,0.4);
+      transition:all 0.25s; user-select:none;
+    }
+    .tab-etudiant-active {
+      background:linear-gradient(135deg,#1a73e8,#0d47a1);
+      color:white; box-shadow:0 4px 12px rgba(26,115,232,0.35);
+    }
+    .tab-alumni-active {
+      background:linear-gradient(135deg,#34a853,#1b5e20);
+      color:white; box-shadow:0 4px 12px rgba(52,168,83,0.35);
+    }
+
+    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:0 16px; }
+
+    .section-label {
+      color:rgba(255,255,255,0.4); font-size:11px;
+      text-transform:uppercase; letter-spacing:1px;
+      margin:8px 0 14px;
+    }
+
+    label {
+      display:block; color:rgba(255,255,255,0.65);
+      font-size:12px; font-weight:600;
+      text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      width:100%; background:rgba(255,255,255,0.07);
+      border:1px solid rgba(255,255,255,0.13);
+      border-radius:10px; padding:12px 14px;
+      color:#fff; font-size:14px; margin-bottom:16px;
+      outline:none; transition:border-color 0.2s;
+    }
+    input:focus { border-color:#43e97b; }
+    input::placeholder { color:rgba(255,255,255,0.25); }
+
+    /* Checkbox en poste */
+    .checkbox-row {
+      display:flex; align-items:center; gap:12px;
+      margin-bottom:16px;
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:10px; padding:13px 16px;
+      cursor:pointer;
+    }
+    .checkbox-row input[type="checkbox"] {
+      width:18px; height:18px;
+      accent-color:#34a853; cursor:pointer;
+      margin-bottom:0;
+    }
+    .checkbox-row span {
+      color:rgba(255,255,255,0.75); font-size:14px;
+    }
+
+    hr { border:none; border-top:1px solid rgba(255,255,255,0.08); margin:16px 0; }
+
+    .btn {
+      width:100%; border:none; border-radius:10px;
+      padding:14px; font-size:15px; font-weight:700;
+      cursor:pointer; transition:opacity 0.2s, transform 0.1s; margin-top:6px;
+    }
+    .btn:hover { opacity:0.9; transform:translateY(-1px); }
+    .btn-blue { background:linear-gradient(135deg,#1a73e8,#0d47a1); color:white; }
+    .btn-green { background:linear-gradient(135deg,#34a853,#1b5e20); color:white; }
+
+    .error-field {
+      color:#ff6b6b; font-size:12px; margin-top:-12px; margin-bottom:12px;
+    }
+    .error-global {
+      background:rgba(229,57,53,0.15); border:1px solid rgba(229,57,53,0.4);
+      color:#ff6b6b; border-radius:10px;
+      padding:12px 16px; font-size:13px; margin-bottom:20px;
+    }
+
+    .link { text-align:center; color:rgba(255,255,255,0.4); font-size:13px; margin-top:20px; }
+    .link a { color:#43e97b; text-decoration:none; font-weight:600; }
+
+    /* ======= PAGE SUCCÈS ======= */
+    .success-box { text-align:center; padding:10px 0; }
+    .success-icon { font-size:70px; margin-bottom:16px; }
+    .success-title { color:#43e97b; font-size:24px; font-weight:700; margin-bottom:14px; }
+    .success-msg {
+      color:rgba(255,255,255,0.75); font-size:14px;
+      line-height:1.8; margin-bottom:22px;
+    }
+    .pending-badge {
+      display:inline-block;
+      background:rgba(255,193,7,0.15);
+      border:1px solid rgba(255,193,7,0.4);
+      color:#ffc107; padding:10px 24px;
+      border-radius:20px; font-size:14px; font-weight:600; margin-bottom:26px;
+    }
+    .btn-back {
+      display:inline-block;
+      background:rgba(255,255,255,0.1);
+      color:#fff; padding:12px 28px;
+      border-radius:10px; text-decoration:none;
+      font-size:14px; font-weight:500;
+      border:1px solid rgba(255,255,255,0.2);
+      transition:background 0.2s;
+    }
+    .btn-back:hover { background:rgba(255,255,255,0.18); }
+
+    .hidden { display:none; }
+  </style>
+</head>
+<body>
+<div class="card">
+
+  {% if success %}
+  <!-- ✅ MESSAGE D'ATTENTE -->
+  <div class="success-box">
+    <div class="success-icon">📬</div>
+    <div class="success-title">Inscription réussie !</div>
+    <p class="success-msg">
+      Bonjour <strong>{{ nom_complet }}</strong> 👋<br/>
+      Votre compte a bien été créé.<br/><br/>
+      <strong>Veuillez patienter</strong> — l'administrateur doit valider
+      et activer votre compte avant que vous puissiez vous connecter.
+      Vous serez informé dès que votre accès est ouvert.
+    </p>
+    <div class="pending-badge">⏳ En attente de validation par l'admin</div>
+    <br/>
+    <a href="{% url 'login' %}" class="btn-back">← Retour à la connexion</a>
+  </div>
+
+  {% else %}
+  <!-- FORMULAIRE -->
+  <div class="logo">🎓</div>
+  <h1>Créer un compte</h1>
+  <p class="subtitle">Rejoignez le réseau alumni</p>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab {% if user_type == 'etudiant' %}tab-etudiant-active{% endif %}"
+         id="tab-etudiant" onclick="selectType('etudiant')">
+      🎓 Étudiant
+    </div>
+    <div class="tab {% if user_type == 'alumni' %}tab-alumni-active{% endif %}"
+         id="tab-alumni" onclick="selectType('alumni')">
+      🏆 Alumni
+    </div>
+  </div>
+
+  {% if form.non_field_errors %}
+    <div class="error-global">{{ form.non_field_errors }}</div>
+  {% endif %}
+
+  <form method="POST" id="register-form">
+    {% csrf_token %}
+    <input type="hidden" name="user_type" id="user_type" value="{{ user_type|default:'etudiant' }}"/>
+
+    <!-- Infos communes -->
+    <p class="section-label">Informations personnelles</p>
+    <div class="grid-2">
+      <div>
+        <label>Nom</label>
+        <input type="text" name="nom" placeholder="Votre nom"
+               value="{{ form.nom.value|default:'' }}" required/>
+        {% if form.nom.errors %}<p class="error-field">{{ form.nom.errors.0 }}</p>{% endif %}
+      </div>
+      <div>
+        <label>Prénom</label>
+        <input type="text" name="prenom" placeholder="Votre prénom"
+               value="{{ form.prenom.value|default:'' }}" required/>
+        {% if form.prenom.errors %}<p class="error-field">{{ form.prenom.errors.0 }}</p>{% endif %}
+      </div>
+    </div>
+
+    <label>Nom d'utilisateur</label>
+    <input type="text" name="username" placeholder="nom_utilisateur"
+           value="{{ form.username.value|default:'' }}" required/>
+    {% if form.username.errors %}<p class="error-field">{{ form.username.errors.0 }}</p>{% endif %}
+
+    <label>Email</label>
+    <input type="email" name="email" placeholder="votre@email.com"
+           value="{{ form.email.value|default:'' }}" required/>
+    {% if form.email.errors %}<p class="error-field">{{ form.email.errors.0 }}</p>{% endif %}
+
+    <hr/>
+
+    <!-- ===== CHAMPS ÉTUDIANT ===== -->
+    <div id="fields-etudiant" class="{% if user_type == 'alumni' %}hidden{% endif %}">
+      <p class="section-label">Informations académiques</p>
+      <div class="grid-2">
+        <div>
+          <label>Année actuelle</label>
+          <input type="text" name="annee_actuelle" placeholder="L1, L2, M1..."
+                 value="{{ form.annee_actuelle.value|default:'' }}"/>
+        </div>
+        <div>
+          <label>Filière</label>
+          <input type="text" name="filiere" placeholder="Informatique..."
+                 value="{{ form.filiere.value|default:'' }}"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CHAMPS ALUMNI ===== -->
+    <div id="fields-alumni" class="{% if user_type != 'alumni' %}hidden{% endif %}">
+      <p class="section-label">Informations alumni</p>
+      <div class="grid-2">
+        <div>
+          <label>Année de licence</label>
+          <input type="text" name="annee_licence" placeholder="Ex: 2021"
+                 value="{{ form.annee_licence.value|default:'' }}"/>
+        </div>
+        <div>
+          <label>Filière étudiée</label>
+          <input type="text" name="filiere_alumni" placeholder="Informatique..."
+                 value="{{ form.filiere_alumni.value|default:'' }}"/>
+        </div>
+      </div>
+      <label class="checkbox-row" style="text-transform:none;letter-spacing:0;">
+        <input type="checkbox" name="en_poste"
+               {% if form.en_poste.value %}checked{% endif %}/>
+        <span>💼 Je travaille actuellement</span>
+      </label>
+    </div>
+
+    <hr/>
+    <p class="section-label">Sécurité</p>
+
+    <label>Mot de passe</label>
+    <input type="password" name="password" placeholder="••••••••" required/>
+    {% if form.password.errors %}<p class="error-field">{{ form.password.errors.0 }}</p>{% endif %}
+
+    <label>Confirmer le mot de passe</label>
+    <input type="password" name="password_confirm" placeholder="••••••••" required/>
+
+    <button type="submit" class="btn {% if user_type == 'alumni' %}btn-green{% else %}btn-blue{% endif %}"
+            id="btn-submit">
+      Créer mon compte 🚀
+    </button>
+  </form>
+
+  <div class="link">
+    Déjà un compte ? <a href="{% url 'login' %}">Se connecter</a>
+  </div>
+  {% endif %}
+
+</div>
+
+<script>
+  function selectType(type) {
+    const te = document.getElementById('tab-etudiant');
+    const ta = document.getElementById('tab-alumni');
+    const fe = document.getElementById('fields-etudiant');
+    const fa = document.getElementById('fields-alumni');
+    const btn = document.getElementById('btn-submit');
+    const hidden = document.getElementById('user_type');
+
+    te.className = 'tab';
+    ta.className = 'tab';
+
+    if (type === 'etudiant') {
+      te.classList.add('tab-etudiant-active');
+      fe.classList.remove('hidden');
+      fa.classList.add('hidden');
+      btn.className = 'btn btn-blue';
+      hidden.value = 'etudiant';
+    } else {
+      ta.classList.add('tab-alumni-active');
+      fa.classList.remove('hidden');
+      fe.classList.add('hidden');
+      btn.className = 'btn btn-green';
+      hidden.value = 'alumni';
+    }
+  }
+</script>
+</body>
+</html>
