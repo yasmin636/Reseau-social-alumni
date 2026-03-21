@@ -1,237 +1,503 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet"/>
 
 <style>
-    body { background-color: #2d6a4f; font-family: "Segoe UI", Roboto, sans-serif; }
-    .admin-layout { display: flex; min-height: calc(100vh - 80px); color: #f8f9fa; }
-    .admin-sidebar { width: 260px; background: #1b4332; padding: 24px 18px; box-shadow: 4px 0 10px rgba(0,0,0,0.4); }
-    .admin-sidebar h2 { font-size: 1.4rem; margin-bottom: 24px; font-weight: 700; }
-    .admin-nav { list-style: none; padding: 0; margin: 0; }
-    .admin-nav li { margin-bottom: 10px; }
-    .admin-nav a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 6px; text-decoration: none; color: #e5f5eb; font-size: 0.95rem; }
-    .admin-nav a.active, .admin-nav a:hover { background: #2d6a4f; color: #ffffff; }
-    .admin-main { flex: 1; padding: 24px 32px; background: linear-gradient(135deg, #1b4332, #2d6a4f); overflow-x: hidden; }
-    .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-    .admin-header h1 { font-size: 1.8rem; color: #ffffff; margin: 0; }
-    .admin-header small { display: block; font-size: 0.9rem; color: #cdeeda; }
-    .admin-user-info { display: flex; align-items: center; gap: 12px; background: rgba(8,28,21,0.6); padding: 8px 14px; border-radius: 20px; }
-    .admin-user-avatar { width: 40px; height: 40px; border-radius: 50%; background: #b7e4c7; display: flex; align-items: center; justify-content: center; color: #1b4332; font-weight: 700; font-size: 1rem; overflow: hidden; }
-    .admin-user-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .admin-user-name { font-size: 0.95rem; font-weight: 600; }
-    .admin-user-role { font-size: 0.8rem; color: #cdeeda; }
-    .admin-section { background: rgba(8,28,21,0.7); border-radius: 10px; padding: 18px 18px 10px; margin-bottom: 22px; box-shadow: 0 8px 18px rgba(0,0,0,0.35); }
-    .admin-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .admin-section-header h2 { font-size: 1.2rem; margin: 0; color: #ffffff; }
-    .admin-section-header span { font-size: 0.85rem; color: #b7e4c7; }
-    .admin-badge { display: inline-block; font-size: 0.75rem; padding: 3px 8px; border-radius: 999px; background: #2d6a4f; color: #e9f7ef; }
-    .admin-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; color: #f1f5f2; }
-    .admin-table thead { background: rgba(21,54,43,0.9); }
-    .admin-table th, .admin-table td { padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; vertical-align: middle; }
-    .admin-table th { font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; }
-    .admin-table tbody tr:hover { background: rgba(33,82,63,0.7); }
-    .tag-role-etudiant { background: #40916c; color: #ffffff; padding: 3px 8px; border-radius: 999px; font-size: 0.75rem; }
-    .tag-role-alumni { background: #2d6a4f; color: #ffffff; padding: 3px 8px; border-radius: 999px; font-size: 0.75rem; }
-    .btn-pill { display: inline-block; padding: 5px 10px; border-radius: 999px; font-size: 0.8rem; border: none; cursor: pointer; text-decoration: none; transition: opacity 0.15s; }
-    .btn-pill:hover { opacity: 0.85; }
-    .btn-approve { background: #2d6a4f; color: #ffffff; }
-    .btn-ban { background: #c92a2a; color: #ffffff; }
-    .btn-detail { background: #1b4332; color: #ffffff; }
-    .status-pub { font-size: 0.8rem; padding: 3px 8px; border-radius: 999px; }
-    .status-pub-valide { background: #2d6a4f; color: #e9f7ef; }
-    .status-pub-en-attente { background: #b08900; color: #fff8e1; }
-    .admin-grid { display: grid; grid-template-columns: 2fr 1.4fr; gap: 18px; }
-    .user-avatar-small { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.2); }
-    .user-initiale { width: 32px; height: 32px; border-radius: 50%; background: #40916c; display: inline-flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 13px; }
-    .user-link { color: #b7e4c7; text-decoration: none; font-weight: 600; }
-    .user-link:hover { text-decoration: underline; color: #fff; }
-    .tri-select { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; border-radius: 8px; padding: 4px 10px; font-size: 0.8rem; outline: none; cursor: pointer; }
-    .tri-select option { background: #1b4332; }
-    @media (max-width: 992px) { .admin-layout { flex-direction: column; } .admin-sidebar { width: 100%; } .admin-main { padding: 16px; } .admin-grid { grid-template-columns: 1fr; } }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0a1628; --bg-2: #0c1526; --bg-3: #111e35;
+  --surface: #0f1c30; --surface-2: #162240;
+  --border: rgba(255,255,255,0.07); --border-2: rgba(255,255,255,0.12);
+  --blue: #2563eb; --blue-light: #3b82f6; --blue-glow: #60a5fa;
+  --cyan: #06b6d4; --green: #10b981; --amber: #f59e0b;
+  --red: #ef4444; --red-dark: #dc2626;
+  --white: #ffffff; --text-1: rgba(255,255,255,0.92);
+  --text-2: rgba(255,255,255,0.55); --text-3: rgba(255,255,255,0.30);
+  --sidebar-w: 256px;
+}
+body { background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--text-1); min-height: 100vh; }
+.adm-wrap { display: flex; min-height: 100vh; position: relative; }
+.adm-sidebar { width: var(--sidebar-w); background: var(--bg-2); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; overflow-y: auto; }
+.sidebar-logo { padding: 22px 20px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+.sidebar-logo svg { width: 36px; height: 28px; flex-shrink: 0; }
+.sidebar-logo-name { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; color: var(--white); letter-spacing: 0.8px; text-transform: uppercase; }
+.sidebar-logo-sub { font-size: 10px; color: var(--text-3); letter-spacing: 0.5px; text-transform: uppercase; }
+.sidebar-section-label { padding: 18px 20px 6px; font-size: 10px; font-weight: 600; color: var(--text-3); letter-spacing: 1.2px; text-transform: uppercase; }
+.adm-nav { list-style: none; padding: 0 10px; }
+.adm-nav li { margin-bottom: 2px; }
+.adm-nav a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; text-decoration: none; color: var(--text-2); font-size: 13.5px; font-weight: 500; transition: all 0.18s; position: relative; }
+.adm-nav a:hover { background: var(--surface); color: var(--text-1); }
+.adm-nav a.active { background: rgba(37,99,235,0.18); color: var(--blue-glow); border: 1px solid rgba(37,99,235,0.25); }
+.nav-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+.nav-badge { margin-left: auto; background: var(--red); color: #fff; font-size: 10px; font-weight: 700; border-radius: 999px; padding: 1px 7px; min-width: 20px; text-align: center; }
+.sidebar-footer { margin-top: auto; padding: 16px 20px; border-top: 1px solid var(--border); }
+.sidebar-footer-user { display: flex; align-items: center; gap: 10px; }
+.sfu-avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), var(--cyan)); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #fff; flex-shrink: 0; overflow: hidden; }
+.sfu-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.sfu-name { font-size: 13px; font-weight: 600; color: var(--text-1); }
+.sfu-role { font-size: 11px; color: var(--text-3); }
+.adm-main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; background: radial-gradient(ellipse 80% 50% at 80% 0%, rgba(37,99,235,0.08) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 0% 100%, rgba(6,182,212,0.06) 0%, transparent 55%), var(--bg); }
+.adm-topbar { height: 58px; background: rgba(7,13,26,0.85); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; position: sticky; top: 0; z-index: 50; }
+.adm-topbar-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: var(--text-1); }
+.adm-topbar-right { display: flex; align-items: center; gap: 12px; }
+.topbar-pill { display: flex; align-items: center; gap: 6px; background: var(--surface); border: 1px solid var(--border-2); border-radius: 999px; padding: 5px 13px; font-size: 11.5px; color: var(--text-2); }
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
+.adm-body { padding: 28px 32px; flex: 1; }
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px 20px 16px; position: relative; overflow: hidden; transition: border-color 0.2s, transform 0.2s; }
+.stat-card:hover { border-color: var(--border-2); transform: translateY(-2px); }
+.stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+.stat-card.blue::before  { background: linear-gradient(90deg, var(--blue), var(--blue-glow)); }
+.stat-card.cyan::before  { background: linear-gradient(90deg, var(--cyan), #22d3ee); }
+.stat-card.green::before { background: linear-gradient(90deg, var(--green), #34d399); }
+.stat-card.red::before   { background: linear-gradient(90deg, var(--red), #f87171); }
+.stat-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 14px; }
+.stat-icon.blue  { background: rgba(37,99,235,0.15); }
+.stat-icon.cyan  { background: rgba(6,182,212,0.13); }
+.stat-icon.green { background: rgba(16,185,129,0.13); }
+.stat-icon.red   { background: rgba(239,68,68,0.13); }
+.stat-num { font-family: 'Sora', sans-serif; font-size: 28px; font-weight: 800; color: var(--white); display: block; line-height: 1; margin-bottom: 4px; }
+.stat-lbl { font-size: 12px; color: var(--text-2); }
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; margin-bottom: 24px; }
+.panel-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02); }
+.panel-head-left { display: flex; align-items: center; gap: 12px; }
+.panel-icon { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 17px; }
+.panel-icon.blue  { background: rgba(37,99,235,0.15); border: 1px solid rgba(37,99,235,0.22); }
+.panel-icon.amber { background: rgba(245,158,11,0.13); border: 1px solid rgba(245,158,11,0.22); }
+.panel-icon.red   { background: rgba(239,68,68,0.13); border: 1px solid rgba(239,68,68,0.20); }
+.panel-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: var(--white); }
+.panel-sub { font-size: 12px; color: var(--text-3); margin-top: 1px; }
+.panel-count { background: var(--bg-3); border: 1px solid var(--border-2); border-radius: 999px; padding: 3px 11px; font-size: 12px; color: var(--text-2); font-weight: 600; }
+.filter-bar { display: flex; align-items: center; gap: 10px; padding: 14px 22px; border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.01); flex-wrap: wrap; }
+.filter-select { background: var(--bg-3); border: 1px solid var(--border-2); color: var(--text-1); border-radius: 9px; padding: 7px 12px; font-size: 12.5px; font-family: 'DM Sans', sans-serif; outline: none; cursor: pointer; }
+.filter-select option { background: var(--bg-2); }
+.filter-search { flex: 1; min-width: 160px; background: var(--bg-3); border: 1px solid var(--border-2); color: var(--text-1); border-radius: 9px; padding: 7px 14px; font-size: 12.5px; font-family: 'DM Sans', sans-serif; outline: none; }
+.filter-search::placeholder { color: var(--text-3); }
+.filter-search:focus { border-color: rgba(37,99,235,0.45); }
+.adm-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.adm-table thead { background: rgba(255,255,255,0.03); }
+.adm-table th { padding: 11px 16px; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-3); text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+.adm-table td { padding: 13px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; color: var(--text-1); }
+.adm-table tbody tr:last-child td { border-bottom: none; }
+.adm-table tbody tr { transition: background 0.15s; }
+.adm-table tbody tr:hover { background: rgba(255,255,255,0.03); }
+.av-sm { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--border-2); }
+.av-initial { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), var(--cyan)); display: inline-flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 13px; border: 1.5px solid rgba(59,130,246,0.30); flex-shrink: 0; }
+.user-cell { display: flex; align-items: center; gap: 10px; }
+.user-cell-name { font-weight: 600; font-size: 13px; color: var(--text-1); }
+.user-cell-email { font-size: 11.5px; color: var(--text-3); }
+.user-cell-link { text-decoration: none; }
+.user-cell-link:hover .user-cell-name { color: var(--blue-glow); }
+.badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.badge-etudiant { background: rgba(37,99,235,0.15); color: var(--blue-glow); border: 1px solid rgba(37,99,235,0.25); }
+.badge-alumni   { background: rgba(6,182,212,0.13); color: #67e8f9; border: 1px solid rgba(6,182,212,0.25); }
+.badge-admin    { background: rgba(245,158,11,0.12); color: #fcd34d; border: 1px solid rgba(245,158,11,0.22); }
+.badge-actif    { background: rgba(16,185,129,0.13); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.25); }
+.badge-attente  { background: rgba(245,158,11,0.12); color: #fcd34d; border: 1px solid rgba(245,158,11,0.22); }
+.badge-valide   { background: rgba(16,185,129,0.13); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.25); }
+.badge-refuse   { background: rgba(239,68,68,0.12); color: #fca5a5; border: 1px solid rgba(239,68,68,0.22); }
+.btn-act { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; font-family: 'DM Sans', sans-serif; border: 1px solid transparent; cursor: pointer; text-decoration: none; transition: all 0.18s; white-space: nowrap; }
+.btn-act:hover { transform: translateY(-1px); }
+.btn-view     { background: var(--bg-3); color: var(--text-2); border-color: var(--border-2); }
+.btn-view:hover { color: var(--white); border-color: rgba(255,255,255,0.22); }
+.btn-activate { background: rgba(16,185,129,0.14); color: #6ee7b7; border-color: rgba(16,185,129,0.28); }
+.btn-activate:hover { background: rgba(16,185,129,0.25); }
+.btn-suspend  { background: rgba(245,158,11,0.12); color: #fcd34d; border-color: rgba(245,158,11,0.25); }
+.btn-suspend:hover { background: rgba(245,158,11,0.22); }
+.btn-delete   { background: rgba(239,68,68,0.12); color: #fca5a5; border-color: rgba(239,68,68,0.25); }
+.btn-delete:hover { background: rgba(239,68,68,0.22); }
+.btn-approve  { background: rgba(16,185,129,0.14); color: #6ee7b7; border-color: rgba(16,185,129,0.28); }
+.btn-approve:hover { background: rgba(16,185,129,0.25); }
+.btn-reject   { background: rgba(239,68,68,0.12); color: #fca5a5; border-color: rgba(239,68,68,0.25); }
+.btn-reject:hover { background: rgba(239,68,68,0.22); }
+.btn-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.post-preview { max-width: 280px; }
+.post-title { font-weight: 600; font-size: 13px; color: var(--text-1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 240px; }
+.post-excerpt { font-size: 11.5px; color: var(--text-3); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 240px; }
+.empty-state { text-align: center; padding: 48px 20px; color: var(--text-3); }
+.empty-state .empty-icon { font-size: 40px; margin-bottom: 10px; opacity: 0.5; }
+.empty-state p { font-size: 13px; }
+.modal-overlay { position: fixed; inset: 0; z-index: 999; background: rgba(0,0,0,0.72); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal-box { background: var(--surface-2); border: 1px solid var(--border-2); border-radius: 20px; padding: 32px 30px; width: 100%; max-width: 400px; box-shadow: 0 40px 80px rgba(0,0,0,0.60); transform: scale(0.94) translateY(10px); transition: transform 0.25s; position: relative; }
+.modal-overlay.open .modal-box { transform: scale(1) translateY(0); }
+.modal-icon { font-size: 40px; margin-bottom: 14px; }
+.modal-title { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+.modal-msg { font-size: 13.5px; color: var(--text-2); line-height: 1.7; margin-bottom: 24px; }
+.modal-msg strong { color: var(--text-1); }
+.modal-btns { display: flex; gap: 10px; }
+.modal-btns button { flex: 1; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 700; font-family: 'DM Sans', sans-serif; cursor: pointer; border: none; transition: all 0.2s; }
+.modal-cancel { background: var(--bg-3); color: var(--text-2); border: 1px solid var(--border-2) !important; }
+.modal-cancel:hover { color: var(--white); }
+.modal-confirm { background: var(--red); color: #fff; box-shadow: 0 4px 16px rgba(239,68,68,0.35); }
+.modal-confirm:hover { background: var(--red-dark); transform: translateY(-1px); }
+.toast { position: fixed; bottom: 28px; right: 28px; z-index: 9999; background: var(--surface-2); border: 1px solid var(--border-2); border-radius: 14px; padding: 14px 18px; display: flex; align-items: center; gap: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); transform: translateY(20px); opacity: 0; transition: all 0.35s cubic-bezier(.16,1,.3,1); min-width: 260px; }
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast-icon { font-size: 20px; }
+.toast-text { font-size: 13.5px; font-weight: 600; color: var(--text-1); }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.20); }
+@media (max-width: 1024px) { .adm-sidebar { transform: translateX(-100%); } .adm-main { margin-left: 0; } .stat-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .adm-body { padding: 16px; } .stat-grid { grid-template-columns: 1fr 1fr; gap: 10px; } .adm-table { font-size: 12px; } .adm-topbar { padding: 0 16px; } }
 </style>
 
-<div class="admin-layout">
-    <aside class="admin-sidebar">
-        <h2>Admin – Alumni</h2>
-        <ul class="admin-nav">
-            <li><a href="#" class="active">Dashboard</a></li>
-            <li><a href="#utilisateurs">Utilisateurs</a></li>
-            <li><a href="#publications">Publications</a></li>
-            <li><a href="#messages">Messages</a></li>
-        </ul>
-    </aside>
+<div class="adm-wrap">
+  <aside class="adm-sidebar">
+    <div class="sidebar-logo">
+      <svg viewBox="0 0 44 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="6" width="18" height="18" rx="1" fill="#3b82f6" transform="rotate(45 10 15)"/>
+        <rect x="16" y="6" width="18" height="18" rx="1" fill="#06b6d4" transform="rotate(45 25 15)"/>
+        <circle cx="18" cy="15" r="3" fill="white" opacity="0.92"/>
+      </svg>
+      <div class="sidebar-logo-text">
+        <div class="sidebar-logo-name">Admin Panel</div>
+        <div class="sidebar-logo-sub">Réseau Alumni · DJ</div>
+      </div>
+    </div>
+    <div class="sidebar-section-label">Navigation</div>
+    <ul class="adm-nav">
+      <li><a href="#dashboard" class="active" onclick="showSection('dashboard',this)"><span class="nav-icon">📊</span> Dashboard</a></li>
+      <li><a href="#utilisateurs" onclick="showSection('utilisateurs',this)"><span class="nav-icon">👥</span> Utilisateurs <span class="nav-badge" id="users-count-badge">{{ users|length }}</span></a></li>
+      <li><a href="#publications" onclick="showSection('publications',this)"><span class="nav-icon">📰</span> Publications {% if pending_posts %}<span class="nav-badge">{{ pending_posts|length }}</span>{% endif %}</a></li>
+      <li><a href="#toutes-publications" onclick="showSection('toutes-publications',this)"><span class="nav-icon">🗂️</span> Toutes les publis</a></li>
+    </ul>
+    <div class="sidebar-section-label" style="margin-top:12px;">Système</div>
+    <ul class="adm-nav">
+      <li><a href="{% url 'admin_logout' %}"><span class="nav-icon">🚪</span> Déconnexion</a></li>
+    </ul>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-user">
+        <div class="sfu-avatar">
+          {% if request.user.profile.photo %}
+            <img src="{{ request.user.profile.photo.url }}"/>
+          {% else %}
+            {{ request.user.first_name|default:request.user.username|first|upper }}
+          {% endif %}
+        </div>
+        <div>
+          <div class="sfu-name">{{ request.user.get_full_name|default:request.user.username }}</div>
+          <div class="sfu-role">Administrateur</div>
+        </div>
+      </div>
+    </div>
+  </aside>
 
-    <main class="admin-main">
-        <header class="admin-header">
-            <div>
-                <h1>Tableau de bord administrateur</h1>
-                <small>Gérez les utilisateurs, les offres publiées et les échanges.</small>
-            </div>
-            <div class="admin-user-info">
-                <div class="admin-user-avatar">
-                    {% if request.user.profile.photo %}
-                        <img src="{{ request.user.profile.photo.url }}"/>
-                    {% else %}
-                        {{ request.user.first_name|default:request.user.username|first|upper }}
-                    {% endif %}
-                </div>
-                <div>
-                    <div class="admin-user-name">{{ request.user.get_full_name|default:request.user.username }}</div>
-                    <div class="admin-user-role">Administrateur</div>
-                </div>
-            </div>
-        </header>
+  <div class="adm-main">
+    <div class="adm-topbar">
+      <div class="adm-topbar-title" id="topbar-title">📊 Dashboard</div>
+      <div class="adm-topbar-right">
+        <div class="topbar-pill"><div class="live-dot"></div> Système actif</div>
+        <div class="topbar-pill">🔒 Session sécurisée</div>
+      </div>
+    </div>
 
-        <section id="utilisateurs" class="admin-section">
-            <div class="admin-section-header">
-                <h2>Utilisateurs</h2>
-                <div style="display:flex;gap:10px;align-items:center;">
-                    <span>Total : {{ users|length }}</span>
-                    <select class="tri-select" id="tri-select" onchange="trierUsers(this.value)">
-                        <option value="recent">Plus récent</option>
-                        <option value="ancien">Plus ancien</option>
-                        <option value="alpha">A → Z</option>
-                        <option value="alpha-desc">Z → A</option>
-                    </select>
-                </div>
+    <div class="adm-body">
+
+      <!-- DASHBOARD -->
+      <div id="section-dashboard">
+        <div class="stat-grid">
+          <div class="stat-card blue"><div class="stat-icon blue">👥</div><span class="stat-num">{{ users|length }}</span><div class="stat-lbl">Utilisateurs total</div></div>
+          <div class="stat-card cyan"><div class="stat-icon cyan">🏆</div><span class="stat-num">{{ alumni_count|default:"—" }}</span><div class="stat-lbl">Alumni</div></div>
+          <div class="stat-card green"><div class="stat-icon green">📰</div><span class="stat-num">{{ all_posts|length|default:"0" }}</span><div class="stat-lbl">Publications totales</div></div>
+          <div class="stat-card red"><div class="stat-icon red">⏳</div><span class="stat-num">{{ pending_posts|length|default:"0" }}</span><div class="stat-lbl">En attente</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-head-left">
+              <div class="panel-icon blue">⚡</div>
+              <div><div class="panel-title">Actions rapides</div><div class="panel-sub">Accès direct aux sections clés</div></div>
             </div>
-            <table class="admin-table" id="users-table">
-                <thead>
-                    <tr>
-                        <th>Photo</th>
-                        <th>Nom</th>
-                        <th>Email</th>
-                        <th>Rôle</th>
-                        <th>Inscription</th>
-                        <th>Statut</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="users-tbody">
+          </div>
+          <div style="padding:20px 22px; display:flex; gap:12px; flex-wrap:wrap;">
+            <a href="#" onclick="showSection('utilisateurs',null)" class="btn-act btn-view" style="padding:10px 18px;font-size:13px;">👥 Gérer utilisateurs</a>
+            <a href="#" onclick="showSection('publications',null)" class="btn-act btn-activate" style="padding:10px 18px;font-size:13px;">📋 Publications en attente</a>
+            <a href="#" onclick="showSection('toutes-publications',null)" class="btn-act btn-view" style="padding:10px 18px;font-size:13px;">🗂️ Toutes les publications</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- UTILISATEURS -->
+      <div id="section-utilisateurs" style="display:none;">
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-head-left">
+              <div class="panel-icon blue">👥</div>
+              <div><div class="panel-title">Gestion des utilisateurs</div><div class="panel-sub">Étudiants et alumni inscrits</div></div>
+            </div>
+            <span class="panel-count">{{ users|length }} utilisateurs</span>
+          </div>
+          <div class="filter-bar">
+            <input class="filter-search" type="text" id="search-users" placeholder="🔍 Rechercher un utilisateur..." oninput="filterUsers()"/>
+            <select class="filter-select" id="tri-select" onchange="trierUsers(this.value)">
+              <option value="recent">📅 Plus récent</option>
+              <option value="ancien">📅 Plus ancien</option>
+              <option value="alpha">🔤 A → Z</option>
+              <option value="alpha-desc">🔤 Z → A</option>
+            </select>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="adm-table">
+              <thead><tr><th>Utilisateur</th><th>Email</th><th>Rôle</th><th>Inscription</th><th>Statut</th><th>Actions</th></tr></thead>
+              <tbody id="users-tbody">
                 {% for u in users %}
-                    <tr data-nom="{{ u.get_full_name|default:u.username|lower }}" data-date="{{ u.date_joined|date:'Y-m-d' }}">
-                        <td>
-                            {% if u.profile.photo %}
-                                <img src="{{ u.profile.photo.url }}" class="user-avatar-small"/>
-                            {% else %}
-                                <div class="user-initiale">{{ u.username|first|upper }}</div>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <a href="/admin-dashboard/users/{{ u.id }}/" class="user-link">
-                                {{ u.get_full_name|default:u.username }}
-                            </a>
-                        </td>
-                        <td>{{ u.email }}</td>
-                        <td>
-                            {% if u.is_staff or u.is_superuser %}
-                                <span class="admin-badge">⚙️ Admin</span>
-                            {% elif u.profile.role == "etudiant" %}
-                                <span class="tag-role-etudiant">🎓 Étudiant</span>
-                            {% elif u.profile.role == "alumni" %}
-                                <span class="tag-role-alumni">🏆 Alumni</span>
-                            {% else %}
-                                <span class="admin-badge">—</span>
-                            {% endif %}
-                        </td>
-                        <td>{{ u.date_joined|date:"d/m/Y" }}</td>
-                        <td>
-                            {% if u.is_staff or u.is_superuser %}
-                                <span class="status-pub status-pub-valide">✅ Admin</span>
-                            {% elif u.profile.compte_active %}
-                                <span class="status-pub status-pub-valide">✅ Actif</span>
-                            {% else %}
-                                <span class="status-pub status-pub-en-attente">⏳ En attente</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if not u.is_staff and not u.is_superuser %}
-                                <a href="/admin-dashboard/users/{{ u.id }}/" class="btn-pill btn-detail">Voir</a>
-                                {% if u.profile.compte_active %}
-                                    <a href="/admin-dashboard/users/{{ u.id }}/toggle-active/" class="btn-pill btn-ban">Suspendre</a>
-                                {% else %}
-                                    <a href="/admin-dashboard/users/{{ u.id }}/toggle-active/" class="btn-pill btn-approve">✅ Activer</a>
-                                {% endif %}
-                            {% endif %}
-                        </td>
-                    </tr>
+                <tr data-nom="{{ u.get_full_name|default:u.username|lower }}" data-date="{{ u.date_joined|date:'Y-m-d' }}">
+                  <td>
+                    <a href="{% url 'admin_user_detail' u.id %}" class="user-cell-link">
+                      <div class="user-cell">
+                        {% if u.profile.photo %}<img src="{{ u.profile.photo.url }}" class="av-sm"/>{% else %}<div class="av-initial">{{ u.username|first|upper }}</div>{% endif %}
+                        <div><div class="user-cell-name">{{ u.get_full_name|default:u.username }}</div><div class="user-cell-email">@{{ u.username }}</div></div>
+                      </div>
+                    </a>
+                  </td>
+                  <td style="color:var(--text-2)">{{ u.email }}</td>
+                  <td>
+                    {% if u.is_staff or u.is_superuser %}<span class="badge badge-admin">⚙️ Admin</span>
+                    {% elif u.profile.role == "etudiant" %}<span class="badge badge-etudiant">🎓 Étudiant</span>
+                    {% elif u.profile.role == "alumni" %}<span class="badge badge-alumni">🏆 Alumni</span>
+                    {% else %}<span class="badge" style="background:var(--bg-3);color:var(--text-3)">—</span>{% endif %}
+                  </td>
+                  <td style="color:var(--text-2);font-size:12px;">{{ u.date_joined|date:"d/m/Y" }}</td>
+                  <td>
+                    {% if u.is_staff or u.is_superuser %}<span class="badge badge-admin">✅ Admin</span>
+                    {% elif u.profile.compte_active %}<span class="badge badge-actif">✅ Actif</span>
+                    {% else %}<span class="badge badge-attente">⏳ Attente</span>{% endif %}
+                  </td>
+                  <td>
+                    {% if not u.is_staff and not u.is_superuser %}
+                    <div class="btn-actions">
+                      <a href="{% url 'admin_user_detail' u.id %}" class="btn-act btn-view">Voir</a>
+                      {% if u.profile.compte_active %}
+                        <a href="{% url 'admin_user_toggle_active' u.id %}" class="btn-act btn-suspend">Suspendre</a>
+                      {% else %}
+                        <a href="{% url 'admin_user_toggle_active' u.id %}" class="btn-act btn-activate">✅ Activer</a>
+                      {% endif %}
+                      <button class="btn-act btn-delete" onclick="confirmDeleteUser({{ u.id }}, '{{ u.get_full_name|default:u.username }}')">🗑 Supprimer</button>
+                    </div>
+                    {% endif %}
+                  </td>
+                </tr>
                 {% empty %}
-                    <tr><td colspan="7">Aucun utilisateur.</td></tr>
+                <tr><td colspan="6"><div class="empty-state"><div class="empty-icon">👤</div><p>Aucun utilisateur trouvé.</p></div></td></tr>
                 {% endfor %}
-                </tbody>
+              </tbody>
             </table>
-        </section>
+          </div>
+        </div>
+      </div>
 
-        <section id="publications" class="admin-section admin-grid">
-            <div>
-                <div class="admin-section-header">
-                    <h2>Publications en attente</h2>
-                    <span>À valider</span>
-                </div>
-                <table class="admin-table">
-                    <thead>
-                        <tr><th>Titre</th><th>Auteur</th><th>Date</th><th>Statut</th><th>Actions</th></tr>
-                    </thead>
-                    <tbody>
-                    {% for post in pending_posts %}
-                        <tr>
-                            <td>{{ post.titre }}</td>
-                            <td>{{ post.auteur.get_full_name|default:post.auteur.username }}</td>
-                            <td>{{ post.date_creation|date:"d/m/Y H:i" }}</td>
-                            <td><span class="status-pub status-pub-en-attente">En attente</span></td>
-                            <td>
-                                <a href="#" class="btn-pill btn-detail">Détails</a>
-                                <a href="#" class="btn-pill btn-approve">Valider</a>
-                                <a href="#" class="btn-pill btn-ban">Refuser</a>
-                            </td>
-                        </tr>
-                    {% empty %}
-                        <tr><td colspan="5">Aucune publication en attente.</td></tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+      <!-- PUBLICATIONS EN ATTENTE -->
+      <div id="section-publications" style="display:none;">
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-head-left">
+              <div class="panel-icon amber">⏳</div>
+              <div><div class="panel-title">Publications en attente</div><div class="panel-sub">À valider ou refuser</div></div>
             </div>
+            <span class="panel-count">{{ pending_posts|length }} en attente</span>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="adm-table">
+              <thead><tr><th>Publication</th><th>Auteur</th><th>Rôle</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+              <tbody>
+                {% for post in pending_posts %}
+                <tr>
+                  <td><div class="post-preview"><div class="post-title">{{ post.titre|default:"Sans titre" }}</div><div class="post-excerpt">{{ post.contenu|truncatechars:60|default:"—" }}</div></div></td>
+                  <td>
+                    <div class="user-cell">
+                      <div class="av-initial" style="width:28px;height:28px;font-size:11px;">{{ post.auteur.username|first|upper }}</div>
+                      <span style="font-size:13px;">{{ post.auteur.get_full_name|default:post.auteur.username }}</span>
+                    </div>
+                  </td>
+                  <td>{% if post.auteur.profile.role == "alumni" %}<span class="badge badge-alumni">🏆 Alumni</span>{% else %}<span class="badge badge-etudiant">🎓 Étudiant</span>{% endif %}</td>
+                  <td style="color:var(--text-2);font-size:12px;">{{ post.date_creation|date:"d/m/Y H:i" }}</td>
+                  <td><span class="badge badge-attente">⏳ En attente</span></td>
+                  <td>
+                    <div class="btn-actions">
+                      <a href="{% url 'admin_post_approve' post.id %}" class="btn-act btn-approve">✅ Valider</a>
+                      <button class="btn-act btn-delete" onclick="confirmDeletePost({{ post.id }}, '{{ post.titre|default:'cette publication'|escapejs }}')">🗑 Supprimer</button>
+                    </div>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6"><div class="empty-state"><div class="empty-icon">✅</div><p>Aucune publication en attente.</p></div></td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
 
-            <div id="messages" class="admin-section">
-                <div class="admin-section-header">
-                    <h2>Derniers messages</h2>
-                    <span>Échanges récents</span>
-                </div>
-                <div style="max-height:320px; overflow-y:auto;">
-                    {% for msg in last_messages %}
-                        <div style="border-bottom:1px solid rgba(255,255,255,0.08); padding:8px 0;">
-                            <div style="font-size:0.85rem; color:#b7e4c7;">
-                                {{ msg.sender.get_full_name|default:msg.sender.username }}
-                                → {{ msg.receiver.get_full_name|default:msg.receiver.username }}
-                            </div>
-                            <div style="font-size:0.9rem; color:#f8f9fa;">{{ msg.text|truncatechars:120 }}</div>
-                        </div>
-                    {% empty %}
-                        <p style="color:rgba(255,255,255,0.4);">Aucun message récent.</p>
-                    {% endfor %}
-                </div>
+      <!-- TOUTES LES PUBLICATIONS -->
+      <div id="section-toutes-publications" style="display:none;">
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-head-left">
+              <div class="panel-icon blue">🗂️</div>
+              <div><div class="panel-title">Toutes les publications</div><div class="panel-sub">Gérez et supprimez les publications</div></div>
             </div>
-        </section>
-    </main>
+            <span class="panel-count">{{ all_posts|length|default:"0" }} publications</span>
+          </div>
+          <div class="filter-bar">
+            <input class="filter-search" type="text" id="search-posts" placeholder="🔍 Rechercher une publication..." oninput="filterPosts()"/>
+            <select class="filter-select" id="filter-role-posts" onchange="filterPosts()">
+              <option value="">Tous les rôles</option>
+              <option value="alumni">🏆 Alumni</option>
+              <option value="etudiant">🎓 Étudiant</option>
+            </select>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="adm-table">
+              <thead><tr><th>Publication</th><th>Auteur</th><th>Rôle</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+              <tbody id="posts-tbody">
+                {% for post in all_posts %}
+                <tr data-role="{{ post.auteur.profile.role|default:'' }}" data-titre="{{ post.titre|lower|default:'' }}">
+                  <td><div class="post-preview"><div class="post-title">{{ post.titre|default:"Sans titre" }}</div><div class="post-excerpt">{{ post.contenu|truncatechars:70|default:"—" }}</div></div></td>
+                  <td>
+                    <div class="user-cell">
+                      {% if post.auteur.profile.photo %}<img src="{{ post.auteur.profile.photo.url }}" class="av-sm" style="width:28px;height:28px;"/>{% else %}<div class="av-initial" style="width:28px;height:28px;font-size:11px;">{{ post.auteur.username|first|upper }}</div>{% endif %}
+                      <span style="font-size:13px;">{{ post.auteur.get_full_name|default:post.auteur.username }}</span>
+                    </div>
+                  </td>
+                  <td>{% if post.auteur.profile.role == "alumni" %}<span class="badge badge-alumni">🏆 Alumni</span>{% else %}<span class="badge badge-etudiant">🎓 Étudiant</span>{% endif %}</td>
+                  <td style="color:var(--text-2);font-size:12px;">{{ post.date_creation|date:"d/m/Y H:i" }}</td>
+                  <td>
+                    {% if post.status == 1 %}<span class="badge badge-valide">✅ Validé</span>
+                    {% elif post.status == 0 %}<span class="badge badge-attente">⏳ Attente</span>
+                    {% else %}<span class="badge badge-refuse">❌ Refusé</span>{% endif %}
+                  </td>
+                  <td>
+                    <div class="btn-actions">
+                      <button class="btn-act btn-delete" onclick="confirmDeletePost({{ post.id }}, '{{ post.titre|default:'cette publication'|escapejs }}')">🗑 Supprimer</button>
+                    </div>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6"><div class="empty-state"><div class="empty-icon">📭</div><p>Aucune publication.</p></div></td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DELETE POST -->
+<div class="modal-overlay" id="modal-post">
+  <div class="modal-box">
+    <div class="modal-icon">🗑️</div>
+    <div class="modal-title">Supprimer la publication</div>
+    <div class="modal-msg">Êtes-vous sûr de vouloir supprimer <strong id="modal-post-name"></strong> ? Cette action est irréversible.</div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal('modal-post')">Annuler</button>
+      <button class="modal-confirm" id="modal-post-confirm">Supprimer définitivement</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DELETE USER -->
+<div class="modal-overlay" id="modal-user">
+  <div class="modal-box">
+    <div class="modal-icon">⚠️</div>
+    <div class="modal-title">Supprimer le compte</div>
+    <div class="modal-msg">Vous allez supprimer le compte de <strong id="modal-user-name"></strong>. Toutes ses données seront <strong>définitivement supprimées</strong>.</div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal('modal-user')">Annuler</button>
+      <button class="modal-confirm" id="modal-user-confirm">Supprimer le compte</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toast-icon">✅</span>
+  <span class="toast-text" id="toast-text">Action effectuée</span>
 </div>
 
 <script>
-function trierUsers(ordre) {
-    const tbody = document.getElementById('users-tbody');
-    const rows = Array.from(tbody.querySelectorAll('tr[data-nom]'));
-    rows.sort((a, b) => {
-        const nomA = a.dataset.nom || '';
-        const nomB = b.dataset.nom || '';
-        const dateA = a.dataset.date || '';
-        const dateB = b.dataset.date || '';
-        if (ordre === 'alpha') return nomA.localeCompare(nomB);
-        if (ordre === 'alpha-desc') return nomB.localeCompare(nomA);
-        if (ordre === 'recent') return dateB.localeCompare(dateA);
-        if (ordre === 'ancien') return dateA.localeCompare(dateB);
-        return 0;
-    });
-    rows.forEach(row => tbody.appendChild(row));
+function showSection(id, linkEl) {
+  ['dashboard','utilisateurs','publications','toutes-publications'].forEach(s => {
+    document.getElementById('section-' + s).style.display = s === id ? 'block' : 'none';
+  });
+  document.querySelectorAll('.adm-nav a').forEach(a => a.classList.remove('active'));
+  if (linkEl) linkEl.classList.add('active');
+  const titles = {'dashboard':'📊 Dashboard','utilisateurs':'👥 Utilisateurs','publications':'⏳ Publications en attente','toutes-publications':'🗂️ Toutes les publications'};
+  document.getElementById('topbar-title').textContent = titles[id] || '';
 }
+
+function trierUsers(ordre) {
+  const tbody = document.getElementById('users-tbody');
+  const rows = Array.from(tbody.querySelectorAll('tr[data-nom]'));
+  rows.sort((a,b) => {
+    const nA = a.dataset.nom||'', nB = b.dataset.nom||'';
+    const dA = a.dataset.date||'', dB = b.dataset.date||'';
+    if (ordre==='alpha') return nA.localeCompare(nB);
+    if (ordre==='alpha-desc') return nB.localeCompare(nA);
+    if (ordre==='recent') return dB.localeCompare(dA);
+    if (ordre==='ancien') return dA.localeCompare(dB);
+    return 0;
+  });
+  rows.forEach(r => tbody.appendChild(r));
+}
+
+function filterUsers() {
+  const q = document.getElementById('search-users').value.toLowerCase();
+  document.querySelectorAll('#users-tbody tr[data-nom]').forEach(row => {
+    row.style.display = row.dataset.nom.includes(q) ? '' : 'none';
+  });
+}
+
+function filterPosts() {
+  const q = document.getElementById('search-posts').value.toLowerCase();
+  const role = document.getElementById('filter-role-posts').value;
+  document.querySelectorAll('#posts-tbody tr[data-role]').forEach(row => {
+    const matchQ = !q || (row.dataset.titre||'').includes(q);
+    const matchRole = !role || row.dataset.role === role;
+    row.style.display = (matchQ && matchRole) ? '' : 'none';
+  });
+}
+
+function confirmDeletePost(postId, postName) {
+  document.getElementById('modal-post-name').textContent = '"' + postName + '"';
+  document.getElementById('modal-post-confirm').onclick = () => {
+    window.location.href = "{% url 'admin_post_delete' 0 %}".replace('/0/', '/' + postId + '/');
+  };
+  openModal('modal-post');
+}
+
+function confirmDeleteUser(userId, userName) {
+  document.getElementById('modal-user-name').textContent = userName;
+  document.getElementById('modal-user-confirm').onclick = () => {
+    window.location.href = "{% url 'admin_user_delete' 0 %}".replace('/0/', '/' + userId + '/');
+  };
+  openModal('modal-user');
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if(e.target===o) o.classList.remove('open'); });
+});
+
+function showToast(msg, icon='✅') {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-icon').textContent = icon;
+  document.getElementById('toast-text').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+{% if messages %}
+  {% for message in messages %}
+    setTimeout(() => showToast('{{ message|escapejs }}', '{% if message.tags == "error" %}❌{% else %}✅{% endif %}'), 300);
+  {% endfor %}
+{% endif %}
 </script>
 
 {% endblock %}

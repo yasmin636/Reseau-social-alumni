@@ -1,80 +1,214 @@
-<!DOCTYPE html>
+
 <html lang="fr">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>{% block title %}Réseau Alumni{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <style>
+    :root {
+      --pink:#f72585; --purple:#7209b7; --cyan:#4cc9f0;
+      --blue:#3a0ca3; --green:#00e676; --dark:#0a0a0f;
+    }
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:'Segoe UI',sans-serif; background:#1b4332; color:#fff; min-height:100vh; }
+    body {
+      font-family:'DM Sans',sans-serif;
+      background:var(--dark);
+      color:#fff;
+      min-height:100vh;
+    }
+    body::before {
+      content:'';
+      position:fixed; top:0; left:0; right:0; bottom:0;
+      background:
+        radial-gradient(ellipse 800px 400px at 10% 10%,rgba(247,37,133,0.06) 0%,transparent 60%),
+        radial-gradient(ellipse 600px 600px at 90% 90%,rgba(76,201,240,0.05) 0%,transparent 60%);
+      pointer-events:none; z-index:0;
+    }
+
+    /* ── Navbar ── */
     .navbar {
-      background:rgba(8,28,21,0.8);
-      border-bottom:1px solid rgba(255,255,255,0.08);
-      padding:0 32px; height:60px;
+      background:rgba(10,10,20,0.85);
+      border-bottom:1px solid rgba(247,37,133,0.1);
+      padding:0 32px; height:64px;
       display:flex; align-items:center; justify-content:space-between;
       position:sticky; top:0; z-index:100;
+      backdrop-filter:blur(16px);
     }
-    .navbar-brand { font-size:18px; font-weight:700; color:#fff; text-decoration:none; }
-    .navbar-right { display:flex; align-items:center; gap:20px; }
-    .navbar-right a { color:rgba(255,255,255,0.7); text-decoration:none; font-size:14px; transition:color 0.2s; }
-    .navbar-right a:hover { color:#fff; }
 
-    /* ← AJOUTÉ : badge notification */
+    /* Brand */
+    .navbar-brand {
+      display:flex; align-items:center; gap:10px;
+      text-decoration:none;
+    }
+    .brand-dot {
+      width:32px; height:32px; border-radius:10px;
+      background:linear-gradient(135deg,var(--pink),var(--purple),var(--cyan));
+      display:flex; align-items:center; justify-content:center;
+      font-weight:800; font-size:14px; color:#fff;
+      font-family:'Syne',sans-serif;
+    }
+    .brand-name {
+      font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:800;
+      background:linear-gradient(90deg,var(--pink),var(--cyan));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    }
+
+    /* Nav links */
+    .navbar-right { display:flex; align-items:center; gap:6px; }
+    .nav-link {
+      color:rgba(255,255,255,0.5);
+      text-decoration:none; font-size:0.85rem; font-weight:500;
+      padding:7px 12px; border-radius:8px;
+      transition:all 0.2s; display:flex; align-items:center; gap:6px;
+      font-family:'DM Sans',sans-serif;
+    }
+    .nav-link:hover { color:#fff; background:rgba(255,255,255,0.06); }
+
+    /* User chip */
+    .user-chip {
+      display:flex; align-items:center; gap:8px;
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:999px; padding:5px 12px 5px 5px;
+    }
+    .user-initiale {
+      width:28px; height:28px; border-radius:50%;
+      background:linear-gradient(135deg,var(--pink),var(--purple));
+      display:flex; align-items:center; justify-content:center;
+      font-weight:800; font-size:11px; color:#fff;
+      font-family:'Syne',sans-serif;
+    }
+    .user-name { font-size:0.82rem; color:rgba(255,255,255,0.7); font-weight:500; }
+
+    /* Notif badge */
     .notif-wrapper { position:relative; display:inline-flex; align-items:center; }
     .notif-badge {
-      position:absolute; top:-8px; right:-14px;
-      background:#e53935; color:white;
-      font-size:10px; font-weight:700;
-      min-width:18px; height:18px; padding:0 4px;
-      border-radius:9px;
+      position:absolute; top:-8px; right:-10px;
+      background:var(--pink); color:white;
+      font-size:0.6rem; font-weight:700;
+      min-width:16px; height:16px; padding:0 4px;
+      border-radius:8px;
       display:flex; align-items:center; justify-content:center;
-      border:2px solid #1b4332;
+      border:2px solid var(--dark);
       animation:pulse 1.5s infinite;
     }
     @keyframes pulse {
-      0% { box-shadow:0 0 0 0 rgba(229,57,53,0.5); }
-      70% { box-shadow:0 0 0 6px rgba(229,57,53,0); }
-      100% { box-shadow:0 0 0 0 rgba(229,57,53,0); }
+      0%{box-shadow:0 0 0 0 rgba(247,37,133,0.5)}
+      70%{box-shadow:0 0 0 5px rgba(247,37,133,0)}
+      100%{box-shadow:0 0 0 0 rgba(247,37,133,0)}
     }
 
+    /* Divider */
+    .nav-divider { width:1px; height:20px; background:rgba(255,255,255,0.08); margin:0 4px; }
+
+    /* Logout btn */
     .btn-logout {
-      background:rgba(229,57,53,0.2); border:1px solid rgba(229,57,53,0.4);
-      color:#ff6b6b !important; padding:6px 14px; border-radius:8px; font-size:13px;
+      background:rgba(255,77,77,0.1);
+      border:1px solid rgba(255,77,77,0.25);
+      color:#ff6b6b !important;
+      padding:7px 14px; border-radius:8px;
+      font-size:0.82rem; font-weight:600;
+      display:flex; align-items:center; gap:6px;
+      text-decoration:none; transition:all 0.2s;
+      font-family:'DM Sans',sans-serif;
     }
-    .main-content { max-width:1200px; margin:0 auto; padding:32px 24px; }
+    .btn-logout:hover { background:rgba(255,77,77,0.2); color:#ff4d4d !important; }
+
+    /* Admin badge */
+    .admin-link {
+      background:linear-gradient(135deg,rgba(247,37,133,0.15),rgba(114,9,183,0.15));
+      border:1px solid rgba(247,37,133,0.2);
+      color:var(--pink) !important;
+      padding:7px 14px; border-radius:8px;
+      font-size:0.82rem; font-weight:600;
+      display:flex; align-items:center; gap:6px;
+      text-decoration:none; transition:all 0.2s;
+    }
+    .admin-link:hover { background:linear-gradient(135deg,rgba(247,37,133,0.25),rgba(114,9,183,0.25)); }
+
+    /* ── Barre colorée en haut ── */
+    .top-bar {
+      height:3px;
+      background:linear-gradient(90deg,var(--pink),var(--purple),var(--cyan),var(--green),var(--cyan),var(--purple),var(--pink));
+      background-size:200% 100%;
+      animation:shimmer 3s linear infinite;
+    }
+    @keyframes shimmer { 0%{background-position:0% 0%} 100%{background-position:200% 0%} }
+
+    /* ── Contenu ── */
+    .main-content {
+      max-width:1200px; margin:0 auto;
+      padding:32px 24px;
+      position:relative; z-index:1;
+    }
   </style>
 </head>
 <body>
+
+<!-- Barre animée en haut -->
+<div class="top-bar"></div>
+
 <nav class="navbar">
-  <a href="/" class="navbar-brand">Réseau Alumni</a>
+  <a href="/" class="navbar-brand">
+    <div class="brand-dot">R</div>
+    <div class="brand-name">Réseau Alumni</div>
+  </a>
+
   <div class="navbar-right">
     {% if user.is_authenticated %}
-      <span style="color:rgba(255,255,255,0.5);font-size:13px;">
-        {{ user.get_full_name|default:user.username }}
-      </span>
+
+      <!-- User chip -->
+      <div class="user-chip">
+        <div class="user-initiale">{{ user.get_full_name|default:user.username|first|upper }}</div>
+        <span class="user-name">{{ user.get_full_name|default:user.username }}</span>
+      </div>
+
+      <div class="nav-divider"></div>
+
       {% if not user.is_staff and not user.is_superuser %}
-        <a href="/offres/">Offres</a>
-        <a href="/favoris/">Favoris</a>
+        <a href="/offres/" class="nav-link"><i class="fas fa-briefcase"></i> Offres</a>
+        <a href="/favoris/" class="nav-link"><i class="fas fa-star"></i> Favoris</a>
       {% endif %}
-      <!-- ← AJOUTÉ : badge rouge sur notifications -->
+
+      <!-- Notifications avec badge -->
       <div class="notif-wrapper">
-        <a href="{% url 'notifications' %}">Notifications</a>
+        <a href="{% url 'notifications' %}" class="nav-link">
+          <i class="fas fa-bell"></i> Notifications
+        </a>
         {% if nb_notifications > 0 %}
           <span class="notif-badge">{{ nb_notifications }}</span>
         {% endif %}
       </div>
+
       {% if user.is_staff or user.is_superuser %}
-        <a href="{% url 'admin_dashboard' %}">Dashboard Admin</a>
+        <a href="{% url 'admin_dashboard' %}" class="admin-link">
+          <i class="fas fa-shield-alt"></i> Admin
+        </a>
       {% endif %}
-      <a href="/logout/" class="btn-logout">Déconnexion</a>
+
+      <div class="nav-divider"></div>
+
+      {% if user.is_staff or user.is_superuser %}
+        <a href="/admin-logout/" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+      {% else %}
+        <a href="/logout/" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+      {% endif %}
+
     {% else %}
-      <a href="{% url 'login' %}">Connexion</a>
-      <a href="{% url 'register' %}">S'inscrire</a>
+      <a href="{% url 'login' %}" class="nav-link"><i class="fas fa-sign-in-alt"></i> Connexion</a>
+      <a href="{% url 'register' %}" class="nav-link" style="background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;padding:7px 16px;border-radius:8px;font-weight:600;">
+        <i class="fas fa-user-plus"></i> S'inscrire
+      </a>
     {% endif %}
   </div>
 </nav>
+
 <div class="main-content">
   {% block content %}{% endblock %}
 </div>
+
 </body>
 </html>

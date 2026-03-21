@@ -5,157 +5,223 @@
     <meta charset="UTF-8">
     <title>Mon Profil Alumni – Réseau Alumni</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
+        :root {
+            --navy: #0a1628; --navy-2: #0d1f3c; --navy-3: #112347; --navy-4: #1a3a6b;
+            --gold: #c9a84c; --gold-light: #e8c97a; --gold-dim: rgba(201,168,76,0.15);
+            --white: #ffffff; --text: rgba(255,255,255,0.90); --text-dim: rgba(255,255,255,0.45);
+            --text-mid: rgba(255,255,255,0.65); --border: rgba(255,255,255,0.07);
+            --border-2: rgba(201,168,76,0.20); --sidebar-w: 260px;
+        }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: "Segoe UI", Roboto, sans-serif; background: #0d1f14; color: #fff; min-height: 100vh; display: flex; }
-        .sidebar { width: 240px; background: linear-gradient(180deg, #0a1a0f, #102a18); padding: 28px 16px; border-right: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; }
-        .sidebar h2 { font-size: 1.1rem; font-weight: 700; color: #43e97b; margin-bottom: 4px; }
-        .sidebar-subtitle { font-size: 0.75rem; color: rgba(255,255,255,0.35); margin-bottom: 28px; }
-        .sidebar-nav { list-style: none; padding: 0; margin: 0; }
-        .sidebar-nav li { margin-bottom: 4px; }
-        .sidebar-nav a { display: flex; align-items: center; padding: 10px 14px; color: rgba(255,255,255,0.6); text-decoration: none; border-radius: 10px; font-size: 0.9rem; transition: all 0.2s; }
-        .sidebar-nav a i { margin-right: 10px; width: 18px; text-align: center; }
-        .sidebar-nav a.active, .sidebar-nav a:hover { background: rgba(67,233,123,0.12); color: #43e97b; }
-        .sidebar-divider { border: none; border-top: 1px solid rgba(255,255,255,0.07); margin: 16px 0; }
-        .main { flex: 1; padding: 40px; max-width: 800px; }
-        .page-title { font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 28px; }
-        .success-msg { background: rgba(52,168,83,0.15); border: 1px solid rgba(52,168,83,0.3); color: #43e97b; border-radius: 10px; padding: 12px 18px; margin-bottom: 24px; font-size: 0.9rem; }
-        .photo-section { display: flex; align-items: center; gap: 24px; margin-bottom: 32px; }
-        .photo-avatar { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(67,233,123,0.4); }
-        .photo-initiale { width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #1b5e3c, #43e97b); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 32px; border: 3px solid rgba(67,233,123,0.4); }
-        .photo-info h3 { font-size: 1.2rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
-        .photo-info p { font-size: 0.85rem; color: rgba(255,255,255,0.4); margin-bottom: 10px; }
-        .btn-upload { background: rgba(67,233,123,0.1); border: 1px solid rgba(67,233,123,0.3); color: #43e97b; border-radius: 8px; padding: 8px 16px; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
-        .btn-upload:hover { background: rgba(67,233,123,0.2); }
-        .form-section { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 24px; margin-bottom: 20px; }
-        .form-section-title { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.35); margin-bottom: 18px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.07); }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        html, body { height: 100%; }
+        body { font-family: 'Inter', sans-serif; background: var(--navy); color: var(--text); display: flex; min-height: 100vh; }
+        .sidebar { width: var(--sidebar-w); background: var(--navy-2); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; overflow-y: auto; }
+        .sidebar-logo { padding: 24px 20px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+        .logo-icon { width: 38px; height: 38px; border-radius: 10px; background: linear-gradient(135deg, var(--gold), var(--gold-light)); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; color: var(--navy); flex-shrink: 0; }
+        .logo-text-main { font-size: 0.95rem; font-weight: 700; color: var(--white); }
+        .logo-text-sub { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; }
+        .sidebar-user { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+        .user-av { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--navy-4), var(--gold)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; color: var(--white); border: 2px solid var(--gold-dim); overflow: hidden; flex-shrink: 0; }
+        .user-av img { width: 100%; height: 100%; object-fit: cover; }
+        .user-name { font-size: 0.84rem; font-weight: 600; color: var(--white); }
+        .user-role { font-size: 0.68rem; color: var(--gold); font-weight: 500; }
+        .nav-section-label { padding: 16px 20px 6px; font-size: 0.62rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px; }
+        .sidebar-nav { list-style: none; padding: 0 10px; }
+        .sidebar-nav li { margin-bottom: 2px; }
+        .sidebar-nav a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; color: var(--text-dim); text-decoration: none; font-size: 0.84rem; font-weight: 500; transition: all 0.18s; }
+        .sidebar-nav a i { width: 16px; text-align: center; font-size: 0.8rem; }
+        .sidebar-nav a:hover { color: var(--white); background: rgba(255,255,255,0.05); }
+        .sidebar-nav a.active { color: var(--gold-light); background: var(--gold-dim); border: 1px solid var(--border-2); font-weight: 600; }
+        .sidebar-divider { height: 1px; background: var(--border); margin: 12px 10px; }
+        .sidebar-nav a.logout { color: rgba(255,100,100,0.5); }
+        .sidebar-nav a.logout:hover { color: #ff6b6b; background: rgba(255,100,100,0.06); }
+        .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+        .topbar { position: sticky; top: 0; z-index: 50; height: 60px; background: rgba(10,22,40,0.92); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
+        .topbar-title { font-size: 0.95rem; font-weight: 600; color: var(--text); }
+        .topbar-chip { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 999px; padding: 5px 14px 5px 6px; }
+        .topbar-av { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, var(--navy-4), var(--gold)); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: var(--white); overflow: hidden; }
+        .topbar-av img { width: 100%; height: 100%; object-fit: cover; }
+        .topbar-chip span { font-size: 0.8rem; color: var(--text-mid); }
+        .content { padding: 32px; flex: 1; overflow-y: auto; max-width: 800px; }
+        .page-eyebrow { font-size: 0.7rem; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
+        .page-title { font-size: 1.5rem; font-weight: 800; color: var(--white); margin-bottom: 28px; }
+        .success-msg { background: rgba(52,168,83,0.1); border: 1px solid rgba(52,168,83,0.25); color: #4ade80; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; }
+        .photo-section { display: flex; align-items: center; gap: 24px; margin-bottom: 28px; padding: 22px 24px; background: var(--navy-2); border: 1px solid var(--border); border-radius: 12px; position: relative; overflow: hidden; }
+        .photo-section::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
+        .photo-avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border-2); flex-shrink: 0; }
+        .photo-initiale { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--navy-4), var(--gold)); display: flex; align-items: center; justify-content: center; color: var(--white); font-weight: 700; font-size: 28px; border: 2px solid var(--border-2); flex-shrink: 0; }
+        .photo-info-name { font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 3px; }
+        .photo-info-role { font-size: 0.75rem; color: var(--gold); margin-bottom: 12px; }
+        .btn-upload { background: var(--gold-dim); border: 1px solid var(--border-2); color: var(--gold-light); border-radius: 7px; padding: 8px 14px; font-size: 0.78rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-family: 'Inter', sans-serif; transition: all 0.2s; }
+        .btn-upload:hover { background: rgba(201,168,76,0.25); }
+        .form-card { background: var(--navy-2); border: 1px solid var(--border); border-radius: 12px; padding: 22px; margin-bottom: 16px; }
+        .form-card-title { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
         .form-group { display: flex; flex-direction: column; gap: 6px; }
-        .form-group label { font-size: 0.78rem; font-weight: 600; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.5px; }
-        .form-group input { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 10px 14px; color: #fff; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
-        .form-group input:focus { border-color: #43e97b; }
-        .form-group input::placeholder { color: rgba(255,255,255,0.25); }
-        .form-group select { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 10px 14px; color: #fff; font-size: 0.9rem; outline: none; }
-        .form-group select option { background: #102a18; }
-        .info-readonly { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 10px 14px; color: rgba(255,255,255,0.5); font-size: 0.9rem; }
-        .btn-save { background: linear-gradient(135deg, #1b5e3c, #43e97b); border: none; border-radius: 10px; color: white; padding: 12px 28px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s; margin-top: 8px; }
-        .btn-save:hover { opacity: 0.85; }
-        @media (max-width: 768px) { body { flex-direction: column; } .sidebar { width: 100%; } .form-grid { grid-template-columns: 1fr; } }
+        .form-label { font-size: 0.72rem; font-weight: 600; color: var(--text-mid); text-transform: uppercase; letter-spacing: 0.6px; }
+        .form-group input, .form-group select { background: var(--navy-3); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--white); font-size: 0.88rem; outline: none; transition: border-color 0.15s; font-family: 'Inter', sans-serif; }
+        .form-group select option { background: var(--navy-2); }
+        .form-group input:focus, .form-group select:focus { border-color: var(--border-2); background: var(--navy-4); }
+        .form-group input::placeholder { color: var(--text-dim); }
+        .info-readonly { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--text-dim); font-size: 0.88rem; }
+        .info-readonly.active { color: #4ade80; }
+        .form-actions { display: flex; justify-content: flex-end; margin-top: 8px; }
+        .btn-save { display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: var(--navy); border: none; border-radius: 8px; padding: 11px 24px; font-size: 0.88rem; font-weight: 700; font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.2s; }
+        .btn-save:hover { opacity: 0.9; transform: translateY(-1px); }
+        @media (max-width: 1024px) { .sidebar { position: relative; width: 100%; height: auto; } .main { margin-left: 0; } .form-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
 <aside class="sidebar">
-    <h2>Réseau Alumni</h2>
-    <p class="sidebar-subtitle">Espace Alumni</p>
+    <div class="sidebar-logo">
+        <div class="logo-icon">RA</div>
+        <div>
+            <div class="logo-text-main">Réseau Alumni</div>
+            <div class="logo-text-sub">Université de Djibouti</div>
+        </div>
+    </div>
+    <div class="sidebar-user">
+        <div class="user-av">
+            {% if profile and profile.photo %}<img src="{{ profile.photo.url }}">
+            {% else %}{{ user.get_full_name|default:user.username|first|upper }}{% endif %}
+        </div>
+        <div>
+            <div class="user-name">{{ user.get_full_name|default:user.username }}</div>
+            <div class="user-role">Alumni</div>
+        </div>
+    </div>
+    <div class="nav-section-label">Menu</div>
     <ul class="sidebar-nav">
         <li><a href="{% url 'dashboard_alumni' %}"><i class="fas fa-th-large"></i> Dashboard</a></li>
         <li><a href="{% url 'post_create' %}"><i class="fas fa-pen"></i> Publier un post</a></li>
-        <li><a href="{% url 'offres' %}"><i class="fas fa-briefcase"></i> Publier une offre</a></li>
+        <li><a href="{% url 'offre_create' %}"><i class="fas fa-briefcase"></i> Publier une offre</a></li>
+        <li><a href="{% url 'fil_alumni' %}"><i class="fas fa-fire"></i> Le Fil</a></li>
         <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> Notifications</a></li>
         <li><a href="{% url 'chat_page' %}"><i class="fas fa-comment-dots"></i> Chat</a></li>
-        <li><a href="{% url 'profil_alumni' %}" class="active"><i class="fas fa-user"></i> Profil</a></li>
+        <li><a href="{% url 'profil_alumni' %}" class="active"><i class="fas fa-user-circle"></i> Profil</a></li>
     </ul>
-    <hr class="sidebar-divider"/>
+    <div class="sidebar-divider"></div>
     <ul class="sidebar-nav">
-        <li><a href="/logout/"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+        <li><a href="{% url 'logout' %}" class="logout"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
     </ul>
 </aside>
 
 <div class="main">
-    <h1 class="page-title">Mon Profil Alumni</h1>
-
-    {% if success %}
-    <div class="success-msg"><i class="fas fa-check-circle"></i> Profil mis à jour avec succès !</div>
-    {% endif %}
-
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-
-        <!-- PHOTO -->
-        <div class="photo-section">
-            {% if profile and profile.photo %}
-                <img src="{{ profile.photo.url }}" class="photo-avatar" id="photo-preview">
-            {% else %}
-                <div class="photo-initiale" id="photo-initiale">{{ user.get_full_name|default:user.username|first|upper }}</div>
-            {% endif %}
-            <div class="photo-info">
-                <h3>{{ user.get_full_name|default:user.username }}</h3>
-                <p>Alumni · {{ profile.filiere_alumni|default:"Filière non renseignée" }}</p>
-                <label class="btn-upload" for="photo-input">
-                    <i class="fas fa-camera"></i> Changer la photo
-                </label>
-                <input type="file" name="photo" id="photo-input" accept="image/*" style="display:none;" onchange="previewPhoto(this)">
+    <header class="topbar">
+        <div class="topbar-title">Mon Profil</div>
+        <div class="topbar-chip">
+            <div class="topbar-av">
+                {% if profile and profile.photo %}<img src="{{ profile.photo.url }}">
+                {% else %}{{ user.get_full_name|default:user.username|first|upper }}{% endif %}
             </div>
+            <span>{{ user.get_full_name|default:user.username }}</span>
         </div>
+    </header>
 
-        <!-- INFOS PERSONNELLES -->
-        <div class="form-section">
-            <div class="form-section-title">Informations personnelles</div>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Prénom</label>
-                    <input type="text" name="prenom" value="{{ user.first_name }}" placeholder="Votre prénom">
-                </div>
-                <div class="form-group">
-                    <label>Nom</label>
-                    <input type="text" name="nom" value="{{ user.last_name }}" placeholder="Votre nom">
-                </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" name="email" value="{{ user.email }}" placeholder="votre@email.com">
-                </div>
-                <div class="form-group">
-                    <label>Nom d'utilisateur</label>
-                    <div class="info-readonly">{{ user.username }}</div>
+    <div class="content">
+        <div class="page-eyebrow">Espace Alumni</div>
+        <div class="page-title">Mon Profil Alumni</div>
+
+        {% if success %}
+        <div class="success-msg"><i class="fas fa-check-circle"></i> Profil mis à jour avec succès !</div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- PHOTO -->
+            <div class="photo-section">
+                {% if profile and profile.photo %}
+                    <img src="{{ profile.photo.url }}" class="photo-avatar" id="photo-preview">
+                {% else %}
+                    <div class="photo-initiale" id="photo-initiale">{{ user.get_full_name|default:user.username|first|upper }}</div>
+                {% endif %}
+                <div>
+                    <div class="photo-info-name">{{ user.get_full_name|default:user.username }}</div>
+                    <div class="photo-info-role">Alumni · {{ profile.filiere_alumni|default:"Filière non renseignée" }}</div>
+                    <label class="btn-upload" for="photo-input">
+                        <i class="fas fa-camera"></i> Changer la photo
+                    </label>
+                    <input type="file" name="photo" id="photo-input" accept="image/*" style="display:none;" onchange="previewPhoto(this)">
                 </div>
             </div>
-        </div>
 
-        <!-- INFOS ALUMNI -->
-        <div class="form-section">
-            <div class="form-section-title">Informations Alumni</div>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Filière étudiée</label>
-                    <input type="text" name="filiere_alumni" value="{{ profile.filiere_alumni|default:'' }}" placeholder="Ex: Informatique...">
-                </div>
-                <div class="form-group">
-                    <label>Année de licence</label>
-                    <input type="text" name="annee_licence" value="{{ profile.annee_licence|default:'' }}" placeholder="Ex: 2021">
-                </div>
-                <div class="form-group">
-                    <label>Situation professionnelle</label>
-                    <select name="en_poste">
-                        <option value="True" {% if profile.en_poste %}selected{% endif %}>En poste</option>
-                        <option value="False" {% if not profile.en_poste %}selected{% endif %}>Sans emploi</option>
-                    </select>
+            <!-- INFOS PERSONNELLES -->
+            <div class="form-card">
+                <div class="form-card-title"><i class="fas fa-user"></i> Informations personnelles</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <div class="form-label">Prénom</div>
+                        <input type="text" name="prenom" value="{{ user.first_name }}" placeholder="Votre prénom">
+                    </div>
+                    <div class="form-group">
+                        <div class="form-label">Nom</div>
+                        <input type="text" name="nom" value="{{ user.last_name }}" placeholder="Votre nom">
+                    </div>
+                    <div class="form-group">
+                        <div class="form-label">Email</div>
+                        <input type="email" name="email" value="{{ user.email }}" placeholder="votre@email.com">
+                    </div>
+                    <div class="form-group">
+                        <div class="form-label">Nom d'utilisateur</div>
+                        <div class="info-readonly">{{ user.username }}</div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- INFOS COMPTE -->
-        <div class="form-section">
-            <div class="form-section-title">Informations du compte</div>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Rôle</label>
-                    <div class="info-readonly">Alumni</div>
-                </div>
-                <div class="form-group">
-                    <label>Statut</label>
-                    <div class="info-readonly" style="color:#43e97b;">Actif</div>
-                </div>
-                <div class="form-group">
-                    <label>Membre depuis</label>
-                    <div class="info-readonly">{{ user.date_joined|date:"d/m/Y" }}</div>
+            <!-- INFOS ALUMNI -->
+            <div class="form-card">
+                <div class="form-card-title"><i class="fas fa-graduation-cap"></i> Informations Alumni</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <div class="form-label">Filière étudiée</div>
+                        <input type="text" name="filiere_alumni" value="{{ profile.filiere_alumni|default:'' }}" placeholder="Ex: Informatique">
+                    </div>
+                    <div class="form-group">
+                        <div class="form-label">Année de licence</div>
+                        <input type="text" name="annee_licence" value="{{ profile.annee_licence|default:'' }}" placeholder="Ex: 2021">
+                    </div>
+                    <div class="form-group">
+                        <div class="form-label">Situation professionnelle</div>
+                        <select name="en_poste">
+                            <option value="True" {% if profile.en_poste %}selected{% endif %}>En poste</option>
+                            <option value="False" {% if not profile.en_poste %}selected{% endif %}>Sans emploi</option>
+                        </select>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <button type="submit" class="btn-save"><i class="fas fa-save"></i> Sauvegarder</button>
-    </form>
+            <!-- INFOS COMPTE -->
+            <div class="form-card">
+                <div class="form-card-title"><i class="fas fa-shield-alt"></i> Informations du compte</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <div class="form-label">Rôle</div>
+                        <div class="info-readonly">Alumni</div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-label">Statut</div>
+                        <div class="info-readonly active">✓ Actif</div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-label">Membre depuis</div>
+                        <div class="info-readonly">{{ user.date_joined|date:"d/m/Y" }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-save">
+                    <i class="fas fa-save"></i> Sauvegarder
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <script>
@@ -165,7 +231,11 @@ function previewPhoto(input) {
         reader.onload = function(e) {
             const initiale = document.getElementById('photo-initiale');
             const preview = document.getElementById('photo-preview');
-            if (initiale) { initiale.style.backgroundImage = `url(${e.target.result})`; initiale.style.backgroundSize = 'cover'; initiale.textContent = ''; }
+            if (initiale) {
+                initiale.style.backgroundImage = `url(${e.target.result})`;
+                initiale.style.backgroundSize = 'cover';
+                initiale.textContent = '';
+            }
             if (preview) { preview.src = e.target.result; }
         };
         reader.readAsDataURL(input.files[0]);

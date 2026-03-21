@@ -4,134 +4,678 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Connexion - Réseau Alumni</title>
+  <title>Connexion — Réseau Alumni · Université de Djibouti</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet"/>
   <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-      font-family:'Segoe UI',sans-serif;
-      min-height:100vh;
-      display:flex; align-items:center; justify-content:center;
-      padding:24px;
-      position: relative;
-      overflow: hidden;
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    :root {
+      --green-deep: #0d3d26;
+      --green-mid: #1b6b42;
+      --green-bright: #2ecc71;
+      --green-glow: #43e97b;
+      --gold: #c9a84c;
+      --gold-light: #e8c97a;
+      --white: #ffffff;
+      --glass-bg: rgba(10, 35, 22, 0.72);
+      --glass-border: rgba(255,255,255,0.10);
+      --text-muted: rgba(255,255,255,0.45);
     }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
+      background: #050f0a;
+    }
+
+    /* ── BACKGROUND ── */
     .bg {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
+      position: fixed; inset: 0; z-index: 0;
       background-image: url("{% static 'img/universite.jpeg' %}");
       background-size: cover;
-      background-position: center;
-      z-index: 0;
+      background-position: center 30%;
+      filter: brightness(0.55) saturate(1.1);
+      transform: scale(1.04);
+      animation: slowZoom 20s ease-in-out infinite alternate;
     }
+    @keyframes slowZoom {
+      from { transform: scale(1.04); }
+      to   { transform: scale(1.09); }
+    }
+
     .bg-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: linear-gradient(135deg, rgba(10,30,20,0.82), rgba(20,60,40,0.75));
-      z-index: 1;
+      position: fixed; inset: 0; z-index: 1;
+      background:
+        linear-gradient(to bottom, rgba(5,15,8,0.55) 0%, rgba(5,15,8,0.12) 35%, rgba(5,15,8,0.12) 65%, rgba(5,15,8,0.80) 100%),
+        linear-gradient(135deg, rgba(13,61,38,0.55) 0%, transparent 60%),
+        linear-gradient(to right, rgba(0,0,0,0.25) 0%, transparent 50%);
     }
-    .card {
+
+    /* ── SCANLINE TEXTURE ── */
+    .scanlines {
+      position: fixed; inset: 0; z-index: 2; pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.04) 2px,
+        rgba(0,0,0,0.04) 4px
+      );
+    }
+
+    /* ── TOP HEADER BAR ── */
+    .topbar {
+      position: relative; z-index: 10;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 40px;
+      background: rgba(5,15,8,0.55);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      animation: slideDown 0.6s ease both;
+    }
+    @keyframes slideDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:none; } }
+
+    .topbar-brand {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .topbar-logo {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--green-mid), var(--green-bright));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 0 16px rgba(67,233,123,0.25);
+    }
+    .topbar-title {
+      font-family: 'Playfair Display', serif;
+      color: var(--white);
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      line-height: 1.2;
+    }
+    .topbar-sub {
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    .topbar-nav {
+      display: flex; align-items: center; gap: 28px;
+    }
+    .topbar-nav a {
+      color: rgba(255,255,255,0.45);
+      font-size: 12px;
+      font-weight: 500;
+      text-decoration: none;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .topbar-nav a:hover { color: var(--green-glow); }
+
+    .topbar-badge {
+      background: rgba(46,204,113,0.12);
+      border: 1px solid rgba(46,204,113,0.25);
+      border-radius: 20px;
+      padding: 5px 12px;
+      color: var(--green-bright);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── MAIN LAYOUT ── */
+    .page-body {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       position: relative;
-      z-index: 2;
-      background:rgba(255,255,255,0.07);
-      backdrop-filter:blur(18px);
-      border:1px solid rgba(255,255,255,0.12);
-      border-radius:20px;
-      padding:44px 40px;
-      width:100%; max-width:420px;
-      box-shadow:0 30px 60px rgba(0,0,0,0.5);
+      z-index: 5;
+      padding: 32px 24px;
+      gap: 60px;
     }
-    .logo { text-align:center; font-size:52px; margin-bottom:8px; }
-    h1 { color:#fff; text-align:center; font-size:22px; font-weight:700; margin-bottom:6px; }
-    .subtitle { color:rgba(255,255,255,0.4); text-align:center; font-size:13px; margin-bottom:28px; }
+
+    /* ── LEFT SIDE CONTENT ── */
+    .side-content {
+      flex: 0 0 340px;
+      animation: fadeInLeft 0.8s ease 0.2s both;
+      display: none;
+    }
+    @media (min-width: 900px) { .side-content { display: block; } }
+    @keyframes fadeInLeft { from { opacity:0; transform:translateX(-30px); } to { opacity:1; transform:none; } }
+
+    .side-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(67,233,123,0.10);
+      border: 1px solid rgba(67,233,123,0.20);
+      border-radius: 20px;
+      padding: 6px 14px;
+      color: var(--green-glow);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .side-tag::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--green-glow); animation: blink 2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .side-heading {
+      font-family: 'Playfair Display', serif;
+      color: var(--white);
+      font-size: 38px;
+      line-height: 1.2;
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+    .side-heading em {
+      font-style: normal;
+      background: linear-gradient(90deg, var(--green-bright), var(--green-glow));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .side-desc {
+      color: rgba(255,255,255,0.42);
+      font-size: 14px;
+      line-height: 1.8;
+      margin-bottom: 36px;
+    }
+
+    .stats-row {
+      display: flex; gap: 24px; margin-bottom: 36px;
+    }
+    .stat-box {
+      flex: 1;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      color: var(--green-glow);
+      font-size: 24px;
+      font-weight: 700;
+      display: block;
+    }
+    .stat-lbl {
+      color: rgba(255,255,255,0.35);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-top: 4px;
+    }
+
+    .feature-list { display: flex; flex-direction: column; gap: 12px; }
+    .feature-item {
+      display: flex; align-items: center; gap: 12px;
+      color: rgba(255,255,255,0.5);
+      font-size: 13px;
+    }
+    .feature-icon {
+      width: 32px; height: 32px; flex-shrink: 0;
+      background: rgba(67,233,123,0.08);
+      border: 1px solid rgba(67,233,123,0.15);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+    }
+
+    /* ── CARD ── */
+    .card {
+      position: relative; z-index: 2;
+      background: var(--glass-bg);
+      backdrop-filter: blur(24px) saturate(1.4);
+      -webkit-backdrop-filter: blur(24px) saturate(1.4);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 44px 40px;
+      width: 100%; max-width: 430px;
+      box-shadow:
+        0 40px 80px rgba(0,0,0,0.6),
+        0 0 0 1px rgba(255,255,255,0.04) inset,
+        0 1px 0 rgba(255,255,255,0.12) inset;
+      animation: fadeInUp 0.7s ease 0.1s both;
+    }
+    @keyframes fadeInUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:none; } }
+
+    /* card top accent line */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 20%; right: 20%; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--green-bright), transparent);
+      border-radius: 1px;
+    }
+
+    /* ── CARD HEADER ── */
+    .card-head {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .card-icon {
+      width: 64px; height: 64px;
+      background: linear-gradient(135deg, var(--green-deep), var(--green-mid));
+      border-radius: 18px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 30px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 0 1px rgba(67,233,123,0.2);
+      position: relative;
+    }
+    .card-icon::after {
+      content: '';
+      position: absolute; inset: -4px;
+      border-radius: 22px;
+      border: 1px solid rgba(67,233,123,0.15);
+    }
+
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      color: var(--white);
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .card-sub {
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    /* ── FORM ── */
+    .form-group { margin-bottom: 16px; }
+
     label {
-      display:block; color:rgba(255,255,255,0.65);
-      font-size:12px; font-weight:600;
-      text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;
+      display: block;
+      color: rgba(255,255,255,0.55);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 7px;
     }
+
     input[type="text"], input[type="password"], select {
-      width:100%; background:rgba(255,255,255,0.07);
-      border:1px solid rgba(255,255,255,0.13);
-      border-radius:10px; padding:13px 16px;
-      color:#fff; font-size:14px; margin-bottom:18px;
-      outline:none; transition:border-color 0.2s;
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.11);
+      border-radius: 12px;
+      padding: 13px 16px;
+      color: var(--white);
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
     }
-    select option { background: #0f2a1a; color: #fff; }
-    input:focus, select:focus { border-color:#43e97b; }
-    input::placeholder { color:rgba(255,255,255,0.25); }
+    select option { background: #0d3d26; color: #fff; }
+
+    input:focus, select:focus {
+      border-color: rgba(67,233,123,0.5);
+      background: rgba(255,255,255,0.08);
+      box-shadow: 0 0 0 3px rgba(67,233,123,0.08);
+    }
+    input::placeholder { color: rgba(255,255,255,0.22); }
+
+    /* User type selector styled */
+    .type-selector {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 10px; margin-bottom: 20px;
+    }
+    .type-option { display: none; }
+    .type-label {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 12px;
+      padding: 14px 10px;
+      cursor: pointer;
+      color: rgba(255,255,255,0.45);
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .type-label .icon { font-size: 22px; }
+    .type-option:checked + .type-label {
+      background: rgba(67,233,123,0.10);
+      border-color: rgba(67,233,123,0.35);
+      color: var(--green-glow);
+      box-shadow: 0 0 0 1px rgba(67,233,123,0.15);
+    }
+
+    .input-wrap { position: relative; }
+    .input-wrap input { padding-left: 44px; }
+    .input-icon {
+      position: absolute;
+      left: 14px; top: 50%; transform: translateY(-50%);
+      color: rgba(255,255,255,0.25);
+      font-size: 16px;
+      pointer-events: none;
+    }
+
+    /* ── BUTTON ── */
     .btn {
-      width:100%; border:none; border-radius:10px;
-      padding:14px; font-size:15px; font-weight:700;
-      cursor:pointer; transition:opacity 0.2s, transform 0.1s; margin-top:4px;
-      background:linear-gradient(135deg,#1b5e3c,#43e97b);
-      color:white;
+      width: 100%; border: none;
+      border-radius: 12px;
+      padding: 15px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all 0.25s;
+      margin-top: 8px;
+      background: linear-gradient(135deg, #1b6b42 0%, #2ecc71 60%, #43e97b 100%);
+      color: white;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(46,204,113,0.25);
     }
-    .btn:hover { opacity:0.9; transform:translateY(-1px); }
+    .btn::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.08), transparent);
+      border-radius: 12px;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(46,204,113,0.35);
+    }
+    .btn:active { transform: translateY(0); }
+
+    /* ── ALERTS ── */
     .error {
-      background:rgba(229,57,53,0.15); border:1px solid rgba(229,57,53,0.4);
-      color:#ff6b6b; border-radius:10px;
-      padding:12px 16px; font-size:13px; margin-bottom:20px; text-align:center;
+      background: rgba(229,57,53,0.10);
+      border: 1px solid rgba(229,57,53,0.30);
+      color: #ff7070;
+      border-radius: 12px;
+      padding: 13px 16px;
+      font-size: 13px;
+      margin-bottom: 18px;
+      text-align: center;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
     }
     .pending {
-      background:rgba(255,193,7,0.12); border:1px solid rgba(255,193,7,0.35);
-      color:#ffc107; border-radius:10px;
-      padding:14px 16px; font-size:13px; margin-bottom:20px; text-align:center;
-      line-height:1.6;
+      background: rgba(255,193,7,0.08);
+      border: 1px solid rgba(255,193,7,0.28);
+      color: #ffd060;
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 13px;
+      margin-bottom: 18px;
+      text-align: center;
+      line-height: 1.7;
     }
-    .divider { display:flex; align-items:center; gap:12px; margin:22px 0 18px; }
-    .divider::before,.divider::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.1); }
-    .divider span { color:rgba(255,255,255,0.3); font-size:12px; }
-    .link { text-align:center; color:rgba(255,255,255,0.4); font-size:13px; }
-    .link a { color:#43e97b; text-decoration:none; font-weight:600; }
-    .admin-link { text-align:center; margin-top:14px; color:rgba(255,255,255,0.25); font-size:12px; }
-    .admin-link a { color:rgba(255,255,255,0.35); text-decoration:none; }
-    .admin-link a:hover { color:rgba(255,255,255,0.6); }
-    .univ-label { text-align:center; color:rgba(255,255,255,0.3); font-size:11px; margin-top:20px; letter-spacing:0.5px; }
+
+    /* ── DIVIDER ── */
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 22px 0 16px;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px;
+      background: rgba(255,255,255,0.08);
+    }
+    .divider span {
+      color: rgba(255,255,255,0.25);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    /* ── FOOTER LINKS ── */
+    .card-links {
+      text-align: center;
+      color: rgba(255,255,255,0.35);
+      font-size: 13px;
+    }
+    .card-links a {
+      color: var(--green-glow);
+      text-decoration: none;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+    .card-links a:hover { opacity: 0.8; }
+
+    .admin-link {
+      text-align: center;
+      margin-top: 16px;
+    }
+    .admin-link a {
+      color: rgba(255,255,255,0.28);
+      font-size: 11.5px;
+      text-decoration: none;
+      letter-spacing: 0.3px;
+      transition: color 0.2s;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .admin-link a:hover { color: rgba(255,255,255,0.55); }
+
+    /* ── BOTTOM FOOTER BAR ── */
+    .footerbar {
+      position: relative; z-index: 10;
+      background: rgba(5,15,8,0.65);
+      backdrop-filter: blur(14px);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 16px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      animation: slideUp 0.6s ease both;
+    }
+    @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:none; } }
+
+    .footer-left {
+      display: flex; align-items: center; gap: 20px;
+    }
+    .footer-text {
+      color: rgba(255,255,255,0.25);
+      font-size: 11px;
+      letter-spacing: 0.4px;
+    }
+    .footer-text strong { color: rgba(255,255,255,0.4); }
+
+    .footer-dots {
+      display: flex; gap: 6px; align-items: center;
+    }
+    .footer-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+    }
+    .footer-dot.active {
+      background: var(--green-bright);
+      box-shadow: 0 0 6px rgba(67,233,123,0.5);
+    }
+
+    .footer-right {
+      display: flex; align-items: center; gap: 20px;
+    }
+    .footer-pill {
+      display: flex; align-items: center; gap: 7px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 20px;
+      padding: 5px 13px;
+      color: rgba(255,255,255,0.28);
+      font-size: 11px;
+    }
+    .footer-pill .dot-green {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green-bright);
+      animation: blink 2s infinite;
+    }
+    .footer-copyright {
+      color: rgba(255,255,255,0.18);
+      font-size: 11px;
+    }
+
+    /* Mobile tweaks */
+    @media (max-width: 600px) {
+      .topbar { padding: 14px 20px; }
+      .topbar-nav { display: none; }
+      .card { padding: 36px 26px; }
+      .footerbar { padding: 14px 20px; }
+      .footer-right { display: none; }
+    }
   </style>
 </head>
 <body>
-<div class="bg"></div>
-<div class="bg-overlay"></div>
 
-<div class="card">
-  <div class="logo">🎓</div>
-  <h1>Bienvenue</h1>
-  <p class="subtitle">Connectez-vous à votre espace</p>
-
-  {% if error == "pending" %}
-    <div class="pending">
-      ⏳ <strong>Compte en attente</strong><br/>
-      Votre compte a bien été créé mais l'administrateur n'a pas encore activé votre accès.
-      Veuillez patienter.
+  <!-- ── TOP BAR ── -->
+  <header class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-logo">🎓</div>
+      <div>
+        <div class="topbar-title">Réseau Alumni</div>
+        <div class="topbar-sub">Université de Djibouti</div>
+      </div>
     </div>
-  {% elif error %}
-    <div class="error">{{ error }}</div>
-  {% endif %}
+    <nav class="topbar-nav">
+      <a href="#">Accueil</a>
+      <a href="#">À propos</a>
+      <a href="#">Contact</a>
+      <span class="topbar-badge">Portail 2026</span>
+    </nav>
+  </header>
 
-  <form method="POST">
-    {% csrf_token %}
+  <!-- ── BACKGROUND LAYERS ── -->
+  <div class="bg"></div>
+  <div class="bg-overlay"></div>
+  <div class="scanlines"></div>
 
-    <select name="user_type" id="user_type">
-      <option value="etudiant">🎓 Étudiant</option>
-      <option value="alumni">🏆 Alumni</option>
-    </select>
+  <!-- ── MAIN BODY ── -->
+  <main class="page-body">
 
-    <label>Nom d'utilisateur</label>
-    <input type="text" name="username" placeholder="Votre nom d'utilisateur" required autofocus/>
+    <!-- Left side info panel -->
+    <aside class="side-content">
+      <div class="side-tag">Plateforme officielle</div>
+      <h2 class="side-heading">Votre réseau<br/><em>professionnel</em><br/>commence ici</h2>
+      <p class="side-desc">Connectez-vous à une communauté d'anciens étudiants, accédez aux opportunités exclusives et restez en lien avec votre université.</p>
 
-    <label>Mot de passe</label>
-    <input type="password" name="password" placeholder="••••••••" required/>
+      <div class="stats-row">
+        <div class="stat-box">
+          <span class="stat-num">4 800+</span>
+          <div class="stat-lbl">Alumni</div>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">7</span>
+          <div class="stat-lbl">Facultés</div>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">95%</span>
+          <div class="stat-lbl">Insertion</div>
+        </div>
+      </div>
 
-    <button type="submit" class="btn">Se connecter →</button>
-  </form>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-icon">🗂️</div>
+          Accès à votre dossier académique
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🤝</div>
+          Mise en relation avec des alumni
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">💼</div>
+          Offres d'emploi et stages
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">📡</div>
+          Actualités de l'université
+        </div>
+      </div>
+    </aside>
 
-  <div class="divider"><span>Pas encore de compte ?</span></div>
-  <div class="link">
-    <a href="{% url 'register' %}">Créer un compte </a>
-  </div>
-  <div class="admin-link">
-    <a href="{% url 'admin_login' %}">⚙️ Accès administrateur</a>
-  </div>
-  <div class="univ-label">Université de Djibouti</div>
-</div>
+    <!-- Login card -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon">🎓</div>
+        <h1 class="card-title">Connexion</h1>
+        <p class="card-sub">Accédez à votre espace personnel</p>
+      </div>
+
+      {% if error == "pending" %}
+      <div class="pending">
+        ⏳ <strong>Compte en attente de validation</strong><br/>
+        Votre compte a bien été créé. L'administrateur n'a pas encore activé votre accès. Veuillez patienter.
+      </div>
+      {% elif error %}
+      <div class="error">⚠️ {{ error }}</div>
+      {% endif %}
+
+      <form method="POST">
+        {% csrf_token %}
+
+        <!-- User type selector -->
+        <div class="form-group">
+          <label>Type de compte</label>
+          <select name="user_type">
+            <option value="etudiant">🎓 Étudiant</option>
+            <option value="alumni">🏆 Alumni</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Nom d'utilisateur</label>
+          <div class="input-wrap">
+            <span class="input-icon">👤</span>
+            <input type="text" name="username" placeholder="Entrez votre identifiant" required autofocus/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Mot de passe</label>
+          <div class="input-wrap">
+            <span class="input-icon">🔒</span>
+            <input type="password" name="password" placeholder="••••••••" required/>
+          </div>
+        </div>
+
+        <button type="submit" class="btn">Se connecter →</button>
+      </form>
+
+      <div class="divider"><span>Pas encore de compte ?</span></div>
+      <div class="card-links">
+        <a href="{% url 'register' %}">Créer un compte gratuitement</a>
+      </div>
+     
+    </div>
+
+  </main>
+
+  <!-- ── BOTTOM FOOTER BAR ── -->
+  <footer class="footerbar">
+    <div class="footer-left">
+      <div class="footer-text">
+        © 2026 <strong>Université de Djibouti</strong> — Tous droits réservés
+      </div>
+      <div class="footer-dots">
+        <div class="footer-dot active"></div>
+        <div class="footer-dot"></div>
+        <div class="footer-dot"></div>
+      </div>
+    </div>
+    <div class="footer-right">
+      <div class="footer-pill">
+        <div class="dot-green"></div>
+        Système opérationnel
+      </div>
+      <div class="footer-pill">🔒 Connexion sécurisée SSL</div>
+      <div class="footer-copyright">v2.5.1</div>
+    </div>
+  </footer>
+
 </body>
 </html>

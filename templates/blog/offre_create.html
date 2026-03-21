@@ -1,0 +1,293 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Publier une offre – Réseau Alumni</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --navy: #0a1628; --navy-2: #0d1f3c; --navy-3: #112347; --navy-4: #1a3a6b;
+            --gold: #c9a84c; --gold-light: #e8c97a; --gold-dim: rgba(201,168,76,0.15);
+            --white: #ffffff; --text: rgba(255,255,255,0.90); --text-dim: rgba(255,255,255,0.45);
+            --text-mid: rgba(255,255,255,0.65); --border: rgba(255,255,255,0.07);
+            --border-2: rgba(201,168,76,0.20); --sidebar-w: 260px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; }
+        body { font-family: 'Inter', sans-serif; background: var(--navy); color: var(--text); display: flex; min-height: 100vh; }
+        .sidebar { width: var(--sidebar-w); background: var(--navy-2); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; overflow-y: auto; }
+        .sidebar-logo { padding: 24px 20px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+        .logo-icon { width: 38px; height: 38px; border-radius: 10px; background: linear-gradient(135deg, var(--gold), var(--gold-light)); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; color: var(--navy); flex-shrink: 0; }
+        .logo-text-main { font-size: 0.95rem; font-weight: 700; color: var(--white); }
+        .logo-text-sub { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; }
+        .sidebar-user { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+        .user-av { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--navy-4), var(--gold)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; color: var(--white); border: 2px solid var(--gold-dim); overflow: hidden; flex-shrink: 0; }
+        .user-av img { width: 100%; height: 100%; object-fit: cover; }
+        .user-name { font-size: 0.84rem; font-weight: 600; color: var(--white); }
+        .user-role { font-size: 0.68rem; color: var(--gold); font-weight: 500; }
+        .nav-section-label { padding: 16px 20px 6px; font-size: 0.62rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px; }
+        .sidebar-nav { list-style: none; padding: 0 10px; }
+        .sidebar-nav li { margin-bottom: 2px; }
+        .sidebar-nav a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; color: var(--text-dim); text-decoration: none; font-size: 0.84rem; font-weight: 500; transition: all 0.18s; }
+        .sidebar-nav a i { width: 16px; text-align: center; font-size: 0.8rem; }
+        .sidebar-nav a:hover { color: var(--white); background: rgba(255,255,255,0.05); }
+        .sidebar-nav a.active { color: var(--gold-light); background: var(--gold-dim); border: 1px solid var(--border-2); font-weight: 600; }
+        .sidebar-divider { height: 1px; background: var(--border); margin: 12px 10px; }
+        .sidebar-nav a.logout { color: rgba(255,100,100,0.5); }
+        .sidebar-nav a.logout:hover { color: #ff6b6b; background: rgba(255,100,100,0.06); }
+        .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+        .topbar { position: sticky; top: 0; z-index: 50; height: 60px; background: rgba(10,22,40,0.92); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
+        .topbar-title { font-size: 0.95rem; font-weight: 600; color: var(--text); }
+        .topbar-chip { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 999px; padding: 5px 14px 5px 6px; }
+        .topbar-av { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, var(--navy-4), var(--gold)); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: var(--white); overflow: hidden; }
+        .topbar-av img { width: 100%; height: 100%; object-fit: cover; }
+        .topbar-chip span { font-size: 0.8rem; color: var(--text-mid); }
+        .content { padding: 32px; flex: 1; overflow-y: auto; max-width: 800px; }
+        .page-eyebrow { font-size: 0.7rem; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
+        .page-title { font-size: 1.5rem; font-weight: 800; color: var(--white); margin-bottom: 5px; }
+        .page-sub { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 28px; }
+        .success-msg { background: rgba(52,168,83,0.1); border: 1px solid rgba(52,168,83,0.25); color: #4ade80; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; }
+        .form-card { background: var(--navy-2); border: 1px solid var(--border); border-radius: 12px; padding: 22px; margin-bottom: 16px; }
+        .form-card-title { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group.full { grid-column: 1 / -1; }
+        .form-label { font-size: 0.72rem; font-weight: 600; color: var(--text-mid); text-transform: uppercase; letter-spacing: 0.6px; }
+        .form-group input, .form-group select, .form-group textarea { background: var(--navy-3); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--white); font-size: 0.88rem; outline: none; transition: border-color 0.15s; font-family: 'Inter', sans-serif; }
+        .form-group select option { background: var(--navy-2); }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--border-2); background: var(--navy-4); }
+        .form-group input::placeholder, .form-group textarea::placeholder { color: var(--text-dim); }
+        .form-group textarea { resize: vertical; min-height: 120px; }
+        .type-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+        .type-option { display: none; }
+        .type-label { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 14px 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--navy-3); cursor: pointer; transition: all 0.2s; font-size: 0.8rem; color: var(--text-dim); text-align: center; }
+        .type-label i { font-size: 18px; }
+        .type-option:checked + .type-label { background: var(--gold-dim); border-color: var(--border-2); color: var(--gold-light); }
+        .champs-speciaux { display: none; }
+        .champs-speciaux.visible { display: block; }
+        .form-actions { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 8px; }
+        .btn-cancel { color: var(--text-dim); text-decoration: none; font-size: 0.85rem; padding: 10px 20px; border-radius: 8px; border: 1px solid var(--border); transition: all 0.15s; }
+        .btn-cancel:hover { color: var(--white); border-color: var(--border-2); }
+        .btn-publish { display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: var(--navy); border: none; border-radius: 8px; padding: 11px 24px; font-size: 0.88rem; font-weight: 700; font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.2s; }
+        .btn-publish:hover { opacity: 0.9; transform: translateY(-1px); }
+        @media (max-width: 1024px) { .sidebar { position: relative; width: 100%; height: auto; } .main { margin-left: 0; } .form-grid { grid-template-columns: 1fr; } .type-grid { grid-template-columns: repeat(2,1fr); } }
+    </style>
+</head>
+<body>
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-icon">RA</div>
+        <div>
+            <div class="logo-text-main">Réseau Alumni</div>
+            <div class="logo-text-sub">Université de Djibouti</div>
+        </div>
+    </div>
+    <div class="sidebar-user">
+        <div class="user-av">
+            {% if request.user.profile.photo %}<img src="{{ request.user.profile.photo.url }}">
+            {% else %}{{ request.user.get_full_name|default:request.user.username|first|upper }}{% endif %}
+        </div>
+        <div>
+            <div class="user-name">{{ request.user.get_full_name|default:request.user.username }}</div>
+            <div class="user-role">Alumni</div>
+        </div>
+    </div>
+    <div class="nav-section-label">Menu</div>
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'dashboard_alumni' %}"><i class="fas fa-th-large"></i> Dashboard</a></li>
+        <li><a href="{% url 'post_create' %}"><i class="fas fa-pen"></i> Publier un post</a></li>
+        <li><a href="{% url 'offre_create' %}" class="active"><i class="fas fa-briefcase"></i> Publier une offre</a></li>
+        <li><a href="{% url 'fil_alumni' %}"><i class="fas fa-fire"></i> Le Fil</a></li>
+        <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> Notifications</a></li>
+        <li><a href="{% url 'chat_page' %}"><i class="fas fa-comment-dots"></i> Chat</a></li>
+        <li><a href="{% url 'profil_alumni' %}"><i class="fas fa-user-circle"></i> Profil</a></li>
+    </ul>
+    <div class="sidebar-divider"></div>
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'logout' %}" class="logout"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+    </ul>
+</aside>
+
+<div class="main">
+    <header class="topbar">
+        <div class="topbar-title">Publier une offre</div>
+        <div class="topbar-chip">
+            <div class="topbar-av">
+                {% if request.user.profile.photo %}<img src="{{ request.user.profile.photo.url }}">
+                {% else %}{{ request.user.get_full_name|default:request.user.username|first|upper }}{% endif %}
+            </div>
+            <span>{{ request.user.get_full_name|default:request.user.username }}</span>
+        </div>
+    </header>
+
+    <div class="content">
+        <div class="page-eyebrow">Nouvelle offre</div>
+        <div class="page-title">Publier une offre</div>
+        <div class="page-sub">Proposez une opportunité professionnelle aux étudiants du réseau.</div>
+
+        {% if success %}
+        <div class="success-msg"><i class="fas fa-check-circle"></i> Offre publiée avec succès !</div>
+        {% endif %}
+
+        <form method="POST" id="offre-form">
+            {% csrf_token %}
+            <input type="hidden" name="type_offre" id="type_offre_hidden" value="stage">
+
+            <div class="form-card">
+                <div class="form-card-title"><i class="fas fa-tag"></i> Type d'opportunité</div>
+                <div class="type-grid">
+                    <div>
+                        <input type="radio" name="_type" id="t-stage" value="stage" class="type-option" checked onchange="changerType('stage')">
+                        <label for="t-stage" class="type-label"><i class="fas fa-graduation-cap"></i> Stage</label>
+                    </div>
+                    <div>
+                        <input type="radio" name="_type" id="t-emploi" value="emploi" class="type-option" onchange="changerType('emploi')">
+                        <label for="t-emploi" class="type-label"><i class="fas fa-briefcase"></i> Emploi</label>
+                    </div>
+                    <div>
+                        <input type="radio" name="_type" id="t-cdi" value="cdi" class="type-option" onchange="changerType('cdi')">
+                        <label for="t-cdi" class="type-label"><i class="fas fa-file-contract"></i> CDI</label>
+                    </div>
+                    <div>
+                        <input type="radio" name="_type" id="t-cdd" value="cdd" class="type-option" onchange="changerType('cdd')">
+                        <label for="t-cdd" class="type-label"><i class="fas fa-calendar-alt"></i> CDD</label>
+                    </div>
+                    <div>
+                        <input type="radio" name="_type" id="t-alt" value="alternance" class="type-option" onchange="changerType('alternance')">
+                        <label for="t-alt" class="type-label"><i class="fas fa-sync-alt"></i> Alternance</label>
+                    </div>
+                    <div>
+                        <input type="radio" name="_type" id="t-free" value="freelance" class="type-option" onchange="changerType('freelance')">
+                        <label for="t-free" class="type-label"><i class="fas fa-laptop"></i> Freelance</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <div class="form-card-title"><i class="fas fa-info-circle"></i> Informations du poste</div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <div class="form-label">Intitulé du poste *</div>
+                        <input type="text" name="titre" placeholder="Ex: Développeur Web, Comptable…" required>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-label">Entreprise *</div>
+                        <input type="text" name="entreprise" placeholder="Nom de l'entreprise" required>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-label">Ville</div>
+                        <input type="text" name="ville" placeholder="Ex: Djibouti" value="Djibouti">
+                    </div>
+                    <div class="form-group">
+                        <div class="form-label">Niveau requis</div>
+                        <select name="niveau_requis">
+                            <option value="tout">Tous niveaux</option>
+                            <option value="bac">Bac</option>
+                            <option value="licence">Licence (L1-L3)</option>
+                            <option value="master">Master (M1-M2)</option>
+                            <option value="doctorat">Doctorat</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-label">Date limite</div>
+                        <input type="date" name="date_limite">
+                    </div>
+                    <div class="form-group full">
+                        <div class="form-label">Description *</div>
+                        <textarea name="description" placeholder="Décrivez les missions, compétences requises…" required></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card champs-speciaux visible" id="champs-stage">
+                <div class="form-card-title"><i class="fas fa-clipboard-list"></i> Détails du stage</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <div class="form-label">Durée</div>
+                        <input type="text" name="duree_stage" placeholder="Ex: 3 mois, 6 mois">
+                    </div>
+                    <div class="form-group">
+                        <div class="form-label">Indemnité</div>
+                        <input type="text" name="indemnite" placeholder="Ex: 50 000 DJF/mois">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card champs-speciaux" id="champs-emploi">
+                <div class="form-card-title"><i class="fas fa-briefcase"></i> Détails du poste</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <div class="form-label">Salaire</div>
+                        <input type="text" name="salaire" placeholder="Ex: 150 000 DJF/mois">
+                    </div>
+                    <div class="form-group">
+                        <div class="form-label">Expérience requise</div>
+                        <input type="text" name="experience_requise" placeholder="Ex: 2 ans minimum">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card champs-speciaux" id="champs-alternance">
+                <div class="form-card-title"><i class="fas fa-sync-alt"></i> Détails alternance</div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <div class="form-label">École partenaire</div>
+                        <input type="text" name="ecole_partenaire" placeholder="Ex: Université de Djibouti">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card champs-speciaux" id="champs-freelance">
+                <div class="form-card-title"><i class="fas fa-laptop"></i> Détails Freelance</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <div class="form-label">Budget</div>
+                        <input type="text" name="budget" placeholder="Ex: 500 000 DJF">
+                    </div>
+                    <div class="form-group">
+                        <div class="form-label">Délai</div>
+                        <input type="text" name="delai" placeholder="Ex: 2 semaines">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <div class="form-card-title"><i class="fas fa-phone"></i> Contact</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <div class="form-label">Email</div>
+                        <input type="email" name="email_contact" value="{{ request.user.email }}" placeholder="contact@entreprise.com">
+                    </div>
+                    <div class="form-group">
+                        <div class="form-label">Téléphone</div>
+                        <input type="text" name="telephone_contact" placeholder="+253 77 XX XX XX">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="{% url 'dashboard_alumni' %}" class="btn-cancel">← Annuler</a>
+                <button type="submit" class="btn-publish">
+                    <i class="fas fa-paper-plane"></i> Publier l'offre
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function changerType(type) {
+    document.getElementById('type_offre_hidden').value = type;
+    document.querySelectorAll('.champs-speciaux').forEach(el => el.classList.remove('visible'));
+    if (type === 'stage') document.getElementById('champs-stage').classList.add('visible');
+    else if (['emploi','cdi','cdd'].includes(type)) document.getElementById('champs-emploi').classList.add('visible');
+    else if (type === 'alternance') document.getElementById('champs-alternance').classList.add('visible');
+    else if (type === 'freelance') document.getElementById('champs-freelance').classList.add('visible');
+}
+</script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse
 from django.db.models import Q, Max
@@ -26,6 +26,14 @@ def admin_login_view(request):
             return render(request, "admin_login.html", {"error": "Nom d'utilisateur ou mot de passe incorrect."})
     return render(request, "admin_login.html")
 
+def admin_logout_view(request):
+    logout(request)
+    return redirect("admin_login")
+
+def logout_view(request):
+    logout(request)
+    return redirect("login")
+
 def login_view(request):
     if request.method == "POST":
         username = request.POST.get("username")
@@ -45,7 +53,7 @@ def login_view(request):
                 return redirect("dashboard_etudiant")
             elif profile.role == "alumni":
                 return redirect("dashboard_alumni")
-            return redirect("dashboard")
+            return redirect("mes_posts")
         else:
             return render(request, "login.html", {"error": "Nom d'utilisateur ou mot de passe incorrect."})
     return render(request, "login.html")
@@ -91,6 +99,8 @@ def register(request):
 def admin_dashboard(request):
     users = User.objects.select_related("profile").all().order_by("date_joined")
     pending_posts = Post.objects.filter(status=0).select_related("auteur").order_by("-date_creation")
+    all_posts = Post.objects.all().select_related("auteur").order_by("-date_creation")
+    alumni_count = Profile.objects.filter(role="alumni").count()
     pending_users = []
     for u in users:
         try:
@@ -98,7 +108,27 @@ def admin_dashboard(request):
                 pending_users.append(u)
         except Profile.DoesNotExist:
             pass
-    return render(request, "admin.html", {"users": users, "pending_posts": pending_posts, "last_messages": [], "pending_users": pending_users})
+    return render(request, "admin.html", {
+        "users": users,
+        "pending_posts": pending_posts,
+        "all_posts": all_posts,
+        "alumni_count": alumni_count,
+        "last_messages": [],
+        "pending_users": pending_users
+    })
+
+@user_passes_test(is_admin)
+def admin_post_delete(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    post.delete()
+    return redirect("admin_dashboard")
+
+@user_passes_test(is_admin)
+def admin_post_approve(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    post.status = 1
+    post.save()
+    return redirect("admin_dashboard")
 
 @user_passes_test(is_admin)
 def admin_user_detail(request, user_id):
@@ -186,12 +216,13 @@ def post_create(request):
         if form.is_valid():
             post = form.save(commit=False)
             post.auteur = request.user
+            post.status = 0  # ✅ En attente de validation
             post.save()
             etudiants = User.objects.filter(profile__role='etudiant', profile__compte_active=True)
             for etudiant in etudiants:
                 Notification.objects.create(destinataire=etudiant,
-                    message=f"Nouveau post : {post.titre} — par {request.user.get_full_name() or request.user.username}")
-            return redirect('dashboard')
+                    message=f"Nouveau post de {request.user.get_full_name() or request.user.username} : {post.titre}")
+            return redirect('dashboard_alumni')
     else:
         form = PostForm()
     return render(request, 'blog/post_create.html', {'form': form})
@@ -205,11 +236,14 @@ def post_like(request, post_id):
         liked = False
     else:
         liked = True
-        # Notifier l'auteur du post
         if post.auteur != request.user:
             Notification.objects.create(
                 destinataire=post.auteur,
                 message=f"{request.user.get_full_name() or request.user.username} a aimé votre post : {post.titre}"
+            )
+            Notification.objects.create(
+                destinataire=request.user,
+                message=f"Vous avez aimé le post de {post.auteur.get_full_name() or post.auteur.username} : {post.titre}"
             )
     return JsonResponse({'liked': liked, 'total': post.likes.count()})
 
@@ -222,6 +256,10 @@ def post_favori(request, post_id):
         en_favori = False
     else:
         en_favori = True
+        Notification.objects.create(
+            destinataire=request.user,
+            message=f"Vous avez ajouté aux favoris le post de {post.auteur.get_full_name() or post.auteur.username} : {post.titre}"
+        )
     return JsonResponse({'favoris': en_favori, 'total': post.favoris.count()})
 
 @login_required
@@ -231,11 +269,14 @@ def post_commenter(request, post_id):
         contenu = request.POST.get("contenu", "").strip()
         if contenu:
             comment = Comment.objects.create(post=post, auteur=request.user, contenu=contenu, actif=True)
-            # Notifier l'auteur du post
             if post.auteur != request.user:
                 Notification.objects.create(
                     destinataire=post.auteur,
                     message=f"{request.user.get_full_name() or request.user.username} a commenté votre post : {post.titre}"
+                )
+                Notification.objects.create(
+                    destinataire=request.user,
+                    message=f"Vous avez commenté le post de {post.auteur.get_full_name() or post.auteur.username} : {post.titre}"
                 )
             return JsonResponse({
                 'success': True,
@@ -246,28 +287,55 @@ def post_commenter(request, post_id):
     return JsonResponse({'success': False})
 
 @login_required
+def post_stats(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    likers = post.likes.select_related('user').order_by('-id')[:3]
+    comments = post.comments.filter(actif=True).select_related('auteur').order_by('date_creation')
+    return JsonResponse({
+        'nb_likes': post.likes.count(),
+        'nb_favoris': post.favoris.count(),
+        'nb_comments': post.comments.filter(actif=True).count(),
+        'user_liked': post.likes.filter(user=request.user).exists(),
+        'user_favori': post.favoris.filter(user=request.user).exists(),
+        'likers': [l.user.get_full_name() or l.user.username for l in likers],
+        'comments': [{'id': c.id, 'auteur': c.auteur.get_full_name() or c.auteur.username,
+            'contenu': c.contenu, 'date': c.date_creation.strftime("%d/%m à %H:%M")} for c in comments],
+    })
+
+@login_required
 def chat_page(request, user_id=None):
     messages_envoyes = Message.objects.filter(expediteur=request.user).values_list('destinataire', flat=True)
     messages_recus = Message.objects.filter(destinataire=request.user).values_list('expediteur', flat=True)
     contact_ids = set(list(messages_envoyes) + list(messages_recus))
-    contacts = User.objects.filter(id__in=contact_ids)
+    try:
+        role = request.user.profile.role
+    except:
+        role = 'etudiant'
+    if role == 'etudiant':
+        contacts = User.objects.filter(id__in=contact_ids, profile__role='alumni')
+    else:
+        contacts = User.objects.filter(id__in=contact_ids)
     selected_user = None
     conversation = []
     if user_id:
         selected_user = get_object_or_404(User, pk=user_id)
+        if role == 'etudiant' and selected_user.profile.role != 'alumni':
+            return redirect('chat_page')
         conversation = Message.objects.filter(
             Q(expediteur=request.user, destinataire=selected_user) |
             Q(expediteur=selected_user, destinataire=request.user)
         ).order_by("date_envoi")
         conversation.filter(destinataire=request.user, lu=False).update(lu=True)
-        # Notifier l'alumni qu'un étudiant veut le contacter (première fois seulement)
         if not Message.objects.filter(expediteur=request.user, destinataire=selected_user).exists():
             nom = request.user.get_full_name() or request.user.username
             Notification.objects.create(
                 destinataire=selected_user,
                 message=f"{nom} veut vous contacter via le chat."
             )
-    tous_alumni = User.objects.filter(profile__role='alumni', profile__compte_active=True)
+    tous_alumni = User.objects.filter(
+        profile__role='alumni',
+        profile__compte_active=True
+    ).exclude(id=request.user.id)
     return render(request, "blog/chat.html", {
         "contacts": contacts,
         "selected_user": selected_user,
@@ -282,7 +350,6 @@ def chat_envoyer(request, alumni_id):
         contenu = request.POST.get("contenu", "").strip()
         if contenu:
             Message.objects.create(expediteur=request.user, destinataire=destinataire, contenu=contenu)
-            # Notifier le destinataire
             nom = request.user.get_full_name() or request.user.username
             Notification.objects.create(
                 destinataire=destinataire,
@@ -306,12 +373,9 @@ def chat_messages(request, alumni_id):
 
 @login_required
 def offres(request):
-    return render(request, "blog/offres.html")
-
-@login_required
-def favoris(request):
-    mes_favoris = Favori.objects.filter(user=request.user).select_related('post')
-    return render(request, "blog/favoris.html", {"mes_favoris": mes_favoris})
+    from .models import Offre
+    offres_list = Offre.objects.all().order_by("-date_creation")
+    return render(request, "blog/offres.html", {"offres_list": offres_list})
 
 @login_required
 def notifications(request):
@@ -321,16 +385,20 @@ def notifications(request):
 
 @login_required
 def dashboard_etudiant(request):
+    from .models import Offre
     try:
         profile = request.user.profile
     except Profile.DoesNotExist:
         profile = None
     posts = Post.objects.filter(status=1).order_by("-date_creation")
-    alumni_list = User.objects.filter(profile__role='alumni', profile__compte_active=True)
+    offres_qs = Offre.objects.all().order_by("-date_creation")
     posts_data = []
     for post in posts:
         posts_data.append({
-            'post': post,
+            'type': 'post',
+            'obj': post,
+            'auteur': post.auteur,
+            'date': post.date_creation,
             'liked': post.likes.filter(user=request.user).exists(),
             'en_favori': post.favoris.filter(user=request.user).exists(),
             'nb_likes': post.likes.count(),
@@ -338,11 +406,52 @@ def dashboard_etudiant(request):
             'nb_comments': post.comments.filter(actif=True).count(),
             'comments': post.comments.filter(actif=True),
         })
+    offres_data = []
+    for offre in offres_qs:
+        offres_data.append({
+            'type': 'offre',
+            'obj': offre,
+            'auteur': offre.auteur,
+            'date': offre.date_creation,
+        })
+    feed = sorted(posts_data + offres_data, key=lambda x: x['date'], reverse=True)
+    nb_notifications = Notification.objects.filter(destinataire=request.user, lue=False).count()
     return render(request, "blog/dashboard_etudiant.html", {
         "user": request.user,
         "profile": profile,
-        "posts_data": posts_data,
-        "alumni_list": alumni_list,
+        "feed": feed,
+        "nb_notifications": nb_notifications,
+        "nom_affiche": request.user.get_full_name() or request.user.username,
+    })
+
+@login_required
+def posts_etudiant(request):
+    from .models import Offre
+    try:
+        profile = request.user.profile
+    except Profile.DoesNotExist:
+        profile = None
+    posts = Post.objects.filter(status=1).order_by("-date_creation")
+    posts_data = []
+    for post in posts:
+        posts_data.append({
+            'type': 'post',
+            'obj': post,
+            'auteur': post.auteur,
+            'date': post.date_creation,
+            'liked': post.likes.filter(user=request.user).exists(),
+            'en_favori': post.favoris.filter(user=request.user).exists(),
+            'nb_likes': post.likes.count(),
+            'nb_favoris': post.favoris.count(),
+            'nb_comments': post.comments.filter(actif=True).count(),
+            'comments': post.comments.filter(actif=True),
+        })
+    nb_notifications = Notification.objects.filter(destinataire=request.user, lue=False).count()
+    return render(request, "blog/dashboard_etudiant.html", {
+        "user": request.user,
+        "profile": profile,
+        "feed": posts_data,
+        "nb_notifications": nb_notifications,
         "nom_affiche": request.user.get_full_name() or request.user.username,
     })
 
@@ -358,9 +467,6 @@ def dashboard_alumni(request):
         "nom_affiche": request.user.get_full_name() or request.user.username,
     })
 
-# ===============================
-# PROFIL ÉTUDIANT
-# ===============================
 @login_required
 def profil_etudiant(request):
     try:
@@ -384,9 +490,6 @@ def profil_etudiant(request):
             Notification.objects.create(destinataire=admin_user, message=f"{nom} a mis à jour son profil.")
     return render(request, "blog/profil_etudiant.html", {"profile": profile, "user": request.user, "success": success})
 
-# ===============================
-# PROFIL ALUMNI (AJOUTÉ)
-# ===============================
 @login_required
 def profil_alumni(request):
     try:
@@ -410,3 +513,168 @@ def profil_alumni(request):
         for admin_user in User.objects.filter(is_staff=True):
             Notification.objects.create(destinataire=admin_user, message=f"{nom} (alumni) a mis à jour son profil.")
     return render(request, "blog/profil_alumni.html", {"profile": profile, "user": request.user, "success": success})
+
+@login_required
+def offre_create(request):
+    from .models import Offre
+    success = False
+    if request.method == "POST":
+        titre = request.POST.get("titre", "").strip()
+        entreprise = request.POST.get("entreprise", "").strip()
+        ville = request.POST.get("ville", "Djibouti").strip()
+        description = request.POST.get("description", "").strip()
+        type_offre = request.POST.get("type_offre", "stage")
+        niveau_requis = request.POST.get("niveau_requis", "tout")
+        date_limite = request.POST.get("date_limite") or None
+        if titre and entreprise and description:
+            offre = Offre.objects.create(
+                auteur=request.user,
+                titre=titre,
+                entreprise=entreprise,
+                ville=ville,
+                description=description,
+                type_offre=type_offre,
+                niveau_requis=niveau_requis,
+                date_limite=date_limite,
+            )
+            etudiants = User.objects.filter(profile__role='etudiant', profile__compte_active=True)
+            for etudiant in etudiants:
+                Notification.objects.create(
+                    destinataire=etudiant,
+                    message=f"Nouvelle offre de {request.user.get_full_name() or request.user.username} : {titre} chez {entreprise}"
+                )
+            success = True
+    return render(request, "blog/offre_create.html", {"success": success})
+
+@login_required
+def mes_offres(request):
+    from .models import Offre
+    offres = Offre.objects.filter(auteur=request.user).order_by("-date_creation")
+    return render(request, "blog/mes_offres.html", {"offres": offres})
+
+@login_required
+def mes_posts(request):
+    posts = Post.objects.filter(auteur=request.user).order_by("-date_creation")
+    return render(request, "blog/mes_posts.html", {"posts": posts})
+
+@login_required
+def favoris(request):
+    from .models import FavoriOffre
+    mes_favoris_posts = Favori.objects.filter(user=request.user).select_related('post__auteur__profile').order_by('-id')
+    mes_favoris_offres = FavoriOffre.objects.filter(user=request.user).select_related('offre__auteur__profile').order_by('-id')
+    nb_notifications = Notification.objects.filter(destinataire=request.user, lue=False).count()
+    return render(request, "blog/favoris.html", {
+        "mes_favoris_posts": mes_favoris_posts,
+        "mes_favoris_offres": mes_favoris_offres,
+        "nb_notifications": nb_notifications,
+    })
+
+@login_required
+def offre_like(request, offre_id):
+    from .models import Offre, LikeOffre
+    offre = get_object_or_404(Offre, pk=offre_id)
+    like, created = LikeOffre.objects.get_or_create(offre=offre, user=request.user)
+    if not created:
+        like.delete()
+        liked = False
+    else:
+        liked = True
+        if offre.auteur != request.user:
+            Notification.objects.create(
+                destinataire=offre.auteur,
+                message=f"{request.user.get_full_name() or request.user.username} a aimé votre offre : {offre.titre}"
+            )
+            Notification.objects.create(
+                destinataire=request.user,
+                message=f"Vous avez aimé l'offre de {offre.auteur.get_full_name() or offre.auteur.username} : {offre.titre}"
+            )
+    return JsonResponse({'liked': liked, 'total': offre.likes.count()})
+
+@login_required
+def offre_favori(request, offre_id):
+    from .models import Offre, FavoriOffre
+    offre = get_object_or_404(Offre, pk=offre_id)
+    favori, created = FavoriOffre.objects.get_or_create(offre=offre, user=request.user)
+    if not created:
+        favori.delete()
+        en_favori = False
+    else:
+        en_favori = True
+        Notification.objects.create(
+            destinataire=request.user,
+            message=f"Vous avez ajouté aux favoris l'offre : {offre.titre}"
+        )
+    return JsonResponse({'favoris': en_favori, 'total': offre.favoris.count()})
+
+@login_required
+def offre_stats(request, offre_id):
+    from .models import Offre
+    offre = get_object_or_404(Offre, pk=offre_id)
+    likers = offre.likes.select_related('user').order_by('-id')[:3]
+    return JsonResponse({
+        'nb_likes': offre.likes.count(),
+        'nb_favoris': offre.favoris.count(),
+        'likers': [l.user.get_full_name() or l.user.username for l in likers],
+    })
+
+@login_required
+def fil_alumni(request):
+    from .models import Offre
+    try:
+        profile = request.user.profile
+    except Profile.DoesNotExist:
+        profile = None
+
+    posts = Post.objects.filter(status=1).order_by("-date_creation")
+    offres_qs = Offre.objects.all().order_by("-date_creation")
+
+    posts_data = []
+    for post in posts:
+        posts_data.append({
+            'type': 'post',
+            'obj': post,
+            'auteur': post.auteur,
+            'date': post.date_creation,
+            'liked': post.likes.filter(user=request.user).exists(),
+            'en_favori': post.favoris.filter(user=request.user).exists(),
+            'nb_likes': post.likes.count(),
+            'nb_favoris': post.favoris.count(),
+            'nb_comments': post.comments.filter(actif=True).count(),
+            'comments': post.comments.filter(actif=True),
+        })
+
+    offres_data = []
+    for offre in offres_qs:
+        offres_data.append({
+            'type': 'offre',
+            'obj': offre,
+            'auteur': offre.auteur,
+            'date': offre.date_creation,
+        })
+
+    feed = sorted(posts_data + offres_data, key=lambda x: x['date'], reverse=True)
+    nb_notifications = Notification.objects.filter(destinataire=request.user, lue=False).count()
+
+    return render(request, "blog/fil_alumni.html", {
+        "user": request.user,
+        "profile": profile,
+        "feed": feed,
+        "nb_notifications": nb_notifications,
+        "nom_affiche": request.user.get_full_name() or request.user.username,
+    })
+
+@login_required
+def dashboard_alumni(request):
+    try:
+        profile = request.user.profile
+    except Profile.DoesNotExist:
+        profile = None
+
+    nb_notifications = Notification.objects.filter(destinataire=request.user, lue=False).count()
+
+    return render(request, "blog/dashboard_alumni.html", {
+        "user": request.user,
+        "profile": profile,
+        "nom_affiche": request.user.get_full_name() or request.user.username,
+        "nb_notifications": nb_notifications,  # ✅ ajouté
+    })

@@ -1,14 +1,319 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-<title>Publier Post</title>
+    <meta charset="UTF-8">
+    <title>Mes Favoris – Réseau Alumni</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --green:#00e676; --teal:#00bcd4; --dark:#060f0a;
+            --pink:#f72585; --purple:#7209b7; --blue:#3a0ca3; --cyan:#4cc9f0;
+            --surface:rgba(255,255,255,0.04); --border:rgba(255,255,255,0.07);
+        }
+        * { box-sizing:border-box; margin:0; padding:0; }
+        body { font-family:'DM Sans',sans-serif; background:var(--dark); color:#fff; min-height:100vh; display:flex; }
+        body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; height:200%;
+            background:
+                radial-gradient(ellipse 600px 400px at 20% 30%,rgba(247,37,133,0.06) 0%,transparent 70%),
+                radial-gradient(ellipse 500px 500px at 80% 70%,rgba(76,201,240,0.05) 0%,transparent 70%);
+            pointer-events:none; z-index:0; }
+
+        /* Sidebar */
+        .sidebar { width:220px; background:rgba(6,15,10,0.95); border-right:1px solid rgba(0,230,118,0.1); padding:28px 14px; display:flex; flex-direction:column; position:relative; z-index:10; flex-shrink:0; }
+        .sidebar-logo { display:flex; align-items:center; gap:10px; margin-bottom:6px; padding:0 6px; }
+        .logo-dot { width:28px; height:28px; border-radius:8px; background:linear-gradient(135deg,var(--pink),var(--purple),var(--cyan)); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:#fff; font-family:'Syne',sans-serif; }
+        .logo-text { font-family:'Syne',sans-serif; font-size:0.88rem; font-weight:700; background:linear-gradient(90deg,var(--pink),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .sidebar-role { font-size:0.68rem; color:rgba(255,255,255,0.25); text-transform:uppercase; letter-spacing:1px; padding:0 6px; margin-bottom:28px; }
+        .sidebar-nav { list-style:none; flex:1; }
+        .sidebar-nav li { margin-bottom:2px; }
+        .sidebar-nav a { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:10px; color:rgba(255,255,255,0.45); text-decoration:none; font-size:0.85rem; font-weight:500; transition:all 0.2s; }
+        .sidebar-nav a i { width:16px; text-align:center; font-size:0.8rem; }
+        .sidebar-nav a:hover { color:rgba(255,255,255,0.8); background:rgba(255,255,255,0.05); }
+        .sidebar-nav a.active { color:#fff; background:linear-gradient(90deg,rgba(247,37,133,0.3),rgba(114,9,183,0.2)); border-left:2px solid var(--pink); font-weight:600; }
+        .sidebar-divider { height:1px; background:rgba(255,255,255,0.06); margin:14px 0; }
+        .sidebar-nav a.logout { color:rgba(255,100,100,0.6); }
+        .sidebar-nav a.logout:hover { color:#ff6b6b; background:rgba(255,100,100,0.08); }
+
+        /* Main */
+        .main { flex:1; display:flex; flex-direction:column; overflow:hidden; position:relative; z-index:1; }
+        .topbar { display:flex; justify-content:space-between; align-items:center; padding:14px 28px; background:rgba(6,15,10,0.8); border-bottom:1px solid rgba(247,37,133,0.1); backdrop-filter:blur(12px); }
+        .topbar-title { font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:600; color:rgba(255,255,255,0.7); }
+        .topbar-title strong { background:linear-gradient(90deg,var(--pink),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .topbar-right { display:flex; align-items:center; gap:14px; }
+        .notif-btn { position:relative; color:rgba(255,255,255,0.5); text-decoration:none; font-size:1rem; transition:color 0.2s; }
+        .notif-btn:hover { color:var(--pink); }
+        .badge-count { position:absolute; top:-6px; right:-7px; background:var(--pink); color:white; font-size:0.6rem; font-weight:700; min-width:15px; height:15px; border-radius:8px; display:flex; align-items:center; justify-content:center; border:2px solid var(--dark); }
+        .user-chip { display:flex; align-items:center; gap:9px; }
+        .user-avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--pink),var(--purple)); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:13px; border:1.5px solid rgba(247,37,133,0.4); overflow:hidden; }
+        .user-avatar img { width:100%; height:100%; object-fit:cover; }
+        .user-chip span { font-size:0.85rem; color:rgba(255,255,255,0.7); font-weight:500; }
+
+        .content { flex:1; overflow-y:auto; padding:28px; }
+        .content::-webkit-scrollbar { width:4px; }
+        .content::-webkit-scrollbar-thumb { background:rgba(247,37,133,0.2); border-radius:2px; }
+
+        .page-heading { margin-bottom:24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+        .page-heading h1 { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; background:linear-gradient(90deg,#fff,rgba(255,255,255,0.7)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .count-badge { background:rgba(247,37,133,0.12); border:1px solid rgba(247,37,133,0.25); color:var(--pink); border-radius:999px; padding:4px 14px; font-size:0.78rem; font-weight:700; }
+
+        .feed { display:flex; flex-direction:column; gap:20px; max-width:620px; margin:0 auto; }
+        .section-title { font-family:'Syne',sans-serif; font-size:0.85rem; font-weight:700; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:1px; margin:8px 0 4px; padding-left:4px; }
+
+        /* ══ CARTE POST favori — style Instagram blanc ══ */
+        .post-card { border-radius:20px; overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,0.3); transition:transform 0.2s,box-shadow 0.2s; }
+        .post-card:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(0,0,0,0.4); }
+        .post-card-top { height:5px; background:linear-gradient(90deg,var(--pink),var(--purple),var(--cyan)); }
+        .post-card-inner { background:#fff; }
+        .post-card-bottom { height:5px; background:linear-gradient(90deg,var(--cyan),var(--purple),var(--pink)); }
+
+        /* ══ CARTE OFFRE favori — style Instagram blanc ══ */
+        .offre-card { border-radius:20px; overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,0.3); transition:transform 0.2s,box-shadow 0.2s; }
+        .offre-card:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(0,0,0,0.4); }
+        .offre-card-top { height:5px; background:linear-gradient(90deg,var(--blue),var(--cyan),var(--green)); }
+        .offre-card-inner { background:#fff; }
+        .offre-card-bottom { height:5px; background:linear-gradient(90deg,var(--green),var(--cyan),var(--blue)); }
+
+        /* Header cartes */
+        .post-header { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; }
+        .post-author { display:flex; align-items:center; gap:10px; }
+        .post-author-avatar { width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg,var(--pink),var(--purple)); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:15px; font-family:'Syne',sans-serif; flex-shrink:0; overflow:hidden; }
+        .post-author-avatar img { width:100%; height:100%; object-fit:cover; }
+        .post-author-name { font-weight:700; font-size:0.9rem; color:#111; font-family:'Syne',sans-serif; }
+        .post-author-role { font-size:0.68rem; color:var(--purple); font-weight:600; }
+        .post-date { font-size:0.7rem; color:#999; }
+
+        .offre-tag { display:inline-flex; align-items:center; gap:5px; background:rgba(58,12,163,0.1); border:1px solid rgba(58,12,163,0.25); color:var(--blue); border-radius:999px; padding:3px 10px; font-size:0.68rem; font-weight:700; text-transform:uppercase; }
+        .offre-meta { font-size:0.78rem; color:#666; display:flex; gap:12px; flex-wrap:wrap; margin-top:5px; }
+        .offre-meta span { display:flex; align-items:center; gap:4px; }
+        .offre-meta i { color:var(--blue); font-size:0.7rem; }
+
+        .post-photo { width:100%; max-height:360px; object-fit:cover; display:block; }
+        .post-body { padding:12px 16px 10px; }
+        .post-titre { font-size:0.95rem; font-weight:800; color:#111; margin-bottom:6px; font-family:'Syne',sans-serif; }
+        .post-contenu { font-size:0.85rem; color:#444; line-height:1.7; }
+
+        /* Actions */
+        .post-actions { display:flex; align-items:center; justify-content:space-between; gap:4px; padding:10px 14px; border-top:1px solid #f0f0f0; }
+        .actions-left { display:flex; align-items:center; gap:4px; }
+        .btn-post-action { background:none; border:none; color:#aaa; cursor:pointer; font-size:0.82rem; display:flex; align-items:center; gap:5px; padding:6px 10px; border-radius:8px; transition:all 0.2s; }
+        .btn-post-action.liked { color:#f72585; }
+
+        /* Bouton retirer */
+        .btn-retirer { background:rgba(247,37,133,0.08); border:1px solid rgba(247,37,133,0.2); color:var(--pink); border-radius:999px; padding:5px 12px; font-size:0.72rem; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:5px; transition:all 0.2s; }
+        .btn-retirer:hover { background:rgba(255,77,109,0.15); border-color:rgba(255,77,109,0.3); color:#ff4d6d; }
+
+        .empty-state { text-align:center; padding:80px 20px; color:rgba(255,255,255,0.2); }
+        .empty-state i { font-size:52px; margin-bottom:16px; display:block; color:rgba(247,37,133,0.15); }
+        .empty-state p { font-size:0.9rem; line-height:1.6; }
+        .empty-state a { color:var(--pink); text-decoration:none; font-weight:600; display:inline-block; margin-top:14px; }
+
+        .toast { position:fixed; bottom:28px; right:28px; background:rgba(255,77,109,0.15); border:1px solid rgba(255,77,109,0.3); border-radius:12px; padding:12px 20px; color:#ff4d6d; font-size:0.85rem; font-weight:600; display:none; align-items:center; gap:8px; z-index:2000; }
+        .toast.show { display:flex; animation:fadeIn 0.3s ease; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+        @media (max-width:768px) { body{flex-direction:column} .sidebar{width:100%} }
+    </style>
 </head>
 <body>
 
-<h2>Page Favoris</h2>
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-dot">R</div>
+        <div class="logo-text">Réseau Alumni</div>
+    </div>
+    <div class="sidebar-role">Espace Étudiant</div>
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'dashboard_etudiant' %}"><i class="fas fa-th-large"></i> Dashboard</a></li>
+        <li><a href="{% url 'offres' %}"><i class="fas fa-briefcase"></i> Offres</a></li>
+        <li><a href="{% url 'posts_etudiant' %}"><i class="fas fa-newspaper"></i> Posts</a></li>
+        <li><a href="{% url 'favoris' %}" class="active"><i class="fas fa-star"></i> Favoris</a></li>
+        <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> Notifications</a></li>
+        <li><a href="{% url 'chat_page' %}"><i class="fas fa-comment-dots"></i> Chat</a></li>
+        <li><a href="{% url 'profil_etudiant' %}"><i class="fas fa-user"></i> Profil</a></li>
+    </ul>
+    <div class="sidebar-divider"></div>
+    <ul class="sidebar-nav">
+        <li><a href="/logout/" class="logout"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+    </ul>
+</aside>
 
+<div class="main">
+    <header class="topbar">
+        <div class="topbar-title">⭐ Mes <strong>Favoris</strong></div>
+        <div class="topbar-right">
+            <a href="{% url 'notifications' %}" class="notif-btn">
+                <i class="fas fa-bell"></i>
+                {% if nb_notifications > 0 %}<span class="badge-count">{{ nb_notifications }}</span>{% endif %}
+            </a>
+            <div class="user-chip">
+                <div class="user-avatar">
+                    {% if user.is_authenticated and user.profile.photo %}
+                        <img src="{{ user.profile.photo.url }}">
+                    {% else %}
+                        {{ user.get_full_name|default:user.username|first|upper }}
+                    {% endif %}
+                </div>
+                <span>{{ user.get_full_name|default:user.username }}</span>
+            </div>
+        </div>
+    </header>
 
-<a href="{% url 'dashboard' %}">⬅ Retour Dashboard</a>
+    <div class="content">
+        {% with total=mes_favoris_posts|length|add:mes_favoris_offres|length %}
+        <div class="page-heading">
+            <h1>⭐ Mes Favoris</h1>
+            <span class="count-badge">{{ total }} favori{{ total|pluralize }}</span>
+        </div>
 
+        <div class="feed">
+            {% if mes_favoris_posts or mes_favoris_offres %}
+
+                <!-- ══ POSTS FAVORIS ══ -->
+                {% if mes_favoris_posts %}
+                <div class="section-title">📰 Posts</div>
+                {% for favori in mes_favoris_posts %}
+                <div class="post-card" id="favori-post-{{ favori.post.id }}">
+                    <div class="post-card-top"></div>
+                    <div class="post-card-inner">
+                        <div class="post-header">
+                            <div class="post-author">
+                                <div class="post-author-avatar">
+                                    {% if favori.post.auteur.profile.photo %}
+                                        <img src="{{ favori.post.auteur.profile.photo.url }}">
+                                    {% else %}
+                                        {{ favori.post.auteur.get_full_name|default:favori.post.auteur.username|first|upper }}
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <div class="post-author-name">{{ favori.post.auteur.get_full_name|default:favori.post.auteur.username }}</div>
+                                    <div class="post-author-role">Alumni · Université de Djibouti</div>
+                                </div>
+                            </div>
+                            <span class="post-date">{{ favori.post.date_creation|date:"d/m/Y" }}</span>
+                        </div>
+                        {% if favori.post.photo %}
+                        <img src="{{ favori.post.photo.url }}" class="post-photo" alt="">
+                        {% endif %}
+                        <div class="post-body">
+                            {% if favori.post.titre %}<div class="post-titre">{{ favori.post.titre }}</div>{% endif %}
+                            <div class="post-contenu">{{ favori.post.contenu }}</div>
+                        </div>
+                        <div class="post-actions">
+                            <div class="actions-left">
+                                <button class="btn-post-action liked"><i class="fas fa-heart"></i> <span>{{ favori.post.likes.count }}</span></button>
+                                <button class="btn-post-action"><i class="fas fa-comment-alt"></i> <span>{{ favori.post.comments.count }}</span></button>
+                            </div>
+                            <button class="btn-retirer" onclick="retirerFavoriPost({{ favori.post.id }})">
+                                <i class="fas fa-star"></i> Retirer
+                            </button>
+                        </div>
+                    </div>
+                    <div class="post-card-bottom"></div>
+                </div>
+                {% endfor %}
+                {% endif %}
+
+                <!-- ══ OFFRES FAVORIS ══ -->
+                {% if mes_favoris_offres %}
+                <div class="section-title">💼 Offres</div>
+                {% for favori in mes_favoris_offres %}
+                <div class="offre-card" id="favori-offre-{{ favori.offre.id }}">
+                    <div class="offre-card-top"></div>
+                    <div class="offre-card-inner">
+                        <div class="post-header">
+                            <div class="post-author">
+                                <div class="post-author-avatar">
+                                    {% if favori.offre.auteur.profile.photo %}
+                                        <img src="{{ favori.offre.auteur.profile.photo.url }}">
+                                    {% else %}
+                                        {{ favori.offre.auteur.get_full_name|default:favori.offre.auteur.username|first|upper }}
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <div class="post-author-name">{{ favori.offre.auteur.get_full_name|default:favori.offre.auteur.username }}</div>
+                                    <div class="post-author-role">Alumni · Université de Djibouti</div>
+                                </div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <span class="post-date">{{ favori.offre.date_creation|date:"d/m/Y" }}</span>
+                                <span class="offre-tag"><i class="fas fa-briefcase"></i> {{ favori.offre.get_type_offre_display }}</span>
+                            </div>
+                        </div>
+                        <div class="post-body">
+                            <div class="post-titre">{{ favori.offre.titre }}</div>
+                            <div class="offre-meta">
+                                <span><i class="fas fa-building"></i> {{ favori.offre.entreprise }}</span>
+                                <span><i class="fas fa-map-marker-alt"></i> {{ favori.offre.ville }}</span>
+                                {% if favori.offre.date_limite %}<span><i class="fas fa-calendar-alt"></i> Limite : {{ favori.offre.date_limite|date:"d/m/Y" }}</span>{% endif %}
+                            </div>
+                            <div class="post-contenu" style="margin-top:8px;">{{ favori.offre.description|truncatechars:150 }}</div>
+                        </div>
+                        <div class="post-actions">
+                            <div class="actions-left">
+                                <button class="btn-post-action liked"><i class="fas fa-heart"></i> <span>{{ favori.offre.likes.count }}</span></button>
+                            </div>
+                            <button class="btn-retirer" onclick="retirerFavoriOffre({{ favori.offre.id }})">
+                                <i class="fas fa-star"></i> Retirer
+                            </button>
+                        </div>
+                    </div>
+                    <div class="offre-card-bottom"></div>
+                </div>
+                {% endfor %}
+                {% endif %}
+
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-star"></i>
+                    <p>Tu n'as pas encore de favoris.<br>Ajoute des posts ou offres depuis le dashboard !</p>
+                    <a href="{% url 'dashboard_etudiant' %}">← Retour au Dashboard</a>
+                </div>
+            {% endif %}
+        </div>
+        {% endwith %}
+    </div>
+</div>
+
+<div class="toast" id="toast"><i class="fas fa-star"></i> Retiré des favoris</div>
+
+<script>
+const CSRF = "{{ csrf_token }}";
+
+function showToast() {
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+}
+function retirerFavoriPost(postId) {
+    fetch(`/post/${postId}/favori/`, { method:'POST', headers:{'X-CSRFToken':CSRF} })
+    .then(r => r.json()).then(data => {
+        if (!data.favoris) {
+            const card = document.getElementById(`favori-post-${postId}`);
+            card.style.transition = 'all 0.3s ease';
+            card.style.opacity = '0';
+            card.style.transform = 'translateX(20px)';
+            setTimeout(() => card.remove(), 300);
+            showToast();
+        }
+    });
+}
+function retirerFavoriOffre(offreId) {
+    fetch(`/offre/${offreId}/favori/`, { method:'POST', headers:{'X-CSRFToken':CSRF} })
+    .then(r => r.json()).then(data => {
+        if (!data.favoris) {
+            const card = document.getElementById(`favori-offre-${offreId}`);
+            card.style.transition = 'all 0.3s ease';
+            card.style.opacity = '0';
+            card.style.transform = 'translateX(20px)';
+            setTimeout(() => card.remove(), 300);
+            showToast();
+        }
+    });
+}
+</script>
 </body>
 </html>

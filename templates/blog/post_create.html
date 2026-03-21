@@ -1,14 +1,217 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-<title>Publier Post</title>
+    <meta charset="UTF-8">
+    <title>Publier un post – Réseau Alumni</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --navy: #0a1628; --navy-2: #0d1f3c; --navy-3: #112347; --navy-4: #1a3a6b;
+            --gold: #c9a84c; --gold-light: #e8c97a; --gold-dim: rgba(201,168,76,0.15);
+            --white: #ffffff; --text: rgba(255,255,255,0.90); --text-dim: rgba(255,255,255,0.45);
+            --text-mid: rgba(255,255,255,0.65); --border: rgba(255,255,255,0.07);
+            --border-2: rgba(201,168,76,0.20); --sidebar-w: 260px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; }
+        body { font-family: 'Inter', sans-serif; background: var(--navy); color: var(--text); display: flex; min-height: 100vh; }
+        .sidebar { width: var(--sidebar-w); background: var(--navy-2); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; overflow-y: auto; }
+        .sidebar-logo { padding: 24px 20px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+        .logo-icon { width: 38px; height: 38px; border-radius: 10px; background: linear-gradient(135deg, var(--gold), var(--gold-light)); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; color: var(--navy); flex-shrink: 0; }
+        .logo-text-main { font-size: 0.95rem; font-weight: 700; color: var(--white); }
+        .logo-text-sub { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; }
+        .sidebar-user { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+        .user-av { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--navy-4), var(--gold)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; color: var(--white); border: 2px solid var(--gold-dim); overflow: hidden; flex-shrink: 0; }
+        .user-av img { width: 100%; height: 100%; object-fit: cover; }
+        .user-name { font-size: 0.84rem; font-weight: 600; color: var(--white); }
+        .user-role { font-size: 0.68rem; color: var(--gold); font-weight: 500; }
+        .nav-section-label { padding: 16px 20px 6px; font-size: 0.62rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px; }
+        .sidebar-nav { list-style: none; padding: 0 10px; }
+        .sidebar-nav li { margin-bottom: 2px; }
+        .sidebar-nav a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; color: var(--text-dim); text-decoration: none; font-size: 0.84rem; font-weight: 500; transition: all 0.18s; }
+        .sidebar-nav a i { width: 16px; text-align: center; font-size: 0.8rem; }
+        .sidebar-nav a:hover { color: var(--white); background: rgba(255,255,255,0.05); }
+        .sidebar-nav a.active { color: var(--gold-light); background: var(--gold-dim); border: 1px solid var(--border-2); font-weight: 600; }
+        .sidebar-divider { height: 1px; background: var(--border); margin: 12px 10px; }
+        .sidebar-nav a.logout { color: rgba(255,100,100,0.5); }
+        .sidebar-nav a.logout:hover { color: #ff6b6b; background: rgba(255,100,100,0.06); }
+        .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+        .topbar { position: sticky; top: 0; z-index: 50; height: 60px; background: rgba(10,22,40,0.92); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
+        .topbar-title { font-size: 0.95rem; font-weight: 600; color: var(--text); }
+        .topbar-right { display: flex; align-items: center; gap: 16px; }
+        .topbar-chip { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 999px; padding: 5px 14px 5px 6px; }
+        .topbar-av { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, var(--navy-4), var(--gold)); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: var(--white); overflow: hidden; }
+        .topbar-av img { width: 100%; height: 100%; object-fit: cover; }
+        .topbar-chip span { font-size: 0.8rem; color: var(--text-mid); font-weight: 500; }
+        .content { padding: 32px; flex: 1; max-width: 700px; }
+        .page-header { margin-bottom: 28px; }
+        .page-eyebrow { font-size: 0.7rem; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
+        .page-header h1 { font-size: 1.5rem; font-weight: 800; color: var(--white); margin-bottom: 5px; }
+        .page-header p { font-size: 0.85rem; color: var(--text-dim); }
+        .author-bar { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--navy-2); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; }
+        .author-av { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--navy-4), var(--gold)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: var(--white); flex-shrink: 0; overflow: hidden; border: 2px solid var(--gold-dim); }
+        .author-av img { width: 100%; height: 100%; object-fit: cover; }
+        .author-name { font-size: 0.88rem; font-weight: 600; color: var(--white); }
+        .author-role { font-size: 0.68rem; color: var(--gold); }
+        .info-note { display: flex; align-items: flex-start; gap: 10px; padding: 12px 16px; background: rgba(201,168,76,0.06); border: 1px solid var(--border-2); border-radius: 8px; margin-bottom: 24px; }
+        .info-note i { color: var(--gold); font-size: 0.82rem; margin-top: 2px; }
+        .info-note p { font-size: 0.78rem; color: var(--text-dim); line-height: 1.6; }
+        .form-group { margin-bottom: 18px; }
+        .form-label { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; font-weight: 600; color: var(--text-mid); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+        .label-opt { font-size: 0.65rem; color: var(--text-dim); font-weight: 400; text-transform: none; letter-spacing: 0; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; }
+        input[type="text"], textarea { width: 100%; background: var(--navy-2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; color: var(--white); font-size: 0.9rem; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.15s; resize: vertical; }
+        input[type="text"]:focus, textarea:focus { border-color: var(--border-2); background: var(--navy-3); }
+        input::placeholder, textarea::placeholder { color: var(--text-dim); }
+        .photo-zone { border: 1px dashed rgba(255,255,255,0.12); border-radius: 10px; padding: 28px 20px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--navy-2); }
+        .photo-zone:hover { border-color: var(--gold); background: var(--navy-3); }
+        .photo-zone input { display: none; }
+        .photo-zone-icon { font-size: 2rem; margin-bottom: 8px; display: block; }
+        .photo-zone-title { font-size: 0.88rem; font-weight: 600; color: var(--text-mid); margin-bottom: 4px; }
+        .photo-zone-sub { font-size: 0.72rem; color: var(--text-dim); }
+        .photo-preview { display: none; margin-top: 12px; position: relative; }
+        .photo-preview img { width: 100%; border-radius: 8px; max-height: 300px; object-fit: cover; border: 1px solid var(--border); }
+        .photo-remove { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.75); border: 1px solid var(--border); color: var(--white); border-radius: 6px; padding: 5px 10px; font-size: 0.72rem; cursor: pointer; transition: all 0.2s; }
+        .photo-remove:hover { background: rgba(220,50,50,0.8); }
+        .divider { height: 1px; background: var(--border); margin: 24px 0; }
+        .form-actions { display: flex; justify-content: space-between; align-items: center; }
+        .btn-cancel { color: var(--text-dim); text-decoration: none; font-size: 0.85rem; padding: 10px 20px; border-radius: 8px; border: 1px solid var(--border); transition: all 0.15s; }
+        .btn-cancel:hover { color: var(--white); border-color: var(--border-2); }
+        .btn-publish { display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: var(--navy); border: none; border-radius: 8px; padding: 11px 24px; font-size: 0.88rem; font-weight: 700; font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.2s; }
+        .btn-publish:hover { opacity: 0.9; transform: translateY(-1px); }
+        @media (max-width: 1024px) { .sidebar { position: relative; width: 100%; height: auto; } .main { margin-left: 0; } }
+    </style>
 </head>
 <body>
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-icon">RA</div>
+        <div>
+            <div class="logo-text-main">Réseau Alumni</div>
+            <div class="logo-text-sub">Université de Djibouti</div>
+        </div>
+    </div>
+    <div class="sidebar-user">
+        <div class="user-av">
+            {% if request.user.profile.photo %}<img src="{{ request.user.profile.photo.url }}">
+            {% else %}{{ request.user.get_full_name|default:request.user.username|first|upper }}{% endif %}
+        </div>
+        <div>
+            <div class="user-name">{{ request.user.get_full_name|default:request.user.username }}</div>
+            <div class="user-role">Alumni</div>
+        </div>
+    </div>
+    <div class="nav-section-label">Menu</div>
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'dashboard_alumni' %}"><i class="fas fa-th-large"></i> Dashboard</a></li>
+        <li><a href="{% url 'post_create' %}" class="active"><i class="fas fa-pen"></i> Publier un post</a></li>
+        <li><a href="{% url 'offre_create' %}"><i class="fas fa-briefcase"></i> Publier une offre</a></li>
+        <li><a href="{% url 'fil_alumni' %}"><i class="fas fa-fire"></i> Le Fil</a></li>
+        <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> Notifications</a></li>
+        <li><a href="{% url 'chat_page' %}"><i class="fas fa-comment-dots"></i> Chat</a></li>
+        <li><a href="{% url 'profil_alumni' %}"><i class="fas fa-user-circle"></i> Profil</a></li>
+    </ul>
+    <div class="sidebar-divider"></div>
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'logout' %}" class="logout"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+    </ul>
+</aside>
 
-<h2>Creer une nouvelle publication</h2>
+<div class="main">
+    <header class="topbar">
+        <div class="topbar-title">Publier un post</div>
+        <div class="topbar-right">
+            <div class="topbar-chip">
+                <div class="topbar-av">
+                    {% if request.user.profile.photo %}<img src="{{ request.user.profile.photo.url }}">
+                    {% else %}{{ request.user.get_full_name|default:request.user.username|first|upper }}{% endif %}
+                </div>
+                <span>{{ request.user.get_full_name|default:request.user.username }}</span>
+            </div>
+        </div>
+    </header>
 
+    <div class="content">
+        <div class="page-header">
+            <div class="page-eyebrow">Nouveau post</div>
+            <h1>Publier un post</h1>
+            <p>Partagez vos expériences et conseils avec la communauté.</p>
+        </div>
 
-<a href="{% url 'dashboard' %}">⬅ Retour Dashboard</a>
+        <div class="author-bar">
+            <div class="author-av">
+                {% if request.user.profile.photo %}<img src="{{ request.user.profile.photo.url }}">
+                {% else %}{{ request.user.get_full_name|default:request.user.username|first|upper }}{% endif %}
+            </div>
+            <div>
+                <div class="author-name">{{ request.user.get_full_name|default:request.user.username }}</div>
+                <div class="author-role">Alumni · Université de Djibouti</div>
+            </div>
+        </div>
 
+        <div class="info-note">
+            <i class="fas fa-info-circle"></i>
+            <p>Votre post sera soumis à validation avant d'être visible par les membres du réseau.</p>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <div class="form-label">Titre <span class="label-opt">optionnel</span></div>
+                <input type="text" name="titre" placeholder="Donnez un titre à votre post…">
+            </div>
+
+            <div class="form-group">
+                <div class="form-label">Message <span class="label-opt">requis</span></div>
+                <textarea name="contenu" rows="7" placeholder="Partagez votre expérience, conseil ou actualité…" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <div class="form-label">Photo <span class="label-opt">optionnel</span></div>
+                <div class="photo-zone" onclick="document.getElementById('photo-input').click()">
+                    <input type="file" id="photo-input" name="photo" accept="image/*" onchange="previewPhoto(this)">
+                    <span class="photo-zone-icon">🖼️</span>
+                    <div class="photo-zone-title">Cliquez pour ajouter une photo</div>
+                    <div class="photo-zone-sub">JPG · PNG · WEBP — max 5MB</div>
+                </div>
+                <div class="photo-preview" id="photo-preview">
+                    <img id="preview-img" src="" alt="Preview">
+                    <button type="button" class="photo-remove" onclick="removePhoto()">✕ Supprimer</button>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="form-actions">
+                <a href="{% url 'dashboard_alumni' %}" class="btn-cancel">← Annuler</a>
+                <button type="submit" class="btn-publish">
+                    <i class="fas fa-paper-plane"></i> Publier
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function previewPhoto(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            document.getElementById('preview-img').src = e.target.result;
+            document.getElementById('photo-preview').style.display = 'block';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+function removePhoto() {
+    document.getElementById('photo-input').value = '';
+    document.getElementById('preview-img').src = '';
+    document.getElementById('photo-preview').style.display = 'none';
+}
+</script>
 </body>
 </html>

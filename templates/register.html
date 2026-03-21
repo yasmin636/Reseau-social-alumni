@@ -1,151 +1,490 @@
+{% load static %}
+
 <!DOCTYPE html>
+
 <html lang="fr">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Inscription - Réseau Alumni</title>
+  <title>Inscription — Réseau Alumni · Université de Djibouti</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@600;700&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet"/>
   <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-      font-family:'Segoe UI',sans-serif;
-      background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-      min-height:100vh;
-      display:flex; align-items:center; justify-content:center;
-      padding:24px;
-    }
-    .card {
-      background:rgba(255,255,255,0.06);
-      backdrop-filter:blur(16px);
-      border:1px solid rgba(255,255,255,0.1);
-      border-radius:20px;
-      padding:44px 40px;
-      width:100%; max-width:520px;
-      box-shadow:0 30px 60px rgba(0,0,0,0.4);
-    }
-    .logo { text-align:center; font-size:48px; margin-bottom:8px; }
-    h1 { color:#fff; text-align:center; font-size:22px; font-weight:700; margin-bottom:6px; }
-    .subtitle { color:rgba(255,255,255,0.4); text-align:center; font-size:13px; margin-bottom:28px; }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
-    /* TABS */
-    .tabs {
-      display:flex; background:rgba(255,255,255,0.06);
-      border-radius:12px; padding:4px; margin-bottom:28px; gap:4px;
-    }
-    .tab {
-      flex:1; text-align:center; padding:11px;
-      border-radius:9px; font-size:13px; font-weight:600;
-      cursor:pointer; color:rgba(255,255,255,0.4);
-      transition:all 0.25s; user-select:none;
-    }
-    .tab-etudiant-active {
-      background:linear-gradient(135deg,#1a73e8,#0d47a1);
-      color:white; box-shadow:0 4px 12px rgba(26,115,232,0.35);
-    }
-    .tab-alumni-active {
-      background:linear-gradient(135deg,#34a853,#1b5e20);
-      color:white; box-shadow:0 4px 12px rgba(52,168,83,0.35);
-    }
+```
+:root {
+  --blue-deep:    #2a4e86;
+  --blue-mid:     #1a3a6b;
+  --blue-bright:  #1a73e8;
+  --blue-glow:    #4d9fff;
+  --red:          #c0392b;
+  --red-bright:   #e74c3c;
+  --green:        #2ecc71;
+  --gold:         #c9a84c;
+  --white:        #ffffff;
+  --glass-bg:     rgba(8, 18, 40, 0.78);
+  --glass-border: rgba(255,255,255,0.10);
+  --muted:        rgba(255,255,255,0.40);
+}
 
-    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:0 16px; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  background: var(--blue-deep);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-x: hidden;
+}
 
-    .section-label {
-      color:rgba(255,255,255,0.4); font-size:11px;
-      text-transform:uppercase; letter-spacing:1px;
-      margin:8px 0 14px;
-    }
+/* ── BACKGROUND ── */
+.bg {
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 50%, rgba(26,58,107,0.55) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 80% at 80% 30%, rgba(192,57,43,0.18) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 50% at 50% 100%, rgba(26,115,232,0.12) 0%, transparent 60%),
+    linear-gradient(160deg, #080e1f 0%, #0d1e3a 40%, #0a1628 100%);
+}
 
-    label {
-      display:block; color:rgba(255,255,255,0.65);
-      font-size:12px; font-weight:600;
-      text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;
-    }
-    input[type="text"],
-    input[type="email"],
-    input[type="password"] {
-      width:100%; background:rgba(255,255,255,0.07);
-      border:1px solid rgba(255,255,255,0.13);
-      border-radius:10px; padding:12px 14px;
-      color:#fff; font-size:14px; margin-bottom:16px;
-      outline:none; transition:border-color 0.2s;
-    }
-    input:focus { border-color:#43e97b; }
-    input::placeholder { color:rgba(255,255,255,0.25); }
+/* Subtle grid pattern */
+.bg-grid {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+}
 
-    /* Checkbox en poste */
-    .checkbox-row {
-      display:flex; align-items:center; gap:12px;
-      margin-bottom:16px;
-      background:rgba(255,255,255,0.05);
-      border:1px solid rgba(255,255,255,0.1);
-      border-radius:10px; padding:13px 16px;
-      cursor:pointer;
-    }
-    .checkbox-row input[type="checkbox"] {
-      width:18px; height:18px;
-      accent-color:#34a853; cursor:pointer;
-      margin-bottom:0;
-    }
-    .checkbox-row span {
-      color:rgba(255,255,255,0.75); font-size:14px;
-    }
+/* Floating orbs */
+.orb {
+  position: fixed; border-radius: 50%; pointer-events: none; z-index: 1;
+  filter: blur(80px);
+  animation: drift 12s ease-in-out infinite alternate;
+}
+.orb-1 { width:380px; height:380px; background:rgba(26,115,232,0.12); top:-100px; right:-80px; }
+.orb-2 { width:280px; height:280px; background:rgba(192,57,43,0.10); bottom:80px; left:-60px; animation-delay:-4s; }
+.orb-3 { width:220px; height:220px; background:rgba(46,204,113,0.07); top:40%; right:15%; animation-delay:-8s; }
+@keyframes drift {
+  from { transform: translate(0,0) scale(1); }
+  to   { transform: translate(20px, -30px) scale(1.08); }
+}
 
-    hr { border:none; border-top:1px solid rgba(255,255,255,0.08); margin:16px 0; }
+/* ── TOP BAR ── */
+.topbar {
+  position: relative; z-index: 20;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 40px;
+  background: rgba(8,14,31,0.70);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  animation: slideDown 0.5s ease both;
+}
+@keyframes slideDown { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:none} }
 
-    .btn {
-      width:100%; border:none; border-radius:10px;
-      padding:14px; font-size:15px; font-weight:700;
-      cursor:pointer; transition:opacity 0.2s, transform 0.1s; margin-top:6px;
-    }
-    .btn:hover { opacity:0.9; transform:translateY(-1px); }
-    .btn-blue { background:linear-gradient(135deg,#1a73e8,#0d47a1); color:white; }
-    .btn-green { background:linear-gradient(135deg,#34a853,#1b5e20); color:white; }
+.topbar-brand { display:flex; align-items:center; gap:14px; }
 
-    .error-field {
-      color:#ff6b6b; font-size:12px; margin-top:-12px; margin-bottom:12px;
-    }
-    .error-global {
-      background:rgba(229,57,53,0.15); border:1px solid rgba(229,57,53,0.4);
-      color:#ff6b6b; border-radius:10px;
-      padding:12px 16px; font-size:13px; margin-bottom:20px;
-    }
+/* ── CUSTOM DJIBOUTI ALUMNI LOGO SVG ── */
+.logo-svg-wrap {
+  display: flex; align-items: center; gap: 13px;
+}
+.dj-logo {
+  display: flex; align-items: center; gap: 0;
+  position: relative;
+}
+/* Two diamonds like France Alumni but in Djibouti colors */
+.dj-logo svg { width: 46px; height: 36px; }
 
-    .link { text-align:center; color:rgba(255,255,255,0.4); font-size:13px; margin-top:20px; }
-    .link a { color:#43e97b; text-decoration:none; font-weight:600; }
+.brand-text-wrap { line-height: 1.1; }
+.brand-top {
+  font-family: 'Barlow Condensed', sans-serif;
+  color: var(--white);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.brand-bottom {
+  font-family: 'Barlow Condensed', sans-serif;
+  background: linear-gradient(90deg, #1a73e8, #4d9fff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: -2px;
+  display: block;
+}
 
-    /* ======= PAGE SUCCÈS ======= */
-    .success-box { text-align:center; padding:10px 0; }
-    .success-icon { font-size:70px; margin-bottom:16px; }
-    .success-title { color:#43e97b; font-size:24px; font-weight:700; margin-bottom:14px; }
-    .success-msg {
-      color:rgba(255,255,255,0.75); font-size:14px;
-      line-height:1.8; margin-bottom:22px;
-    }
-    .pending-badge {
-      display:inline-block;
-      background:rgba(255,193,7,0.15);
-      border:1px solid rgba(255,193,7,0.4);
-      color:#ffc107; padding:10px 24px;
-      border-radius:20px; font-size:14px; font-weight:600; margin-bottom:26px;
-    }
-    .btn-back {
-      display:inline-block;
-      background:rgba(255,255,255,0.1);
-      color:#fff; padding:12px 28px;
-      border-radius:10px; text-decoration:none;
-      font-size:14px; font-weight:500;
-      border:1px solid rgba(255,255,255,0.2);
-      transition:background 0.2s;
-    }
-    .btn-back:hover { background:rgba(255,255,255,0.18); }
+.topbar-nav { display:flex; align-items:center; gap:24px; }
+.topbar-nav a {
+  color: rgba(255,255,255,0.38);
+  font-size: 12px; font-weight:500;
+  text-decoration:none; letter-spacing:0.5px; text-transform:uppercase;
+  transition: color 0.2s;
+}
+.topbar-nav a:hover { color: var(--blue-glow); }
+.topbar-badge {
+  background: rgba(26,115,232,0.14);
+  border: 1px solid rgba(26,115,232,0.28);
+  border-radius: 20px; padding: 5px 13px;
+  color: var(--blue-glow); font-size: 11px; font-weight:600; letter-spacing:0.5px;
+}
 
-    .hidden { display:none; }
+/* ── PAGE BODY ── */
+.page-body {
+  flex: 1; position:relative; z-index:5;
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 36px 24px 40px;
+  gap: 48px;
+}
+
+/* ── LEFT PANEL ── */
+.side-panel {
+  flex: 0 0 300px;
+  padding-top: 8px;
+  display: none;
+  animation: fadeLeft 0.7s ease 0.2s both;
+}
+@media (min-width: 1000px) { .side-panel { display:block; } }
+@keyframes fadeLeft { from{opacity:0;transform:translateX(-24px)} to{opacity:1;transform:none} }
+
+/* Big logo on side */
+.side-logo-big {
+  margin-bottom: 28px;
+  padding: 24px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 18px;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+}
+.side-logo-big svg { width: 90px; height: 70px; }
+.side-logo-big .brand-top { font-size: 22px; text-align:center; }
+.side-logo-big .brand-bottom { font-size: 30px; text-align:center; }
+
+.side-tag {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: rgba(26,115,232,0.10);
+  border: 1px solid rgba(26,115,232,0.22);
+  border-radius: 20px; padding: 5px 13px;
+  color: var(--blue-glow); font-size: 11px; font-weight:600;
+  letter-spacing:1px; text-transform:uppercase; margin-bottom:16px;
+}
+.side-tag::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--blue-glow); animation:blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.side-heading {
+  font-family: 'Playfair Display', serif;
+  color: var(--white); font-size:28px; line-height:1.25; margin-bottom:12px; font-weight:700;
+}
+.side-heading em { font-style:normal; background:linear-gradient(90deg,#1a73e8,#4d9fff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.side-desc { color:rgba(255,255,255,0.38); font-size:13px; line-height:1.8; margin-bottom:28px; }
+
+.step-list { display:flex; flex-direction:column; gap:14px; }
+.step-item { display:flex; align-items:center; gap:12px; }
+.step-num {
+  width:28px; height:28px; border-radius:8px; flex-shrink:0;
+  background: linear-gradient(135deg, var(--blue-mid), var(--blue-bright));
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; font-weight:700; color:#fff;
+}
+.step-text { color:rgba(255,255,255,0.45); font-size:13px; line-height:1.4; }
+
+/* ── CARD ── */
+.card {
+  position:relative; z-index:2;
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 40px 38px;
+  width:100%; max-width:520px;
+  box-shadow:
+    0 40px 80px rgba(0,0,0,0.55),
+    0 0 0 1px rgba(255,255,255,0.04) inset,
+    0 1px 0 rgba(255,255,255,0.10) inset;
+  animation: fadeUp 0.6s ease 0.1s both;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+
+.card::before {
+  content:''; position:absolute; top:0; left:25%; right:25%; height:1px;
+  background: linear-gradient(90deg, transparent, var(--blue-bright), transparent);
+}
+
+/* ── CARD HEADER ── */
+.card-head { text-align:center; margin-bottom:28px; }
+
+/* Card logo */
+.card-logo-wrap {
+  display: inline-flex; flex-direction:column; align-items:center; gap:8px;
+  margin-bottom: 14px;
+}
+.card-logo-wrap svg { width:60px; height:46px; }
+.card-logo-wrap .brand-top { font-size:13px; }
+.card-logo-wrap .brand-bottom { font-size:18px; }
+
+.card-title {
+  font-family:'Playfair Display', serif;
+  color:var(--white); font-size:22px; font-weight:700; margin-bottom:4px;
+}
+.card-sub { color:var(--muted); font-size:13px; }
+
+/* ── TABS ── */
+.tabs {
+  display:flex; background:rgba(255,255,255,0.05);
+  border-radius:14px; padding:4px; margin-bottom:26px; gap:4px;
+}
+.tab {
+  flex:1; text-align:center; padding:12px 8px;
+  border-radius:11px; font-size:13px; font-weight:600;
+  cursor:pointer; color:rgba(255,255,255,0.38);
+  transition:all 0.25s; user-select:none;
+}
+.tab-etudiant-active {
+  background: linear-gradient(135deg,#1a4fa8,#1a73e8);
+  color:#fff; box-shadow:0 4px 14px rgba(26,115,232,0.35);
+}
+.tab-alumni-active {
+  background: linear-gradient(135deg,#c0392b,#e74c3c);
+  color:#fff; box-shadow:0 4px 14px rgba(231,76,60,0.35);
+}
+
+/* ── FORM ── */
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:0 14px; }
+.section-label {
+  color:rgba(255,255,255,0.30); font-size:10.5px;
+  text-transform:uppercase; letter-spacing:1.2px; margin:6px 0 14px;
+  display:flex; align-items:center; gap:8px;
+}
+.section-label::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.07); }
+
+label {
+  display:block; color:rgba(255,255,255,0.55);
+  font-size:11px; font-weight:600;
+  text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px;
+}
+
+.input-wrap { position:relative; }
+.input-wrap input { padding-left:42px; }
+.input-icon {
+  position:absolute; left:13px; top:50%; transform:translateY(-50%);
+  color:rgba(255,255,255,0.22); font-size:15px; pointer-events:none;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width:100%;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 12px; padding:12px 14px;
+  color:#fff; font-size:14px; font-family:'DM Sans',sans-serif;
+  margin-bottom:14px; outline:none;
+  transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+}
+input:focus {
+  border-color: rgba(26,115,232,0.55);
+  background: rgba(255,255,255,0.08);
+  box-shadow: 0 0 0 3px rgba(26,115,232,0.10);
+}
+input::placeholder { color:rgba(255,255,255,0.20); }
+
+.checkbox-row {
+  display:flex; align-items:center; gap:12px;
+  margin-bottom:14px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.09);
+  border-radius:12px; padding:13px 16px; cursor:pointer;
+}
+.checkbox-row input[type="checkbox"] {
+  width:17px; height:17px; accent-color:#1a73e8;
+  cursor:pointer; margin-bottom:0; flex-shrink:0;
+}
+.checkbox-row span { color:rgba(255,255,255,0.65); font-size:13px; }
+
+hr { border:none; border-top:1px solid rgba(255,255,255,0.07); margin:14px 0; }
+
+/* ── BUTTON ── */
+.btn {
+  width:100%; border:none; border-radius:12px;
+  padding:15px; font-size:14px; font-weight:700;
+  font-family:'DM Sans',sans-serif; letter-spacing:0.4px;
+  cursor:pointer; transition:all 0.25s; margin-top:6px;
+  position:relative; overflow:hidden;
+}
+.btn::after { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,0.10),transparent); border-radius:12px; }
+.btn:hover { transform:translateY(-2px); }
+.btn-blue {
+  background: linear-gradient(135deg,#1a4fa8,#1a73e8,#4d9fff);
+  color:#fff; box-shadow:0 6px 22px rgba(26,115,232,0.30);
+}
+.btn-blue:hover { box-shadow:0 10px 30px rgba(26,115,232,0.42); }
+.btn-red {
+  background: linear-gradient(135deg,#922b21,#c0392b,#e74c3c);
+  color:#fff; box-shadow:0 6px 22px rgba(192,57,43,0.30);
+}
+.btn-red:hover { box-shadow:0 10px 30px rgba(192,57,43,0.42); }
+
+/* ── ERRORS ── */
+.error-field { color:#ff7070; font-size:12px; margin-top:-10px; margin-bottom:12px; }
+.error-global {
+  background:rgba(229,57,53,0.10); border:1px solid rgba(229,57,53,0.28);
+  color:#ff7070; border-radius:12px;
+  padding:12px 16px; font-size:13px; margin-bottom:18px;
+  display:flex; align-items:center; gap:8px;
+}
+
+.link { text-align:center; color:rgba(255,255,255,0.35); font-size:13px; margin-top:20px; }
+.link a { color:var(--blue-glow); text-decoration:none; font-weight:600; }
+.link a:hover { opacity:0.8; }
+
+/* ── SUCCESS ── */
+.success-box { text-align:center; padding:10px 0; }
+.success-icon { font-size:66px; margin-bottom:14px; }
+.success-title { color:#4d9fff; font-family:'Playfair Display',serif; font-size:24px; font-weight:700; margin-bottom:12px; }
+.success-msg { color:rgba(255,255,255,0.68); font-size:14px; line-height:1.85; margin-bottom:22px; }
+.pending-badge {
+  display:inline-block;
+  background:rgba(255,193,7,0.10); border:1px solid rgba(255,193,7,0.35);
+  color:#ffd060; padding:10px 24px; border-radius:20px;
+  font-size:13px; font-weight:600; margin-bottom:26px;
+}
+.btn-back {
+  display:inline-block;
+  background:rgba(255,255,255,0.07);
+  color:rgba(255,255,255,0.7); padding:12px 28px;
+  border-radius:12px; text-decoration:none; font-size:14px; font-weight:500;
+  border:1px solid rgba(255,255,255,0.14); transition:background 0.2s;
+}
+.btn-back:hover { background:rgba(255,255,255,0.13); }
+
+/* ── FOOTER ── */
+.footerbar {
+  position:relative; z-index:10;
+  background:rgba(8,14,31,0.75);
+  backdrop-filter:blur(14px);
+  border-top:1px solid rgba(255,255,255,0.06);
+  padding:15px 40px;
+  display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
+  animation: slideUp 0.5s ease both;
+}
+@keyframes slideUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
+
+.footer-left { display:flex; align-items:center; gap:16px; }
+.footer-text { color:rgba(255,255,255,0.22); font-size:11px; letter-spacing:0.3px; }
+.footer-text strong { color:rgba(255,255,255,0.38); }
+.footer-right { display:flex; align-items:center; gap:16px; }
+.footer-pill {
+  display:flex; align-items:center; gap:7px;
+  background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07);
+  border-radius:20px; padding:5px 13px;
+  color:rgba(255,255,255,0.28); font-size:11px;
+}
+.dot-blue { width:6px; height:6px; border-radius:50%; background:var(--blue-bright); animation:blink 2s infinite; }
+
+.hidden { display:none; }
+
+@media (max-width:600px) {
+  .topbar { padding:14px 18px; }
+  .topbar-nav { display:none; }
+  .card { padding:32px 22px; }
+  .grid-2 { grid-template-columns:1fr; }
+  .footerbar { padding:13px 18px; }
+  .footer-right { display:none; }
+}
+```
+
   </style>
 </head>
 <body>
+
+  <!-- ── BACKGROUND ── -->
+
+  <div class="bg"></div>
+  <div class="bg-grid"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- ── TOP BAR ── -->
+
+  <header class="topbar">
+    <div class="topbar-brand">
+      <div class="logo-svg-wrap">
+        <!-- Djibouti Alumni Logo: two diamonds in Djibouti flag colors (blue + green) with a red star feel -->
+        <svg viewBox="0 0 56 44" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:48px;height:38px">
+          <!-- Diamond 1: Djibouti blue -->
+          <rect x="2" y="10" width="22" height="22" rx="1" fill="#1a73e8" transform="rotate(45 13 21)"/>
+          <!-- Diamond 2: Djibouti green -->
+          <rect x="18" y="10" width="22" height="22" rx="1" fill="#2ecc71" transform="rotate(45 29 21)"/>
+          <!-- Small accent star-dot -->
+          <circle cx="21" cy="21" r="3.5" fill="white" opacity="0.9"/>
+        </svg>
+        <div class="brand-text-wrap">
+          <div class="brand-top">Djibouti 2026</div>
+          <span class="brand-bottom">Alumni</span>
+        </div>
+      </div>
+    </div>
+    <nav class="topbar-nav">
+      <a href="#">Accueil</a>
+      <a href="#">Événements</a>
+      <a href="#">Contact</a>
+      <span class="topbar-badge">Inscription ouverte</span>
+    </nav>
+  </header>
+
+  <!-- ── PAGE BODY ── -->
+
+  <main class="page-body">
+
+```
+<!-- Left side panel -->
+<aside class="side-panel">
+  <!-- Big logo -->
+  <div class="side-logo-big">
+    <svg viewBox="0 0 100 78" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="14" width="38" height="38" rx="2" fill="#1a73e8" transform="rotate(45 21 33)"/>
+      <rect x="30" y="14" width="38" height="38" rx="2" fill="#2ecc71" transform="rotate(45 49 33)"/>
+      <circle cx="37" cy="33" r="6" fill="white" opacity="0.92"/>
+    </svg>
+    <div class="brand-top">Djibouti 2026</div>
+    <span class="brand-bottom">Alumni</span>
+  </div>
+
+  <div class="side-tag">Rejoindre le réseau</div>
+  <h2 class="side-heading">Construisez votre<br/><em>avenir</em> avec<br/>nous</h2>
+  <p class="side-desc">Créez votre profil et intégrez une communauté d'anciens et d'étudiants de l'Université de Djibouti, partout dans le monde.</p>
+
+  <div class="step-list">
+    <div class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-text">Remplissez le formulaire d'inscription</div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">2</div>
+      <div class="step-text">Attendez la validation de l'administrateur</div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">3</div>
+      <div class="step-text">Accédez à votre espace personnel</div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">4</div>
+      <div class="step-text">Connectez-vous avec la communauté</div>
+    </div>
+  </div>
+</aside>
+
+<!-- ── CARD ── -->
 <div class="card">
 
   {% if success %}
-  <!-- ✅ MESSAGE D'ATTENTE -->
+  <!-- ✅ SUCCESS -->
   <div class="success-box">
     <div class="success-icon">📬</div>
     <div class="success-title">Inscription réussie !</div>
@@ -154,7 +493,6 @@
       Votre compte a bien été créé.<br/><br/>
       <strong>Veuillez patienter</strong> — l'administrateur doit valider
       et activer votre compte avant que vous puissiez vous connecter.
-      Vous serez informé dès que votre accès est ouvert.
     </p>
     <div class="pending-badge">⏳ En attente de validation par l'admin</div>
     <br/>
@@ -163,9 +501,20 @@
 
   {% else %}
   <!-- FORMULAIRE -->
-  <div class="logo">🎓</div>
-  <h1>Créer un compte</h1>
-  <p class="subtitle">Rejoignez le réseau alumni</p>
+  <div class="card-head">
+    <!-- Card logo small -->
+    <div class="card-logo-wrap">
+      <svg viewBox="0 0 70 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="9" width="26" height="26" rx="1.5" fill="#1a73e8" transform="rotate(45 14 22)"/>
+        <rect x="21" y="9" width="26" height="26" rx="1.5" fill="#2ecc71" transform="rotate(45 34 22)"/>
+        <circle cx="26" cy="22" r="4" fill="white" opacity="0.92"/>
+      </svg>
+      <div class="brand-top">Djibouti 2026</div>
+      <span class="brand-bottom">Alumni</span>
+    </div>
+    <h1 class="card-title">Créer un compte</h1>
+    <p class="card-sub">Rejoignez le réseau officiel de l'université</p>
+  </div>
 
   <!-- TABS -->
   <div class="tabs">
@@ -180,14 +529,13 @@
   </div>
 
   {% if form.non_field_errors %}
-    <div class="error-global">{{ form.non_field_errors }}</div>
+    <div class="error-global">⚠️ {{ form.non_field_errors }}</div>
   {% endif %}
 
   <form method="POST" id="register-form">
     {% csrf_token %}
     <input type="hidden" name="user_type" id="user_type" value="{{ user_type|default:'etudiant' }}"/>
 
-    <!-- Infos communes -->
     <p class="section-label">Informations personnelles</p>
     <div class="grid-2">
       <div>
@@ -205,18 +553,24 @@
     </div>
 
     <label>Nom d'utilisateur</label>
-    <input type="text" name="username" placeholder="nom_utilisateur"
-           value="{{ form.username.value|default:'' }}" required/>
+    <div class="input-wrap">
+      <span class="input-icon">👤</span>
+      <input type="text" name="username" placeholder="nom_utilisateur"
+             value="{{ form.username.value|default:'' }}" required/>
+    </div>
     {% if form.username.errors %}<p class="error-field">{{ form.username.errors.0 }}</p>{% endif %}
 
-    <label>Email</label>
-    <input type="email" name="email" placeholder="votre@email.com"
-           value="{{ form.email.value|default:'' }}" required/>
+    <label>Adresse e-mail</label>
+    <div class="input-wrap">
+      <span class="input-icon">✉️</span>
+      <input type="email" name="email" placeholder="votre@email.com"
+             value="{{ form.email.value|default:'' }}" required/>
+    </div>
     {% if form.email.errors %}<p class="error-field">{{ form.email.errors.0 }}</p>{% endif %}
 
     <hr/>
 
-    <!-- ===== CHAMPS ÉTUDIANT ===== -->
+    <!-- ÉTUDIANT FIELDS -->
     <div id="fields-etudiant" class="{% if user_type == 'alumni' %}hidden{% endif %}">
       <p class="section-label">Informations académiques</p>
       <div class="grid-2">
@@ -233,7 +587,7 @@
       </div>
     </div>
 
-    <!-- ===== CHAMPS ALUMNI ===== -->
+    <!-- ALUMNI FIELDS -->
     <div id="fields-alumni" class="{% if user_type != 'alumni' %}hidden{% endif %}">
       <p class="section-label">Informations alumni</p>
       <div class="grid-2">
@@ -256,18 +610,25 @@
     </div>
 
     <hr/>
-    <p class="section-label">Sécurité</p>
+    <p class="section-label">Sécurité du compte</p>
 
     <label>Mot de passe</label>
-    <input type="password" name="password" placeholder="••••••••" required/>
+    <div class="input-wrap">
+      <span class="input-icon">🔒</span>
+      <input type="password" name="password" placeholder="••••••••" required/>
+    </div>
     {% if form.password.errors %}<p class="error-field">{{ form.password.errors.0 }}</p>{% endif %}
 
     <label>Confirmer le mot de passe</label>
-    <input type="password" name="password_confirm" placeholder="••••••••" required/>
+    <div class="input-wrap">
+      <span class="input-icon">🔒</span>
+      <input type="password" name="password_confirm" placeholder="••••••••" required/>
+    </div>
 
-    <button type="submit" class="btn {% if user_type == 'alumni' %}btn-green{% else %}btn-blue{% endif %}"
+    <button type="submit"
+            class="btn {% if user_type == 'alumni' %}btn-red{% else %}btn-blue{% endif %}"
             id="btn-submit">
-      Créer mon compte 🚀
+      Créer mon compte →
     </button>
   </form>
 
@@ -277,33 +638,47 @@
   {% endif %}
 
 </div>
+```
 
-<script>
-  function selectType(type) {
-    const te = document.getElementById('tab-etudiant');
-    const ta = document.getElementById('tab-alumni');
-    const fe = document.getElementById('fields-etudiant');
-    const fa = document.getElementById('fields-alumni');
-    const btn = document.getElementById('btn-submit');
-    const hidden = document.getElementById('user_type');
+  </main>
 
-    te.className = 'tab';
-    ta.className = 'tab';
+  <!-- ── FOOTER ── -->
 
-    if (type === 'etudiant') {
-      te.classList.add('tab-etudiant-active');
-      fe.classList.remove('hidden');
-      fa.classList.add('hidden');
-      btn.className = 'btn btn-blue';
-      hidden.value = 'etudiant';
-    } else {
-      ta.classList.add('tab-alumni-active');
-      fa.classList.remove('hidden');
-      fe.classList.add('hidden');
-      btn.className = 'btn btn-green';
-      hidden.value = 'alumni';
+  <footer class="footerbar">
+    <div class="footer-left">
+      <div class="footer-text">© 2026 <strong>Université de Djibouti</strong> — Tous droits réservés</div>
+    </div>
+    <div class="footer-right">
+      <div class="footer-pill"><div class="dot-blue"></div> Système opérationnel</div>
+      <div class="footer-pill">🔒 SSL sécurisé</div>
+      <div class="footer-pill" style="color:rgba(255,255,255,0.18)">v2.5.1</div>
+    </div>
+  </footer>
+
+  <script>
+    function selectType(type) {
+      const te  = document.getElementById('tab-etudiant');
+      const ta  = document.getElementById('tab-alumni');
+      const fe  = document.getElementById('fields-etudiant');
+      const fa  = document.getElementById('fields-alumni');
+      const btn = document.getElementById('btn-submit');
+      const hid = document.getElementById('user_type');
+
+      te.className = 'tab';
+      ta.className = 'tab';
+
+      if (type === 'etudiant') {
+        te.classList.add('tab-etudiant-active');
+        fe.classList.remove('hidden'); fa.classList.add('hidden');
+        btn.className = 'btn btn-blue';
+      } else {
+        ta.classList.add('tab-alumni-active');
+        fa.classList.remove('hidden'); fe.classList.add('hidden');
+        btn.className = 'btn btn-red';
+      }
+      hid.value = type;
     }
-  }
-</script>
+  </script>
+
 </body>
 </html>

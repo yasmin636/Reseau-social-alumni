@@ -5,145 +5,440 @@
     <meta charset="UTF-8">
     <title>Dashboard Alumni – Réseau Alumni</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        * { box-sizing: border-box; }
-        body { margin: 0; font-family: "Segoe UI", Roboto, sans-serif; background: #0d1f14; color: #fff; }
-        .app-wrapper { display: flex; min-height: 100vh; }
-        .sidebar { width: 240px; background: linear-gradient(180deg, #0a1a0f 0%, #102a18 100%); padding: 28px 16px; border-right: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; }
-        .sidebar h2 { font-size: 1.1rem; font-weight: 700; color: #43e97b; margin-bottom: 4px; }
-        .sidebar-subtitle { font-size: 0.75rem; color: rgba(255,255,255,0.35); margin-bottom: 28px; }
-        .sidebar-nav { list-style: none; padding: 0; margin: 0; }
-        .sidebar-nav li { margin-bottom: 4px; }
-        .sidebar-nav a { display: flex; align-items: center; padding: 10px 14px; color: rgba(255,255,255,0.6); text-decoration: none; border-radius: 10px; font-size: 0.9rem; transition: all 0.2s; }
-        .sidebar-nav a i { margin-right: 10px; width: 18px; text-align: center; font-size: 0.85rem; }
-        .sidebar-nav a.active, .sidebar-nav a:hover { background: rgba(67,233,123,0.12); color: #43e97b; }
-        .sidebar-divider { border: none; border-top: 1px solid rgba(255,255,255,0.07); margin: 16px 0; }
-        .main { flex: 1; display: flex; flex-direction: column; }
-        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 14px 28px; background: rgba(0,0,0,0.3); border-bottom: 1px solid rgba(255,255,255,0.06); }
-        .topbar-title { font-size: 1rem; font-weight: 500; color: rgba(255,255,255,0.8); }
+        :root {
+            --navy: #0a1628;
+            --navy-2: #0d1f3c;
+            --navy-3: #112347;
+            --navy-4: #1a3a6b;
+            --gold: #c9a84c;
+            --gold-light: #e8c97a;
+            --gold-dim: rgba(201,168,76,0.15);
+            --white: #ffffff;
+            --text: rgba(255,255,255,0.90);
+            --text-dim: rgba(255,255,255,0.45);
+            --text-mid: rgba(255,255,255,0.65);
+            --border: rgba(255,255,255,0.07);
+            --border-2: rgba(201,168,76,0.20);
+            --sidebar-w: 260px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--navy);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--navy-2);
+            border-right: 1px solid var(--border);
+            display: flex; flex-direction: column;
+            position: fixed; top: 0; left: 0; bottom: 0;
+            z-index: 100; overflow-y: auto;
+        }
+        .sidebar-logo {
+            padding: 24px 20px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; gap: 12px;
+        }
+        .logo-icon {
+            width: 38px; height: 38px; border-radius: 10px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 14px; color: var(--navy);
+            flex-shrink: 0;
+        }
+        .logo-text-main {
+            font-size: 0.95rem; font-weight: 700; color: var(--white);
+        }
+        .logo-text-sub {
+            font-size: 0.7rem; color: var(--text-dim);
+            text-transform: uppercase; letter-spacing: 0.8px;
+        }
+
+        .sidebar-user {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; gap: 10px;
+        }
+        .user-av {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--navy-4), var(--gold));
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 13px; color: var(--white);
+            border: 2px solid var(--gold-dim); overflow: hidden; flex-shrink: 0;
+        }
+        .user-av img { width: 100%; height: 100%; object-fit: cover; }
+        .user-name { font-size: 0.84rem; font-weight: 600; color: var(--white); }
+        .user-role { font-size: 0.68rem; color: var(--gold); font-weight: 500; }
+
+        .nav-section-label {
+            padding: 16px 20px 6px;
+            font-size: 0.62rem; font-weight: 700;
+            color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px;
+        }
+        .sidebar-nav { list-style: none; padding: 0 10px; }
+        .sidebar-nav li { margin-bottom: 2px; }
+        .sidebar-nav a {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px; border-radius: 8px;
+            color: var(--text-dim); text-decoration: none;
+            font-size: 0.84rem; font-weight: 500;
+            transition: all 0.18s;
+        }
+        .sidebar-nav a i { width: 16px; text-align: center; font-size: 0.8rem; }
+        .sidebar-nav a:hover { color: var(--white); background: rgba(255,255,255,0.05); }
+        .sidebar-nav a.active {
+            color: var(--gold-light);
+            background: var(--gold-dim);
+            border: 1px solid var(--border-2);
+            font-weight: 600;
+        }
+        .sidebar-divider { height: 1px; background: var(--border); margin: 12px 10px; }
+        .sidebar-nav a.logout { color: rgba(255,100,100,0.5); }
+        .sidebar-nav a.logout:hover { color: #ff6b6b; background: rgba(255,100,100,0.06); }
+
+        /* ── MAIN ── */
+        .main {
+            margin-left: var(--sidebar-w);
+            flex: 1; display: flex; flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            position: sticky; top: 0; z-index: 50;
+            height: 60px;
+            background: rgba(10,22,40,0.92);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 32px;
+        }
+        .topbar-title {
+            font-size: 0.95rem; font-weight: 600; color: var(--text);
+        }
         .topbar-right { display: flex; align-items: center; gap: 16px; }
-        .notif-btn { position: relative; color: rgba(255,255,255,0.6); text-decoration: none; font-size: 1.1rem; transition: color 0.2s; }
-        .notif-btn:hover { color: #43e97b; }
-        .notif-btn .badge-count { position: absolute; top: -6px; right: -8px; background: #e53935; color: white; font-size: 0.65rem; font-weight: 700; min-width: 16px; height: 16px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 2px solid #0d1f14; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(229,57,53,0.5); } 70% { box-shadow: 0 0 0 5px rgba(229,57,53,0); } 100% { box-shadow: 0 0 0 0 rgba(229,57,53,0); } }
-        .user-chip { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        .avatar-initiale { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, #1b5e3c, #43e97b); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px; border: 2px solid rgba(67,233,123,0.4); }
-        .avatar-img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(67,233,123,0.4); }
-        .user-chip span { font-size: 0.9rem; color: rgba(255,255,255,0.8); }
-        .content { flex: 1; padding: 28px; }
-        .content-header { margin-bottom: 28px; }
-        .content-header h1 { font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
-        .content-header p { color: rgba(255,255,255,0.4); font-size: 0.9rem; margin: 0; }
-        .info-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; margin-bottom: 28px; }
-        .info-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 16px 18px; }
-        .info-card-label { font-size: 10px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-        .info-card-value { font-size: 15px; font-weight: 600; color: #fff; }
-        .action-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; margin-bottom: 28px; }
-        .action-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 24px; transition: all 0.2s; }
-        .action-card:hover { background: rgba(67,233,123,0.06); border-color: rgba(67,233,123,0.2); transform: translateY(-2px); }
-        .action-card-icon { font-size: 28px; margin-bottom: 12px; }
-        .action-card h5 { font-size: 1rem; font-weight: 600; color: #fff; margin-bottom: 8px; }
-        .action-card p { font-size: 0.83rem; color: rgba(255,255,255,0.4); margin-bottom: 16px; }
-        .btn-green { background: linear-gradient(135deg, #1b5e3c, #43e97b); color: #fff; border: none; border-radius: 8px; padding: 8px 18px; font-size: 0.85rem; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; transition: opacity 0.2s; }
-        .btn-green:hover { opacity: 0.85; color: #fff; }
-        .btn-blue { background: linear-gradient(135deg, #1565c0, #1e88e5); color: #fff; border: none; border-radius: 8px; padding: 8px 18px; font-size: 0.85rem; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; }
-        .btn-blue:hover { opacity: 0.85; color: #fff; }
-        .btn-amber { background: linear-gradient(135deg, #e65100, #ffa000); color: #fff; border: none; border-radius: 8px; padding: 8px 18px; font-size: 0.85rem; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; }
-        .btn-amber:hover { opacity: 0.85; color: #fff; }
-        @media (max-width: 992px) { .app-wrapper { flex-direction: column; } .sidebar { width: 100%; } }
+        .notif-btn {
+            position: relative; color: var(--text-dim);
+            text-decoration: none; font-size: 1rem; transition: color 0.2s;
+        }
+        .notif-btn:hover { color: var(--gold); }
+        .badge-count {
+            position: absolute; top: -6px; right: -7px;
+            background: var(--gold); color: var(--navy);
+            font-size: 0.6rem; font-weight: 800;
+            min-width: 15px; height: 15px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            border: 2px solid var(--navy);
+        }
+        .topbar-chip {
+            display: flex; align-items: center; gap: 8px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            border-radius: 999px; padding: 5px 14px 5px 6px;
+        }
+        .topbar-av {
+            width: 26px; height: 26px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--navy-4), var(--gold));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; font-weight: 700; color: var(--white); overflow: hidden;
+        }
+        .topbar-av img { width: 100%; height: 100%; object-fit: cover; }
+        .topbar-chip span { font-size: 0.8rem; color: var(--text-mid); font-weight: 500; }
+
+        /* ── CONTENT ── */
+        .content { padding: 32px; flex: 1; overflow-y: auto; }
+
+        /* ── WELCOME BANNER ── */
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--navy-3) 0%, var(--navy-4) 100%);
+            border: 1px solid var(--border-2);
+            border-radius: 16px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            position: relative; overflow: hidden;
+        }
+        .welcome-banner::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
+        }
+        .welcome-banner::after {
+            content: '';
+            position: absolute; right: -40px; top: -40px;
+            width: 200px; height: 200px; border-radius: 50%;
+            background: rgba(201,168,76,0.06);
+            pointer-events: none;
+        }
+        .welcome-eyebrow {
+            font-size: 0.72rem; font-weight: 600;
+            color: var(--gold); text-transform: uppercase;
+            letter-spacing: 1.5px; margin-bottom: 8px;
+        }
+        .welcome-title {
+            font-size: 1.6rem; font-weight: 800; color: var(--white);
+            margin-bottom: 6px; line-height: 1.2;
+        }
+        .welcome-sub { font-size: 0.88rem; color: var(--text-dim); }
+        .welcome-badges {
+            display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap;
+        }
+        .w-badge {
+            display: flex; align-items: center; gap: 6px;
+            padding: 5px 12px; border-radius: 6px;
+            font-size: 0.75rem; font-weight: 600;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-mid);
+        }
+        .w-badge i { font-size: 0.7rem; color: var(--gold); }
+
+        /* ── STATS ── */
+        .stats-row {
+            display: grid; grid-template-columns: repeat(4,1fr);
+            gap: 14px; margin-bottom: 28px;
+        }
+        .stat-card {
+            background: var(--navy-2);
+            border: 1px solid var(--border);
+            border-radius: 12px; padding: 18px 20px;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+        .stat-card:hover { border-color: var(--border-2); transform: translateY(-2px); }
+        .stat-icon { font-size: 1.4rem; margin-bottom: 10px; }
+        .stat-label {
+            font-size: 0.7rem; font-weight: 600;
+            color: var(--text-dim); text-transform: uppercase;
+            letter-spacing: 0.8px; margin-bottom: 5px;
+        }
+        .stat-value { font-size: 0.95rem; font-weight: 700; color: var(--white); }
+
+        /* ── SECTION TITLE ── */
+        .section-title {
+            font-size: 0.72rem; font-weight: 700;
+            color: var(--text-dim); text-transform: uppercase;
+            letter-spacing: 1.5px; margin-bottom: 16px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .section-title::after {
+            content: ''; flex: 1; height: 1px;
+            background: var(--border);
+        }
+
+        /* ── ACTION CARDS ── */
+        .action-grid {
+            display: grid; grid-template-columns: repeat(3,1fr);
+            gap: 16px;
+        }
+        .action-card {
+            background: var(--navy-2);
+            border: 1px solid var(--border);
+            border-radius: 14px; overflow: hidden;
+            display: flex; flex-direction: column;
+            transition: transform 0.22s, border-color 0.22s, box-shadow 0.22s;
+            text-decoration: none;
+        }
+        .action-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--border-2);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+        }
+        .card-stripe { height: 4px; }
+        .c-post  .card-stripe { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+        .c-offre .card-stripe { background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
+        .c-fil   .card-stripe { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+
+        .card-body { padding: 22px 20px 18px; flex: 1; display: flex; flex-direction: column; }
+        .card-icon-wrap {
+            width: 44px; height: 44px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; margin-bottom: 14px;
+        }
+        .c-post  .card-icon-wrap { background: rgba(59,130,246,0.12); }
+        .c-offre .card-icon-wrap { background: var(--gold-dim); }
+        .c-fil   .card-icon-wrap { background: rgba(139,92,246,0.12); }
+
+        .card-title {
+            font-size: 0.95rem; font-weight: 700;
+            color: var(--white); margin-bottom: 6px;
+        }
+        .card-desc {
+            font-size: 0.81rem; color: var(--text-dim);
+            line-height: 1.6; flex: 1; margin-bottom: 18px;
+        }
+        .card-cta {
+            display: inline-flex; align-items: center; gap: 7px;
+            padding: 9px 16px; border-radius: 7px;
+            font-size: 0.8rem; font-weight: 600;
+            text-decoration: none; transition: all 0.18s;
+            width: fit-content;
+        }
+        .c-post  .card-cta { background: rgba(59,130,246,0.12); color: #60a5fa; border: 1px solid rgba(59,130,246,0.2); }
+        .c-offre .card-cta { background: var(--gold-dim); color: var(--gold-light); border: 1px solid var(--border-2); }
+        .c-fil   .card-cta { background: rgba(139,92,246,0.12); color: #a78bfa; border: 1px solid rgba(139,92,246,0.2); }
+        .card-cta:hover { filter: brightness(1.2); }
+
+        @media (max-width: 1024px) {
+            .sidebar { position: relative; width: 100%; height: auto; }
+            .main { margin-left: 0; }
+            .stats-row { grid-template-columns: 1fr 1fr; }
+            .action-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
-<div class="app-wrapper">
-    <aside class="sidebar">
-        <h2>Réseau Alumni</h2>
-        <p class="sidebar-subtitle">Espace Alumni</p>
-        <ul class="sidebar-nav">
-            <li><a href="#" class="active"><i class="fas fa-th-large"></i> Dashboard</a></li>
-            <li><a href="{% url 'post_create' %}"><i class="fas fa-pen"></i> Publier un post</a></li>
-            <li><a href="{% url 'offres' %}"><i class="fas fa-briefcase"></i> Publier une offre</a></li>
-            <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> Notifications</a></li>
-            <!-- ← AJOUTÉ -->
-            <li><a href="{% url 'chat_page' %}"><i class="fas fa-comment-dots"></i> Chat</a></li>
-            <li><a href="{% url 'profil_alumni' %}"><i class="fas fa-user"></i> Profil</a></li>
-        </ul>
-        <hr class="sidebar-divider"/>
-        <ul class="sidebar-nav">
-            <li><a href="/logout/"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
-        </ul>
-    </aside>
 
-    <div class="main">
-        <header class="topbar">
-            <div class="topbar-title">
-                Bienvenue{% if user.is_authenticated %}, <strong style="color:#43e97b;">{{ user.get_full_name|default:user.username }}</strong>{% endif %} 👋
-            </div>
-            <div class="topbar-right">
-                <a href="{% url 'notifications' %}" class="notif-btn">
-                    <i class="fas fa-bell"></i>
-                    {% if nb_notifications > 0 %}
-                        <span class="badge-count">{{ nb_notifications }}</span>
-                    {% endif %}
-                </a>
-                <div class="user-chip">
-                    {% if user.is_authenticated and user.profile.photo %}
-                        <img src="{{ user.profile.photo.url }}" alt="profil" class="avatar-img">
-                    {% else %}
-                        <div class="avatar-initiale">{{ user.get_full_name|default:user.username|first|upper }}</div>
-                    {% endif %}
-                    <span>{{ user.get_full_name|default:user.username }}</span>
-                </div>
-            </div>
-        </header>
-
-        <main class="content">
-            <div class="content-header">
-                <h1>Tableau de bord Alumni</h1>
-                <p>Gérez vos publications, offres et restez connecté avec la communauté.</p>
-            </div>
-
-            {% if user.is_authenticated %}
-            <div class="info-cards">
-                <div class="info-card">
-                    <div class="info-card-label">Filière</div>
-                    <div class="info-card-value">{{ user.profile.filiere_alumni|default:"—" }}</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-card-label">Année de licence</div>
-                    <div class="info-card-value">{{ user.profile.annee_licence|default:"—" }}</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-card-label">Situation</div>
-                    <div class="info-card-value" style="color:{% if user.profile.en_poste %}#43e97b{% else %}#ffc107{% endif %};">
-                        {% if user.profile.en_poste %}En poste{% else %}Sans emploi{% endif %}
-                    </div>
-                </div>
-                <div class="info-card">
-                    <div class="info-card-label">Statut</div>
-                    <div class="info-card-value" style="color:#43e97b;">Alumni actif</div>
-                </div>
-            </div>
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-icon">RA</div>
+        <div>
+            <div class="logo-text-main">Réseau Alumni</div>
+            <div class="logo-text-sub">Université de Djibouti</div>
+        </div>
+    </div>
+    <div class="sidebar-user">
+        <div class="user-av">
+            {% if user.profile.photo %}
+                <img src="{{ user.profile.photo.url }}">
+            {% else %}
+                {{ user.get_full_name|default:user.username|first|upper }}
             {% endif %}
+        </div>
+        <div>
+            <div class="user-name">{{ user.get_full_name|default:user.username }}</div>
+            <div class="user-role">Alumni</div>
+        </div>
+    </div>
+    <div class="nav-section-label">Menu</div>
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'dashboard_alumni' %}" class="active"><i class="fas fa-th-large"></i> Dashboard</a></li>
+        <li><a href="{% url 'post_create' %}"><i class="fas fa-pen"></i> Publier un post</a></li>
+        <li><a href="{% url 'offre_create' %}"><i class="fas fa-briefcase"></i> Publier une offre</a></li>
+        <li><a href="{% url 'fil_alumni' %}"><i class="fas fa-fire"></i> Le Fil</a></li>
+        <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> Notifications</a></li>
+        <li><a href="{% url 'chat_page' %}"><i class="fas fa-comment-dots"></i> Chat</a></li>
+        <li><a href="{% url 'profil_alumni' %}"><i class="fas fa-user-circle"></i> Profil</a></li>
+    </ul>
+    <div class="sidebar-divider"></div>
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'logout' %}" class="logout"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+    </ul>
+</aside>
 
-            <div class="action-grid">
-                <div class="action-card">
-                    <div class="action-card-icon">✍️</div>
-                    <h5>Publier un post</h5>
-                    <p>Partagez vos expériences et conseils avec les étudiants.</p>
-                    <a href="{% url 'post_create' %}" class="btn-green">Créer un post</a>
+<!-- MAIN -->
+<div class="main">
+    <header class="topbar">
+        <div class="topbar-title">Tableau de bord</div>
+        <div class="topbar-right">
+            <a href="{% url 'notifications' %}" class="notif-btn">
+                <i class="fas fa-bell"></i>
+                {% if nb_notifications > 0 %}<span class="badge-count">{{ nb_notifications }}</span>{% endif %}
+            </a>
+            <div class="topbar-chip">
+                <div class="topbar-av">
+                    {% if user.profile.photo %}
+                        <img src="{{ user.profile.photo.url }}">
+                    {% else %}
+                        {{ user.get_full_name|default:user.username|first|upper }}
+                    {% endif %}
                 </div>
-                <div class="action-card">
-                    <div class="action-card-icon">💼</div>
-                    <h5>Publier une offre</h5>
-                    <p>Proposez des stages ou emplois aux étudiants du réseau.</p>
-                    <a href="{% url 'offres' %}" class="btn-blue">Publier une offre</a>
-                </div>
-               
+                <span>{{ user.get_full_name|default:user.username }}</span>
             </div>
-        </main>
+        </div>
+    </header>
+
+    <div class="content">
+
+        <!-- Welcome Banner -->
+        <div class="welcome-banner">
+            <div class="welcome-eyebrow">Espace Alumni</div>
+            <div class="welcome-title">Bonjour, {{ user.get_full_name|default:user.username }} 👋</div>
+            <div class="welcome-sub">Bienvenue sur votre espace personnel — Réseau Alumni · Université de Djibouti</div>
+            <div class="welcome-badges">
+                <span class="w-badge"><i class="fas fa-graduation-cap"></i> {{ user.profile.filiere_alumni|default:"Filière non renseignée" }}</span>
+                <span class="w-badge"><i class="fas fa-calendar"></i> Promo {{ user.profile.annee_licence|default:"—" }}</span>
+                <span class="w-badge"><i class="fas fa-briefcase"></i> {% if user.profile.en_poste %}En poste{% else %}Disponible{% endif %}</span>
+                <span class="w-badge"><i class="fas fa-star"></i> Alumni actif</span>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-icon">🎓</div>
+                <div class="stat-label">Filière</div>
+                <div class="stat-value">{{ user.profile.filiere_alumni|default:"—" }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-label">Promotion</div>
+                <div class="stat-value">{{ user.profile.annee_licence|default:"—" }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💼</div>
+                <div class="stat-label">Situation</div>
+                <div class="stat-value">{% if user.profile.en_poste %}En poste{% else %}Disponible{% endif %}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-label">Statut</div>
+                <div class="stat-value">Alumni ✓</div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="section-title">Actions disponibles</div>
+        <div class="action-grid">
+
+            <div class="action-card c-post">
+                <div class="card-stripe"></div>
+                <div class="card-body">
+                    <div class="card-icon-wrap">✍️</div>
+                    <div class="card-title">Publier un post</div>
+                    <div class="card-desc">Partagez vos expériences, conseils et actualités avec les étudiants et alumni du réseau.</div>
+                    <a href="{% url 'post_create' %}" class="card-cta">
+                        <i class="fas fa-arrow-right"></i> Créer un post
+                    </a>
+                </div>
+            </div>
+
+            <div class="action-card c-offre">
+                <div class="card-stripe"></div>
+                <div class="card-body">
+                    <div class="card-icon-wrap">💼</div>
+                    <div class="card-title">Publier une offre</div>
+                    <div class="card-desc">Proposez des stages, emplois ou missions freelance aux étudiants du réseau.</div>
+                    <a href="{% url 'offre_create' %}" class="card-cta">
+                        <i class="fas fa-arrow-right"></i> Publier une offre
+                    </a>
+                </div>
+            </div>
+
+            <div class="action-card c-fil">
+                <div class="card-stripe"></div>
+                <div class="card-body">
+                    <div class="card-icon-wrap">🔥</div>
+                    <div class="card-title">Le Fil</div>
+                    <div class="card-desc">Explorez tous les posts et offres du réseau. Likez, commentez et ajoutez en favoris.</div>
+                    <a href="{% url 'fil_alumni' %}" class="card-cta">
+                        <i class="fas fa-arrow-right"></i> Explorer le fil
+                    </a>
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>
+
 </body>
 </html>

@@ -78,9 +78,7 @@
       {% else %}
         <a href="{% url 'admin_user_toggle_active' u.id %}" class="btn-action btn-activer">Activer le compte</a>
       {% endif %}
-      <a href="{% url 'admin_user_change_role' u.id %}" class="btn-action btn-role">
-        {% if profile and profile.role == "etudiant" %}Passer en Alumni{% else %}Passer en Etudiant{% endif %}
-      </a>
+      
       <button class="btn-action btn-supprimer" onclick="document.getElementById('confirm-delete').style.display='block'">
         Supprimer le compte
       </button>
