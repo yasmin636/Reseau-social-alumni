@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Inscription</title>
+
+<style>
+
+body{
+font-family: Arial;
+background:#f2f2f2;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+.register-box{
+background:white;
+padding:40px;
+border-radius:10px;
+width:350px;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+text-align:center;
+}
+
+h2{
+color:#5a7f2c;
+}
+
+input, select{
+width:100%;
+padding:10px;
+margin:10px 0;
+border:1px solid #ccc;
+border-radius:5px;
+}
+
+button{
+width:100%;
+padding:10px;
+background:#8BC34A;
+border:none;
+color:white;
+border-radius:5px;
+}
+
+a{
+color:#8BC34A;
+text-decoration:none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="register-box">
+
+<h2>Inscription</h2>
+
+<form method="POST">
+{% csrf_token %}
+
+<input type="text" name="username" placeholder="Nom">
+
+<input type="email" name="email" placeholder="Email">
+
+<input type="password" name="password" placeholder="Mot de passe">
+
+<select name="role">
+<option value="student">Étudiant</option>
+<option value="alumni">Alumni</option>
+</select>
+
+<button type="submit">S'inscrire</button>
+
+</form>
+
+<p>Déjà un compte ? <a href="/login">Se connecter</a></p>
+
+</div>
+
+</body>
+</html>

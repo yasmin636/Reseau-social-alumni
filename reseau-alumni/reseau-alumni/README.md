@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # UniversityConnectHut-An-alumni-networking-portal-using-Python-Django-
 
 ## INTRODUCTION
@@ -32,6 +31,3 @@ With the help of front-end (HTML, CSS, Bootstrap) and back-end technology (Pytho
 
 ## List of active comments-
 ![](images/Picture4.png)
-=======
-# Reseau-social-alumni
->>>>>>> b393acb13ad4fffe003d2e308cfe97df376379d6
