@@ -1,1032 +1,441 @@
 {% load static %}
+
 <!DOCTYPE html>
+
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <title>Chat – Réseau Alumni</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
-            background: #000;
-            color: #fff; 
-            height: 100vh; 
-            display: flex; 
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* Effet de fond Instagram */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(131, 58, 180, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(253, 29, 29, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 20%, rgba(252, 176, 69, 0.08) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        /* ═══════════════════════════════════════════════════════════════════════════════════ */
-        /* SIDEBAR */
-        /* ═══════════════════════════════════════════════════════════════════════════════════ */
-        .sidebar { 
-            width: 280px; 
-            background: linear-gradient(180deg, rgba(18, 18, 18, 0.98), rgba(22, 22, 22, 0.98)); 
-            backdrop-filter: blur(30px) saturate(180%);
-            padding: 36px 24px; 
-            border-right: 1px solid rgba(255, 255, 255, 0.1); 
-            display: flex; 
-            flex-direction: column;
-            box-shadow: 8px 0 40px rgba(0, 0, 0, 0.5);
-            position: relative;
-            z-index: 10;
-        }
-
-        .sidebar::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 1px;
-            height: 100%;
-            background: linear-gradient(180deg, 
-                transparent 0%, 
-                rgba(131, 58, 180, 0.3) 30%,
-                rgba(253, 29, 29, 0.3) 60%, 
-                rgba(252, 176, 69, 0.3) 90%,
-                transparent 100%
-            );
-        }
-
-        .sidebar h2 { 
-            font-size: 1.35rem; 
-            font-weight: 900; 
-            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 8px; 
-            letter-spacing: -0.8px;
-            position: relative;
-            padding-bottom: 12px;
-        }
-
-        .sidebar h2::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 50px;
-            height: 3px;
-            background: linear-gradient(90deg, #f09433, #e6683c, #dc2743);
-            border-radius: 2px;
-        }
-
-        .sidebar-subtitle { 
-            font-size: 0.8rem; 
-            color: rgba(255, 255, 255, 0.5); 
-            margin-bottom: 36px; 
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .sidebar-nav { list-style: none; padding: 0; margin: 0; }
-        .sidebar-nav li { margin-bottom: 8px; }
-        
-        .sidebar-nav a { 
-            display: flex; 
-            align-items: center; 
-            padding: 14px 18px; 
-            color: rgba(255, 255, 255, 0.7); 
-            text-decoration: none; 
-            border-radius: 14px; 
-            font-size: 0.92rem; 
-            font-weight: 600;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
-            position: relative;
-            overflow: hidden;
-        }
-
-        .sidebar-nav a::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, 
-                rgba(131, 58, 180, 0.2), 
-                rgba(253, 29, 29, 0.2),
-                rgba(252, 176, 69, 0.2)
-            );
-            transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: -1;
-        }
-
-        .sidebar-nav a i { 
-            margin-right: 14px; 
-            width: 22px; 
-            text-align: center; 
-            font-size: 0.95rem; 
-            position: relative;
-            z-index: 1;
-            transition: transform 0.3s;
-        }
-
-        .sidebar-nav a:hover { 
-            color: #fff; 
-            transform: translateX(6px);
-            box-shadow: 0 4px 20px rgba(253, 29, 29, 0.2);
-        }
-
-        .sidebar-nav a:hover::before {
-            left: 0;
-        }
-
-        .sidebar-nav a:hover i {
-            transform: scale(1.2);
-        }
-
-        .sidebar-nav a.active { 
-            color: #fff; 
-            background: linear-gradient(135deg, 
-                rgba(131, 58, 180, 0.25), 
-                rgba(253, 29, 29, 0.25),
-                rgba(252, 176, 69, 0.15)
-            );
-            box-shadow: 
-                0 4px 20px rgba(253, 29, 29, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
-
-        .sidebar-divider { 
-            border: none; 
-            height: 1px;
-            background: linear-gradient(90deg, 
-                transparent, 
-                rgba(255, 255, 255, 0.1), 
-                transparent
-            );
-            margin: 24px 0; 
-        }
-
-        /* ═══════════════════════════════════════════════════════════════════════════════════ */
-        /* CHAT LAYOUT */
-        /* ═══════════════════════════════════════════════════════════════════════════════════ */
-        .chat-layout { 
-            flex: 1; 
-            display: flex; 
-            height: 100vh; 
-            overflow: hidden;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* ═══════════════════════════════════════════════════════════════════════════════════ */
-        /* CONTACTS PANEL */
-        /* ═══════════════════════════════════════════════════════════════════════════════════ */
-        .contacts-panel { 
-            width: 360px; 
-            background: rgba(18, 18, 18, 0.7); 
-            backdrop-filter: blur(20px) saturate(180%);
-            border-right: 1px solid rgba(255, 255, 255, 0.1); 
-            display: flex; 
-            flex-direction: column; 
-            overflow: hidden;
-            position: relative;
-        }
-
-        .contacts-panel::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 1px;
-            height: 100%;
-            background: linear-gradient(180deg, 
-                rgba(131, 58, 180, 0.3) 0%, 
-                rgba(253, 29, 29, 0.3) 50%, 
-                rgba(252, 176, 69, 0.3) 100%
-            );
-        }
-
-        .contacts-header { 
-            padding: 28px 24px 20px; 
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            background: linear-gradient(180deg, 
-                rgba(0, 0, 0, 0.4), 
-                rgba(0, 0, 0, 0.2)
-            );
-            position: relative;
-        }
-
-        .contacts-header::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 24px;
-            right: 24px;
-            height: 2px;
-            background: linear-gradient(90deg, 
-                #f09433, 
-                #e6683c, 
-                #dc2743,
-                #cc2366,
-                #bc1888
-            );
-            opacity: 0.4;
-        }
-
-        .contacts-header h3 { 
-            font-size: 1.25rem; 
-            font-weight: 800; 
-            color: #fff; 
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            letter-spacing: -0.5px;
-        }
-
-        /* ✨ PROFILS EN HAUT - Style Instagram Stories */
-        .profils-section { 
-            padding: 20px 24px; 
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            background: linear-gradient(180deg, 
-                rgba(0, 0, 0, 0.3), 
-                transparent
-            );
-        }
-
-        .profils-section-title { 
-            font-size: 0.7rem; 
-            text-transform: uppercase; 
-            letter-spacing: 1.5px; 
-            color: rgba(255, 255, 255, 0.5); 
-            font-weight: 800; 
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .profils-row { 
-            display: flex; 
-            gap: 14px; 
-            overflow-x: auto; 
-            padding-bottom: 10px; 
-            scrollbar-width: thin;
-            scrollbar-color: rgba(253, 29, 29, 0.4) rgba(255, 255, 255, 0.05);
-        }
-
-        .profils-row::-webkit-scrollbar { height: 6px; }
-        .profils-row::-webkit-scrollbar-track { 
-            background: rgba(255, 255, 255, 0.05); 
-            border-radius: 3px; 
-        }
-        .profils-row::-webkit-scrollbar-thumb { 
-            background: linear-gradient(90deg, #f09433, #e6683c, #dc2743); 
-            border-radius: 3px;
-        }
-
-        .profil-card { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            gap: 8px; 
-            cursor: pointer; 
-            text-decoration: none; 
-            flex-shrink: 0; 
-            width: 72px;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .profil-card:hover { 
-            transform: translateY(-8px); 
-        }
-
-        .profil-avatar { 
-            width: 58px; 
-            height: 58px; 
-            border-radius: 50%; 
-            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            color: white; 
-            font-weight: 800; 
-            font-size: 22px; 
-            overflow: hidden; 
-            padding: 3px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 8px 20px rgba(253, 29, 29, 0.4);
-            position: relative;
-        }
-
-        .profil-avatar-inner {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .profil-avatar img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-            border-radius: 50%;
-        }
-
-        .profil-card:hover .profil-avatar { 
-            box-shadow: 
-                0 12px 32px rgba(253, 29, 29, 0.6),
-                0 0 30px rgba(252, 176, 69, 0.4);
-            transform: scale(1.1);
-        }
-
-        .profil-avatar.active-border { 
-            animation: instagram-pulse 2s infinite;
-        }
-
-        @keyframes instagram-pulse {
-            0%, 100% { 
-                box-shadow: 0 0 0 0 rgba(253, 29, 29, 0.5), 0 12px 32px rgba(253, 29, 29, 0.5); 
-            }
-            50% { 
-                box-shadow: 0 0 0 8px rgba(253, 29, 29, 0.2), 0 12px 32px rgba(253, 29, 29, 0.4); 
-            }
-        }
-
-        .profil-name { 
-            font-size: 0.72rem; 
-            color: rgba(255, 255, 255, 0.7); 
-            text-align: center; 
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-            width: 100%;
-            font-weight: 600;
-            transition: color 0.3s;
-        }
-
-        .profil-card:hover .profil-name {
-            background: linear-gradient(45deg, #f09433, #dc2743);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* 📋 LISTE CONVERSATIONS */
-        .contacts-list { 
-            flex: 1; 
-            overflow-y: auto; 
-            scrollbar-width: thin;
-            scrollbar-color: rgba(253, 29, 29, 0.4) rgba(255, 255, 255, 0.05);
-        }
-
-        .contacts-list::-webkit-scrollbar { width: 6px; }
-        .contacts-list::-webkit-scrollbar-track { 
-            background: rgba(255, 255, 255, 0.03); 
-        }
-        .contacts-list::-webkit-scrollbar-thumb { 
-            background: linear-gradient(180deg, #f09433, #dc2743, #bc1888); 
-            border-radius: 3px;
-        }
-
-        .contacts-section-title { 
-            padding: 16px 24px; 
-            font-size: 0.7rem; 
-            text-transform: uppercase; 
-            letter-spacing: 1.5px; 
-            color: rgba(255, 255, 255, 0.5); 
-            font-weight: 800;
-            background: linear-gradient(180deg, 
-                rgba(0, 0, 0, 0.2), 
-                transparent
-            );
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            backdrop-filter: blur(10px);
-        }
-
-        .contact-item { 
-            display: flex; 
-            align-items: center; 
-            gap: 16px; 
-            padding: 16px 24px; 
-            cursor: pointer; 
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
-            text-decoration: none;
-            position: relative;
-        }
-
-        .contact-item::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 0;
-            height: 100%;
-            background: linear-gradient(90deg, #f09433, #e6683c, #dc2743);
-            transition: width 0.3s;
-        }
-
-        .contact-item:hover { 
-            background: rgba(253, 29, 29, 0.05); 
-            transform: translateX(8px);
-        }
-
-        .contact-item:hover::before {
-            width: 4px;
-        }
+        :root {
+            --dark: #0a0705;
+            --brown: #8B5E3C;
+            --brown-light: #C4956A;
+            --brown-dark: #5C3D20;
+            --blue: #3B82F6;
+            --blue-light: #60A5FA;
+            --blue-dark: #1D4ED8;
+            --white: #F5F0EB;
+            --white-dim: rgba(245,240,235,0.6);
+            --surface: rgba(245,240,235,0.04);
+            --border: rgba(245,240,235,0.08);
+            --pink: #f72585;
+            --purple: #7209b7;
+            --cyan: #4cc9f0;
+        }
+        * { box-sizing:border-box; margin:0; padding:0; }
+        html, body { height:100%; overflow:hidden; }
+        body { font-family:'DM Sans',sans-serif; background:var(--dark); color:var(--white); display:flex; }
+
+
+    /* FOND AMBIANCE */
+    body::before { content:''; position:fixed; inset:0;
+        background:
+            radial-gradient(ellipse 600px 400px at 15% 40%, rgba(139,94,60,0.08) 0%, transparent 70%),
+            radial-gradient(ellipse 500px 500px at 85% 60%, rgba(59,130,246,0.06) 0%, transparent 70%),
+            radial-gradient(ellipse 300px 300px at 50% 10%, rgba(196,149,106,0.04) 0%, transparent 60%);
+        pointer-events:none; z-index:0; animation:bgDrift 18s ease-in-out infinite alternate; }
+    @keyframes bgDrift { from{transform:translate(0,0)} to{transform:translate(15px,-15px)} }
+
+    /* ─── CANVA SHAPES ─── */
+    .canva-shapes { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+    .shape { position:absolute; animation:floatShape ease-in-out infinite alternate; }
+    .s1 { width:280px; height:280px; border-radius:50%; border:1.5px solid rgba(139,94,60,0.12); top:-60px; right:-50px; animation-duration:13s; }
+    .s2 { width:180px; height:180px; border-radius:50%; border:1px solid rgba(59,130,246,0.10); bottom:-40px; left:-40px; animation-duration:10s; animation-delay:-4s; }
+    .s3 { width:100px; height:100px; border-radius:50%; border:1px solid rgba(196,149,106,0.09); top:20%; right:6%; animation-duration:15s; animation-delay:-6s; }
+    .s4 { width:60px; height:60px; border-radius:50%; background:rgba(139,94,60,0.05); top:55%; right:3%; animation-duration:9s; animation-delay:-2s; }
+    .s5 { width:40px; height:40px; border-radius:50%; background:rgba(59,130,246,0.05); bottom:25%; left:3%; animation-duration:11s; animation-delay:-7s; }
+    .s6 { width:28px; height:28px; border-radius:8px; border:1px solid rgba(196,149,106,0.10); top:38%; right:14%; transform:rotate(20deg); animation-duration:12s; animation-delay:-3s; }
+    .dot-grid { position:absolute; inset:0; background-image:radial-gradient(circle,rgba(245,240,235,0.07) 1px,transparent 1px); background-size:30px 30px; }
+
+    /* EMOJIS CANVA FLOTTANTS */
+    .canva-emoji { position:absolute; font-size:1.4rem; opacity:0.08; animation:floatEmoji ease-in-out infinite alternate; user-select:none; }
+    .e1 { top:12%; left:2%; animation-duration:11s; }
+    .e2 { top:60%; right:2%; animation-duration:14s; animation-delay:-5s; }
+    .e3 { top:30%; left:5%; animation-duration:9s; animation-delay:-2s; }
+    .e4 { bottom:15%; right:5%; animation-duration:13s; animation-delay:-7s; }
+    .e5 { top:75%; left:3%; animation-duration:10s; animation-delay:-4s; }
+    .e6 { top:45%; right:5%; animation-duration:12s; animation-delay:-1s; }
+    @keyframes floatEmoji { from{transform:translate(0,0) rotate(-5deg)} to{transform:translate(8px,-12px) rotate(5deg)} }
+    @keyframes floatShape { from{transform:translate(0,0) rotate(0deg)} to{transform:translate(10px,-14px) rotate(8deg)} }
+
+    /* ─── SIDEBAR (même que Dashboard) ─── */
+    .sidebar { width:220px; background:rgba(10,7,5,0.96); border-right:1px solid rgba(139,94,60,0.15); padding:28px 14px; display:flex; flex-direction:column; position:fixed; top:0; left:0; bottom:0; z-index:100; overflow-y:auto; flex-shrink:0; }
+    .sidebar::-webkit-scrollbar { display:none; }
+    .sidebar-logo { display:flex; align-items:center; gap:10px; margin-bottom:6px; padding:0 6px; }
+    .logo-dot { width:28px; height:28px; border-radius:8px; background:linear-gradient(135deg,var(--brown),var(--blue)); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:#fff; font-family:'Syne',sans-serif; }
+    .logo-text { font-family:'Syne',sans-serif; font-size:0.88rem; font-weight:700; background:linear-gradient(90deg,var(--brown-light),var(--blue-light)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .sidebar-role { font-size:0.68rem; color:rgba(245,240,235,0.25); text-transform:uppercase; letter-spacing:1px; padding:0 6px; margin-bottom:14px; }
+    .sidebar-user { display:flex; align-items:center; gap:9px; background:rgba(139,94,60,0.06); border:1px solid rgba(139,94,60,0.15); border-radius:12px; padding:10px 12px; margin-bottom:20px; }
+    .sidebar-av { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--brown),var(--blue)); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; color:#fff; overflow:hidden; flex-shrink:0; }
+    .sidebar-av img { width:100%; height:100%; object-fit:cover; }
+    .sidebar-uname { font-size:0.82rem; font-weight:600; color:var(--white); }
+    .sidebar-urole { font-size:0.65rem; color:var(--brown-light); font-weight:600; }
+    .sidebar-nav { list-style:none; }
+    .sidebar-nav li { margin-bottom:2px; }
+    .sidebar-nav a { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:10px; color:rgba(245,240,235,0.45); text-decoration:none; font-size:0.85rem; font-weight:500; transition:all 0.2s; }
+    .sidebar-nav a i { width:16px; text-align:center; font-size:0.8rem; }
+    .sidebar-nav a:hover { color:rgba(245,240,235,0.85); background:rgba(245,240,235,0.05); }
+    .sidebar-nav a.active { color:#fff; background:linear-gradient(90deg,rgba(139,94,60,0.30),rgba(59,130,246,0.18)); border-left:2px solid var(--brown-light); font-weight:600; }
+    .sidebar-divider { height:1px; background:rgba(245,240,235,0.06); margin:14px 0; }
+    .sidebar-nav a.logout { color:rgba(255,100,100,0.6); }
+    .sidebar-nav a.logout:hover { color:#ff6b6b; background:rgba(255,100,100,0.08); }
+
+    /* ─── LAYOUT PRINCIPAL ─── */
+    .chat-root { margin-left:220px; flex:1; display:flex; height:100vh; overflow:hidden; position:relative; z-index:1; }
+
+    /* ─── PANEL CONTACTS ─── */
+    .contacts-panel { width:320px; background:rgba(10,7,5,0.85); border-right:1px solid rgba(139,94,60,0.15); display:flex; flex-direction:column; flex-shrink:0; backdrop-filter:blur(20px); }
+
+    .contacts-header { padding:20px 20px 14px; border-bottom:1px solid rgba(139,94,60,0.12); position:relative; }
+    .contacts-header::after { content:''; position:absolute; bottom:0; left:20px; right:20px; height:2px; background:linear-gradient(90deg,var(--brown),var(--blue)); border-radius:2px; }
+    .contacts-header h3 { font-family:'Syne',sans-serif; font-size:1rem; font-weight:800; color:var(--white); display:flex; align-items:center; gap:10px; }
+
+    /* STORIES */
+    .profils-section { padding:16px 20px 10px; border-bottom:1px solid rgba(139,94,60,0.10); }
+    .profils-section-title { font-size:0.65rem; text-transform:uppercase; letter-spacing:1.2px; color:rgba(245,240,235,0.35); font-weight:700; margin-bottom:12px; }
+    .profils-row { display:flex; gap:12px; overflow-x:auto; padding-bottom:6px; scrollbar-width:none; }
+    .profils-row::-webkit-scrollbar { display:none; }
+    .profil-card { display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer; text-decoration:none; flex-shrink:0; width:60px; transition:transform 0.3s; }
+    .profil-card:hover { transform:translateY(-5px); }
+    .profil-avatar { width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg,var(--brown),var(--blue)); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:18px; overflow:hidden; padding:2.5px; box-shadow:0 4px 14px rgba(139,94,60,0.35); transition:all 0.3s; }
+    .profil-avatar-inner { width:100%; height:100%; border-radius:50%; background:var(--dark); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+    .profil-avatar img { width:100%; height:100%; object-fit:cover; }
+    .profil-card:hover .profil-avatar { box-shadow:0 8px 22px rgba(59,130,246,0.4); }
+    .profil-avatar.active-border { animation:avatarPulse 2s infinite; }
+    @keyframes avatarPulse { 0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,0.5)} 50%{box-shadow:0 0 0 6px rgba(59,130,246,0.15)} }
+    .profil-name { font-size:0.68rem; color:rgba(245,240,235,0.6); text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; font-weight:500; }
+
+    /* LISTE CONVERSATIONS */
+    .contacts-section-title { padding:12px 20px 8px; font-size:0.63rem; text-transform:uppercase; letter-spacing:1.2px; color:rgba(245,240,235,0.3); font-weight:700; }
+    .contacts-list { flex:1; overflow-y:auto; scrollbar-width:thin; scrollbar-color:rgba(139,94,60,0.3) transparent; }
+    .contacts-list::-webkit-scrollbar { width:4px; }
+    .contacts-list::-webkit-scrollbar-thumb { background:rgba(139,94,60,0.3); border-radius:2px; }
+
+    .contact-item { display:flex; align-items:center; gap:13px; padding:13px 20px; cursor:pointer; transition:all 0.2s; text-decoration:none; border-bottom:1px solid rgba(245,240,235,0.04); position:relative; }
+    .contact-item::before { content:''; position:absolute; left:0; top:0; width:0; height:100%; background:linear-gradient(90deg,var(--brown),transparent); transition:width 0.25s; }
+    .contact-item:hover { background:rgba(139,94,60,0.06); }
+    .contact-item:hover::before { width:3px; }
+    .contact-item.active { background:rgba(59,130,246,0.07); }
+    .contact-item.active::before { width:3px; background:linear-gradient(180deg,var(--blue),var(--brown)); }
+
+    .contact-avatar { width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,var(--brown),var(--blue)); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:17px; overflow:hidden; padding:2px; flex-shrink:0; }
+    .contact-avatar-inner { width:100%; height:100%; border-radius:50%; background:var(--dark); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+    .contact-avatar img { width:100%; height:100%; object-fit:cover; }
+    .contact-info { flex:1; min-width:0; }
+    .contact-name { font-size:0.88rem; font-weight:600; color:var(--white); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:2px; }
+    .contact-last { font-size:0.75rem; color:rgba(245,240,235,0.4); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+    .empty-contacts { padding:40px 20px; color:rgba(245,240,235,0.4); font-size:0.85rem; text-align:center; line-height:1.8; }
+    .empty-contacts i { font-size:48px; display:block; margin-bottom:16px; opacity:0.3; }
+
+    /* ─── CONVERSATION PANEL ─── */
+    .conversation-panel { flex:1; display:flex; flex-direction:column; background:rgba(10,7,5,0.60); position:relative; backdrop-filter:blur(8px); }
+
+    /* HEADER CONV */
+    .conv-header { padding:16px 24px; background:rgba(10,7,5,0.85); border-bottom:1px solid rgba(139,94,60,0.12); display:flex; align-items:center; gap:14px; backdrop-filter:blur(20px); position:relative; z-index:5; flex-shrink:0; }
+    .conv-header::after { content:''; position:absolute; bottom:0; left:24px; right:24px; height:2px; background:linear-gradient(90deg,var(--brown-light),var(--blue),transparent); opacity:0.4; }
+    .conv-header-name { font-family:'Syne',sans-serif; font-size:0.98rem; font-weight:800; color:var(--white); margin-bottom:2px; }
+    .conv-header-status { font-size:0.72rem; color:var(--brown-light); font-weight:600; display:flex; align-items:center; gap:5px; }
+    .conv-header-status::before { content:''; width:5px; height:5px; background:var(--blue-light); border-radius:50%; box-shadow:0 0 6px var(--blue); animation:blink 2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    /* MESSAGES */
+    .conv-messages { flex:1; overflow-y:auto; padding:24px 24px; display:flex; flex-direction:column; gap:12px; scrollbar-width:thin; scrollbar-color:rgba(139,94,60,0.25) transparent; }
+    .conv-messages::-webkit-scrollbar { width:4px; }
+    .conv-messages::-webkit-scrollbar-thumb { background:rgba(139,94,60,0.25); border-radius:2px; }
+
+    .msg-item { display:flex; flex-direction:column; max-width:68%; animation:msgIn 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+    @keyframes msgIn { from{opacity:0;transform:translateY(12px) scale(0.95)} to{opacity:1;transform:none} }
+    .msg-moi { align-self:flex-end; align-items:flex-end; }
+    .msg-autre { align-self:flex-start; align-items:flex-start; }
+
+    .msg-bubble { padding:11px 16px; border-radius:18px; font-size:0.88rem; line-height:1.6; word-break:break-word; transition:transform 0.2s; }
+    .msg-bubble:hover { transform:translateY(-1px); }
+
+    .msg-moi .msg-bubble { background:linear-gradient(135deg,var(--brown),var(--brown-dark)); color:var(--white); border-bottom-right-radius:5px; box-shadow:0 3px 14px rgba(139,94,60,0.4); }
+    .msg-autre .msg-bubble { background:rgba(245,240,235,0.07); color:rgba(245,240,235,0.92); border-bottom-left-radius:5px; border:1px solid rgba(245,240,235,0.09); backdrop-filter:blur(10px); }
+
+    /* DATE + DOUBLE TICK */
+    .msg-footer { display:flex; align-items:center; gap:5px; margin-top:4px; padding:0 4px; }
+    .msg-date { font-size:0.68rem; color:rgba(245,240,235,0.28); }
+
+    /* ══ DOUBLE TICK ══ */
+    .msg-ticks { display:flex; align-items:center; gap:-2px; }
+    .tick { width:10px; height:10px; opacity:0.35; transition:all 0.4s ease; }
+    .tick:last-child { margin-left:-4px; }
+    .tick svg { width:10px; height:10px; }
+    /* État non-lu : gris */
+    .ticks-unread .tick { opacity:0.35; }
+    /* État lu : bleu */
+    .ticks-read .tick { opacity:1; }
+    .ticks-read .tick svg path { stroke: var(--blue-light); }
+
+    /* INPUT */
+    .conv-input { padding:16px 24px; background:rgba(10,7,5,0.90); border-top:1px solid rgba(139,94,60,0.12); display:flex; gap:12px; align-items:center; flex-shrink:0; backdrop-filter:blur(20px); position:relative; z-index:5; }
+    .conv-input::before { content:''; position:absolute; top:0; left:24px; right:24px; height:2px; background:linear-gradient(90deg,var(--brown),var(--blue),transparent); opacity:0.25; }
+
+    .emoji-btn { width:38px; height:38px; border-radius:50%; border:1px solid rgba(139,94,60,0.25); background:rgba(139,94,60,0.08); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:1rem; transition:all 0.2s; flex-shrink:0; }
+    .emoji-btn:hover { background:rgba(139,94,60,0.18); transform:scale(1.1); }
+
+    .conv-input input { flex:1; background:rgba(245,240,235,0.05); border:1px solid rgba(245,240,235,0.09); border-radius:22px; padding:11px 18px; color:var(--white); font-size:0.88rem; font-family:'DM Sans',sans-serif; outline:none; transition:all 0.2s; }
+    .conv-input input:focus { border-color:rgba(139,94,60,0.4); background:rgba(139,94,60,0.06); box-shadow:0 0 0 3px rgba(139,94,60,0.08); }
+    .conv-input input::placeholder { color:rgba(245,240,235,0.25); }
+
+    .send-btn { width:42px; height:42px; border-radius:50%; border:none; background:linear-gradient(135deg,var(--brown),var(--blue)); color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:0.9rem; transition:all 0.2s; box-shadow:0 4px 14px rgba(59,130,246,0.35); flex-shrink:0; }
+    .send-btn:hover { transform:scale(1.12) rotate(15deg); box-shadow:0 6px 20px rgba(59,130,246,0.5); }
+
+    /* EMOJI PICKER */
+    .emoji-picker { position:absolute; bottom:80px; left:24px; background:rgba(18,12,8,0.97); border:1px solid rgba(139,94,60,0.2); border-radius:14px; padding:12px; display:none; flex-wrap:wrap; gap:6px; width:240px; backdrop-filter:blur(20px); box-shadow:0 8px 32px rgba(0,0,0,0.6); z-index:50; }
+    .emoji-picker.open { display:flex; }
+    .emoji-picker span { font-size:1.3rem; cursor:pointer; padding:4px; border-radius:6px; transition:background 0.15s; }
+    .emoji-picker span:hover { background:rgba(139,94,60,0.2); }
+
+    /* EMPTY STATE */
+    .conv-empty { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; color:rgba(245,240,235,0.3); padding:40px; }
+    .conv-empty .big-emoji { font-size:4rem; opacity:0.25; }
+    .conv-empty p { font-size:0.9rem; text-align:center; line-height:1.8; }
+</style>
 
-        .contact-item.active { 
-            background: linear-gradient(90deg, 
-                rgba(131, 58, 180, 0.15), 
-                rgba(253, 29, 29, 0.1)
-            );
-        }
-
-        .contact-item.active::before {
-            width: 4px;
-        }
-
-        .contact-avatar { 
-            width: 50px; 
-            height: 50px; 
-            border-radius: 50%; 
-            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            color: white; 
-            font-weight: 800; 
-            font-size: 20px; 
-            flex-shrink: 0; 
-            overflow: hidden;
-            padding: 2px;
-            box-shadow: 0 6px 16px rgba(253, 29, 29, 0.3);
-            transition: all 0.3s;
-        }
-
-        .contact-avatar-inner {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .contact-avatar img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-            border-radius: 50%;
-        }
-
-        .contact-item:hover .contact-avatar {
-            transform: scale(1.1);
-            box-shadow: 0 8px 24px rgba(253, 29, 29, 0.5);
-        }
-
-        .contact-info { 
-            flex: 1; 
-            min-width: 0; 
-        }
-
-        .contact-name { 
-            font-size: 0.95rem; 
-            font-weight: 700; 
-            color: #fff; 
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis;
-            margin-bottom: 4px;
-            letter-spacing: -0.2px;
-        }
-
-        .contact-last { 
-            font-size: 0.78rem; 
-            color: rgba(255, 255, 255, 0.5); 
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis;
-            font-weight: 500;
-        }
-
-        /* ═══════════════════════════════════════════════════════════════════════════════════ */
-        /* CONVERSATION PANEL */
-        /* ═══════════════════════════════════════════════════════════════════════════════════ */
-        .conversation-panel { 
-            flex: 1; 
-            display: flex; 
-            flex-direction: column;
-            background: #000;
-            position: relative;
-        }
-
-        .conv-header { 
-            padding: 20px 28px; 
-            background: linear-gradient(180deg, 
-                rgba(0, 0, 0, 0.8), 
-                rgba(0, 0, 0, 0.5)
-            ); 
-            backdrop-filter: blur(30px) saturate(180%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
-            display: flex; 
-            align-items: center; 
-            gap: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-            position: relative;
-            z-index: 5;
-        }
-
-        .conv-header::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 28px;
-            right: 28px;
-            height: 2px;
-            background: linear-gradient(90deg, 
-                #f09433, 
-                #e6683c, 
-                #dc2743,
-                transparent
-            );
-            opacity: 0.3;
-        }
-
-        .conv-header .contact-avatar { 
-            width: 46px; 
-            height: 46px; 
-            font-size: 18px;
-        }
-
-        .conv-header-name { 
-            font-weight: 800; 
-            font-size: 1.05rem; 
-            color: #fff; 
-            margin-bottom: 4px;
-            letter-spacing: -0.3px;
-        }
-
-        .conv-header-status { 
-            font-size: 0.78rem; 
-            background: linear-gradient(45deg, #f09433, #dc2743);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .conv-header-status::before {
-            content: '';
-            width: 6px;
-            height: 6px;
-            background: #dc2743;
-            border-radius: 50%;
-            box-shadow: 0 0 8px #dc2743;
-            animation: blink 2s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .conv-messages { 
-            flex: 1; 
-            overflow-y: auto; 
-            padding: 32px 28px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 16px;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(253, 29, 29, 0.4) rgba(255, 255, 255, 0.05);
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(131, 58, 180, 0.03), transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(253, 29, 29, 0.03), transparent 40%);
-        }
-
-        .conv-messages::-webkit-scrollbar { width: 8px; }
-        .conv-messages::-webkit-scrollbar-track { 
-            background: rgba(255, 255, 255, 0.03); 
-            border-radius: 4px;
-        }
-        .conv-messages::-webkit-scrollbar-thumb { 
-            background: linear-gradient(180deg, #f09433, #dc2743, #bc1888); 
-            border-radius: 4px;
-        }
-
-        .msg-item { 
-            display: flex; 
-            flex-direction: column; 
-            max-width: 70%; 
-            animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        @keyframes slideIn {
-            from { 
-                opacity: 0; 
-                transform: translateY(20px) scale(0.9); 
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0) scale(1); 
-            }
-        }
 
-        .msg-moi { 
-            align-self: flex-end; 
-            align-items: flex-end; 
-        }
-
-        .msg-autre { 
-            align-self: flex-start; 
-            align-items: flex-start; 
-        }
-
-        .msg-bubble { 
-            padding: 14px 20px; 
-            border-radius: 22px; 
-            font-size: 0.92rem; 
-            line-height: 1.6; 
-            word-break: break-word;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-        }
-
-        .msg-bubble:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-        }
-
-        .msg-moi .msg-bubble { 
-            background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-            color: white; 
-            border-bottom-right-radius: 8px;
-            box-shadow: 0 4px 20px rgba(253, 29, 29, 0.5);
-        }
-
-        .msg-autre .msg-bubble { 
-            background: rgba(38, 38, 38, 0.8); 
-            color: rgba(255, 255, 255, 0.95); 
-            border-bottom-left-radius: 8px;
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .msg-date { 
-            font-size: 0.72rem; 
-            color: rgba(255, 255, 255, 0.4); 
-            margin-top: 6px; 
-            padding: 0 8px;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-        }
-
-        .conv-input { 
-            padding: 20px 28px; 
-            background: linear-gradient(180deg, 
-                rgba(0, 0, 0, 0.5), 
-                rgba(0, 0, 0, 0.8)
-            ); 
-            backdrop-filter: blur(30px) saturate(180%);
-            border-top: 1px solid rgba(255, 255, 255, 0.1); 
-            display: flex; 
-            gap: 14px; 
-            align-items: center;
-            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
-            position: relative;
-            z-index: 5;
-        }
-
-        .conv-input::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 28px;
-            right: 28px;
-            height: 2px;
-            background: linear-gradient(90deg, 
-                #f09433, 
-                #e6683c, 
-                #dc2743,
-                transparent
-            );
-            opacity: 0.3;
-        }
-
-        .conv-input input { 
-            flex: 1; 
-            background: rgba(38, 38, 38, 0.8); 
-            border: 1px solid rgba(255, 255, 255, 0.15); 
-            border-radius: 28px; 
-            padding: 14px 24px; 
-            color: #fff; 
-            font-size: 0.92rem; 
-            outline: none;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            font-family: inherit;
-        }
-
-        .conv-input input:focus {
-            background: rgba(38, 38, 38, 1);
-            border: 1px solid transparent;
-            box-shadow: 0 0 0 2px rgba(253, 29, 29, 0.5);
-            transform: scale(1.02);
-        }
-
-        .conv-input input::placeholder { 
-            color: rgba(255, 255, 255, 0.4); 
-        }
-
-        .conv-input button { 
-            width: 50px; 
-            height: 50px; 
-            border-radius: 50%; 
-            border: none; 
-            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-            color: white; 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 1rem;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 6px 20px rgba(253, 29, 29, 0.5);
-        }
-
-        .conv-input button:hover {
-            transform: scale(1.15) rotate(20deg);
-            box-shadow: 0 8px 28px rgba(253, 29, 29, 0.7);
-        }
-
-        .conv-input button:active {
-            transform: scale(1.05) rotate(10deg);
-        }
-
-        .conv-empty { 
-            flex: 1; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            color: rgba(255, 255, 255, 0.4); 
-            gap: 20px;
-            padding: 60px 40px;
-        }
-
-        .conv-empty i { 
-            font-size: 80px;
-            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            opacity: 0.5;
-        }
-
-        .conv-empty p { 
-            font-size: 1rem; 
-            text-align: center; 
-            padding: 0 20px;
-            line-height: 1.8;
-            font-weight: 600;
-        }
-
-        .empty-contacts { 
-            padding: 40px 24px; 
-            color: rgba(255, 255, 255, 0.5); 
-            font-size: 0.88rem; 
-            text-align: center; 
-            line-height: 1.8;
-        }
-
-        .empty-contacts i {
-            display: block;
-            margin-bottom: 20px;
-            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* ═══════════════════════════════════════════════════════════════════════════════════ */
-        /* RESPONSIVE */
-        /* ═══════════════════════════════════════════════════════════════════════════════════ */
-        @media (max-width: 992px) { 
-            body { flex-direction: column; } 
-            .sidebar { 
-                width: 100%; 
-                height: auto; 
-                border-right: none; 
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
-            } 
-            .contacts-panel { width: 100%; } 
-        }
-
-        @media (max-width: 768px) {
-            .sidebar { padding: 24px 20px; }
-            .contacts-panel { width: 100%; }
-            .profils-section { padding: 16px 20px; }
-            .conv-messages { padding: 20px 16px; }
-            .conv-input { padding: 16px 20px; }
-            .msg-bubble { padding: 12px 16px; }
-        }
-    </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════════════ -->
-<!-- SIDEBAR -->
-<!-- ═══════════════════════════════════════════════════════════════════════════════════ -->
+<!-- CANVA SHAPES + EMOJIS -->
+
+<div class="canva-shapes">
+    <div class="dot-grid"></div>
+    <div class="shape s1"></div>
+    <div class="shape s2"></div>
+    <div class="shape s3"></div>
+    <div class="shape s4"></div>
+    <div class="shape s5"></div>
+    <div class="shape s6"></div>
+    <div class="canva-emoji e1">📞</div>
+    <div class="canva-emoji e2">💬</div>
+    <div class="canva-emoji e3">📱</div>
+    <div class="canva-emoji e4">✉️</div>
+    <div class="canva-emoji e5">🔔</div>
+    <div class="canva-emoji e6">📨</div>
+</div>
+
+<!-- ─── SIDEBAR (même design que Dashboard) ─── -->
+
 <aside class="sidebar">
-    <h2>Réseau Alumni</h2>
+    <div class="sidebar-logo">
+        <div class="logo-dot">R</div>
+        <div class="logo-text">Réseau Alumni</div>
+    </div>
     {% if request.user.profile.role == 'alumni' %}
-    <p class="sidebar-subtitle">Espace Alumni</p>
+    <div class="sidebar-role">Espace Alumni</div>
+    <div class="sidebar-user">
+        <div class="sidebar-av">
+            {% if request.user.profile.photo %}<img src="{{ request.user.profile.photo.url }}">
+            {% else %}{{ request.user.get_full_name|default:request.user.username|first|upper }}{% endif %}
+        </div>
+        <div>
+            <div class="sidebar-uname">{{ request.user.get_full_name|default:request.user.username }}</div>
+            <div class="sidebar-urole">⭐ Alumni</div>
+        </div>
+    </div>
     <ul class="sidebar-nav">
         <li><a href="{% url 'dashboard_alumni' %}"><i class="fas fa-th-large"></i> Dashboard</a></li>
         <li><a href="{% url 'post_create' %}"><i class="fas fa-pen"></i> Publier un post</a></li>
-        <li><a href="{% url 'mes_posts' %}"><i class="fas fa-newspaper"></i> Mes posts</a></li>
-        <li><a href="{% url 'mes_offres' %}"><i class="fas fa-folder"></i> Mes offres</a></li>
         <li><a href="{% url 'offre_create' %}"><i class="fas fa-briefcase"></i> Publier une offre</a></li>
+        <li><a href="{% url 'fil_alumni' %}"><i class="fas fa-fire"></i> Le Fil</a></li>
         <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> Notifications</a></li>
         <li><a href="{% url 'chat_page' %}" class="active"><i class="fas fa-comment-dots"></i> Chat</a></li>
-        <li><a href="{% url 'profil_alumni' %}"><i class="fas fa-user"></i> Profil</a></li>
+        <li><a href="{% url 'profil_alumni' %}"><i class="fas fa-user-circle"></i> Profil</a></li>
     </ul>
     {% else %}
-    <p class="sidebar-subtitle">Espace Étudiant</p>
+    <div class="sidebar-role">Espace Étudiant</div>
+    <div class="sidebar-user">
+        <div class="sidebar-av">
+            {% if request.user.profile.photo %}<img src="{{ request.user.profile.photo.url }}">
+            {% else %}{{ request.user.get_full_name|default:request.user.username|first|upper }}{% endif %}
+        </div>
+        <div>
+            <div class="sidebar-uname">{{ request.user.get_full_name|default:request.user.username }}</div>
+            <div class="sidebar-urole">🎓 Étudiant</div>
+        </div>
+    </div>
     <ul class="sidebar-nav">
         <li><a href="{% url 'dashboard_etudiant' %}"><i class="fas fa-th-large"></i> Dashboard</a></li>
-        <li><a href="{% url 'offres' %}"><i class="fas fa-briefcase"></i> Offres</a></li>
+        <li><a href="{% url 'offres' %}"><i class="fas fa-briefcase"></i> Offres </a></li>
         <li><a href="{% url 'favoris' %}"><i class="fas fa-star"></i> Favoris</a></li>
         <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> Notifications</a></li>
         <li><a href="{% url 'chat_page' %}" class="active"><i class="fas fa-comment-dots"></i> Chat</a></li>
-        <li><a href="{% url 'profil_etudiant' %}"><i class="fas fa-user"></i> Profil</a></li>
+        <li><a href="{% url 'profil_etudiant' %}"><i class="fas fa-user-circle"></i> Profil</a></li>
     </ul>
     {% endif %}
-    <hr class="sidebar-divider"/>
+    <div class="sidebar-divider"></div>
     <ul class="sidebar-nav">
-        <li><a href="/logout/"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+        <li><a href="/logout/" class="logout"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
     </ul>
 </aside>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════════════ -->
-<!-- CHAT LAYOUT -->
-<!-- ═══════════════════════════════════════════════════════════════════════════════════ -->
-<div class="chat-layout">
+<!-- ─── CHAT ROOT ─── -->
 
-    <!-- ─────────────────────────────────────────────────────────────────────────────── -->
-    <!-- CONTACTS PANEL -->
-    <!-- ─────────────────────────────────────────────────────────────────────────────── -->
-    <div class="contacts-panel">
-        <div class="contacts-header">
-            <h3>💬 Messages</h3>
-        </div>
+<div class="chat-root">
 
-        {% if contacts %}
-        <!-- ✨ EN HAUT : Profils style Instagram Stories -->
-        <div class="profils-section">
-            <div class="profils-section-title">Alumni contactés</div>
-            <div class="profils-row">
-                {% for contact in contacts %}
-                <a href="{% url 'chat_avec' contact.id %}" class="profil-card">
-                    <div class="profil-avatar {% if selected_user and selected_user.id == contact.id %}active-border{% endif %}">
-                        <div class="profil-avatar-inner">
-                            {% if contact.profile.photo %}
-                                <img src="{{ contact.profile.photo.url }}" alt="{{ contact.get_full_name|default:contact.username }}"/>
-                            {% else %}
-                                {{ contact.get_full_name|default:contact.username|first|upper }}
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="profil-name">{{ contact.get_full_name|default:contact.username }}</div>
-                </a>
-                {% endfor %}
-            </div>
-        </div>
 
-        <!-- 📋 EN BAS : Liste conversations -->
-        <div class="contacts-section-title">Conversations</div>
-        <div class="contacts-list">
+<!-- CONTACTS PANEL -->
+<div class="contacts-panel">
+    <div class="contacts-header">
+        <h3>💬 Messages</h3>
+    </div>
+
+    {% if contacts %}
+    <div class="profils-section">
+        <div class="profils-section-title">Contacts récents</div>
+        <div class="profils-row">
             {% for contact in contacts %}
-            <a href="{% url 'chat_avec' contact.id %}" class="contact-item {% if selected_user and selected_user.id == contact.id %}active{% endif %}">
-                <div class="contact-avatar">
-                    <div class="contact-avatar-inner">
-                        {% if contact.profile.photo %}
-                            <img src="{{ contact.profile.photo.url }}" alt="{{ contact.get_full_name|default:contact.username }}"/>
-                        {% else %}
-                            {{ contact.get_full_name|default:contact.username|first|upper }}
-                        {% endif %}
+            <a href="{% url 'chat_avec' contact.id %}" class="profil-card">
+                <div class="profil-avatar {% if selected_user and selected_user.id == contact.id %}active-border{% endif %}">
+                    <div class="profil-avatar-inner">
+                        {% if contact.profile.photo %}<img src="{{ contact.profile.photo.url }}">
+                        {% else %}{{ contact.get_full_name|default:contact.username|first|upper }}{% endif %}
                     </div>
                 </div>
-                <div class="contact-info">
-                    <div class="contact-name">{{ contact.get_full_name|default:contact.username }}</div>
-                    <div class="contact-last">
-                        {% if contact.profile.role == 'alumni' %}
-                            Alumni · {{ contact.profile.filiere_alumni|default:"Université de Djibouti" }}
-                        {% else %}
-                            Étudiant
-                        {% endif %}
-                    </div>
-                </div>
+                <div class="profil-name">{{ contact.get_full_name|default:contact.username }}</div>
             </a>
             {% endfor %}
         </div>
-
-        {% else %}
-        <!-- Aucun contact -->
-        <div class="empty-contacts">
-            <i class="fas fa-comment-dots" style="font-size:64px;"></i>
-            {% if request.user.profile.role == 'etudiant' %}
-            Tu n'as encore contacté aucun alumni.<br>Clique sur <strong style="background:linear-gradient(45deg,#f09433,#dc2743);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Écrire</strong> sur un post pour démarrer !
-            {% else %}
-            Aucun étudiant ne t'a encore contacté.
-            {% endif %}
-        </div>
-        {% endif %}
-
     </div>
 
-    <!-- ─────────────────────────────────────────────────────────────────────────────── -->
-    <!-- CONVERSATION PANEL -->
-    <!-- ─────────────────────────────────────────────────────────────────────────────── -->
-    <div class="conversation-panel">
-        {% if selected_user %}
-        <div class="conv-header">
+    <div class="contacts-section-title">Conversations</div>
+    <div class="contacts-list">
+        {% for contact in contacts %}
+        <a href="{% url 'chat_avec' contact.id %}" class="contact-item {% if selected_user and selected_user.id == contact.id %}active{% endif %}">
             <div class="contact-avatar">
                 <div class="contact-avatar-inner">
-                    {% if selected_user.profile.photo %}
-                        <img src="{{ selected_user.profile.photo.url }}" alt="{{ selected_user.get_full_name|default:selected_user.username }}"/>
-                    {% else %}
-                        {{ selected_user.get_full_name|default:selected_user.username|first|upper }}
-                    {% endif %}
+                    {% if contact.profile.photo %}<img src="{{ contact.profile.photo.url }}">
+                    {% else %}{{ contact.get_full_name|default:contact.username|first|upper }}{% endif %}
                 </div>
             </div>
-            <div>
-                <div class="conv-header-name">{{ selected_user.get_full_name|default:selected_user.username }}</div>
-                <div class="conv-header-status">
-                    {% if selected_user.profile.role == 'alumni' %}Alumni{% else %}Étudiant{% endif %}
+            <div class="contact-info">
+                <div class="contact-name">{{ contact.get_full_name|default:contact.username }}</div>
+                <div class="contact-last">
+                    {% if contact.profile.role == 'alumni' %}⭐ Alumni{% else %}🎓 Étudiant{% endif %}
                 </div>
             </div>
-        </div>
+        </a>
+        {% endfor %}
+    </div>
 
-        <div class="conv-messages" id="conv-messages">
-            {% for msg in conversation %}
-            <div class="msg-item {% if msg.expediteur == request.user %}msg-moi{% else %}msg-autre{% endif %}">
-                <div class="msg-bubble">{{ msg.contenu }}</div>
-                <div class="msg-date">{{ msg.date_envoi|date:"d/m/Y à H:i" }}</div>
-            </div>
-            {% empty %}
-            <div style="text-align:center;color:rgba(255,255,255,0.4);padding:80px 20px;font-size:0.95rem;">
-                <i class="fas fa-comments" style="font-size:64px;display:block;margin-bottom:24px;opacity:0.5;background:linear-gradient(45deg,#f09433,#dc2743,#bc1888);-webkit-background-clip:text;-webkit-text-fill-color:transparent;"></i>
-                <strong>Démarrez la conversation !</strong>
-            </div>
-            {% endfor %}
-        </div>
-
-        <div class="conv-input">
-            <input type="text" id="msg-input" placeholder="Écrire un message…" autocomplete="off">
-            <button onclick="envoyerMessage()" title="Envoyer"><i class="fas fa-paper-plane"></i></button>
-        </div>
-
+    {% else %}
+    <div class="empty-contacts">
+        <i class="fas fa-comment-dots"></i>
+        {% if request.user.profile.role == 'etudiant' %}
+        Aucun alumni contacté.<br>Clique sur <strong>Écrire</strong> sur un post !
         {% else %}
-        <div class="conv-empty">
-            <i class="fas fa-comment-dots"></i>
-            {% if request.user.profile.role == 'alumni' %}
-            <p>Sélectionne une conversation ou attends qu'un étudiant te contacte</p>
-            {% else %}
-            <p>Sélectionne un alumni pour démarrer une conversation</p>
-            {% endif %}
-        </div>
+        Aucun étudiant ne t'a encore contacté.
         {% endif %}
     </div>
+    {% endif %}
+</div>
+
+<!-- CONVERSATION PANEL -->
+<div class="conversation-panel">
+    {% if selected_user %}
+
+    <div class="conv-header">
+        <div class="contact-avatar">
+            <div class="contact-avatar-inner">
+                {% if selected_user.profile.photo %}<img src="{{ selected_user.profile.photo.url }}">
+                {% else %}{{ selected_user.get_full_name|default:selected_user.username|first|upper }}{% endif %}
+            </div>
+        </div>
+        <div>
+            <div class="conv-header-name">{{ selected_user.get_full_name|default:selected_user.username }}</div>
+            <div class="conv-header-status">
+                {% if selected_user.profile.role == 'alumni' %}Alumni{% else %}Étudiant{% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="conv-messages" id="conv-messages">
+        {% for msg in conversation %}
+        <div class="msg-item {% if msg.expediteur == request.user %}msg-moi{% else %}msg-autre{% endif %}">
+            <div class="msg-bubble">{{ msg.contenu }}</div>
+            <div class="msg-footer">
+                <div class="msg-date">{{ msg.date_envoi|date:"d/m/Y à H:i" }}</div>
+                {% if msg.expediteur == request.user %}
+                <!-- Double tick : lu = bleu, non lu = gris -->
+                <div class="msg-ticks {% if msg.lu %}ticks-read{% else %}ticks-unread{% endif %}">
+                    <span class="tick">
+                        <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M2 8L6 12L14 4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                    <span class="tick">
+                        <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M2 8L6 12L14 4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div style="text-align:center;color:rgba(245,240,235,0.3);padding:60px 20px;">
+            <div style="font-size:3rem;margin-bottom:12px;">💬</div>
+            <div style="font-size:0.88rem;">Démarrez la conversation !</div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- EMOJI PICKER -->
+    <div class="emoji-picker" id="emoji-picker">
+        <span onclick="insertEmoji('😊')">😊</span>
+        <span onclick="insertEmoji('😂')">😂</span>
+        <span onclick="insertEmoji('❤️')">❤️</span>
+        <span onclick="insertEmoji('👍')">👍</span>
+        <span onclick="insertEmoji('🙏')">🙏</span>
+        <span onclick="insertEmoji('🔥')">🔥</span>
+        <span onclick="insertEmoji('✅')">✅</span>
+        <span onclick="insertEmoji('🎓')">🎓</span>
+        <span onclick="insertEmoji('💼')">💼</span>
+        <span onclick="insertEmoji('👏')">👏</span>
+        <span onclick="insertEmoji('🚀')">🚀</span>
+        <span onclick="insertEmoji('💡')">💡</span>
+        <span onclick="insertEmoji('😍')">😍</span>
+        <span onclick="insertEmoji('🤝')">🤝</span>
+        <span onclick="insertEmoji('💪')">💪</span>
+        <span onclick="insertEmoji('🎉')">🎉</span>
+    </div>
+
+    <div class="conv-input">
+        <div class="emoji-btn" onclick="toggleEmoji()" title="Emoji">😊</div>
+        <input type="text" id="msg-input" placeholder="Écrire un message…" autocomplete="off">
+        <button class="send-btn" onclick="envoyerMessage()" title="Envoyer">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    </div>
+
+    {% else %}
+    <div class="conv-empty">
+        <div class="big-emoji">💬</div>
+        <p>
+            {% if request.user.profile.role == 'alumni' %}
+            Sélectionne une conversation<br>ou attends qu'un étudiant te contacte
+            {% else %}
+            Sélectionne un alumni<br>pour démarrer une conversation
+            {% endif %}
+        </p>
+    </div>
+    {% endif %}
+</div>
+
+
 </div>
 
 <script>
 const CSRF = "{{ csrf_token }}";
-{% if selected_user %}
-const DEST_ID = {{ selected_user.id }};
-{% endif %}
+{% if selected_user %}const DEST_ID = {{ selected_user.id }};{% endif %}
 
 function envoyerMessage() {
     const input = document.getElementById('msg-input');
@@ -1035,10 +444,7 @@ function envoyerMessage() {
 
     fetch(`/chat/${DEST_ID}/envoyer/`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded', 
-            'X-CSRFToken': CSRF
-        },
+        headers: { 'Content-Type':'application/x-www-form-urlencoded', 'X-CSRFToken':CSRF },
         body: `contenu=${encodeURIComponent(text)}`
     })
     .then(r => r.json())
@@ -1050,13 +456,20 @@ function envoyerMessage() {
             div.className = 'msg-item msg-moi';
             div.innerHTML = `
                 <div class="msg-bubble">${escapeHtml(text)}</div>
-                <div class="msg-date">À l'instant</div>
+                <div class="msg-footer">
+                    <div class="msg-date">À l'instant</div>
+                    <div class="msg-ticks ticks-unread">
+                        <span class="tick"><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8L6 12L14 4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                        <span class="tick"><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8L6 12L14 4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    </div>
+                </div>
             `;
             box.appendChild(div);
             box.scrollTop = box.scrollHeight;
+            closePicker();
         }
     })
-    .catch(err => console.error('Erreur envoi:', err));
+    .catch(err => console.error('Erreur:', err));
 }
 
 function escapeHtml(text) {
@@ -1065,20 +478,28 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-const msgInput = document.getElementById('msg-input');
-if (msgInput) {
-    msgInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            envoyerMessage();
-        }
-    });
+document.getElementById('msg-input')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); envoyerMessage(); }
+});
+
+function toggleEmoji() {
+    document.getElementById('emoji-picker').classList.toggle('open');
 }
+function closePicker() {
+    document.getElementById('emoji-picker')?.classList.remove('open');
+}
+function insertEmoji(emoji) {
+    const input = document.getElementById('msg-input');
+    if (input) { input.value += emoji; input.focus(); }
+}
+document.addEventListener('click', e => {
+    const picker = document.getElementById('emoji-picker');
+    if (picker && !picker.contains(e.target) && !e.target.classList.contains('emoji-btn')) closePicker();
+});
 
 const box = document.getElementById('conv-messages');
-if (box) {
-    box.scrollTop = box.scrollHeight;
-}
+if (box) box.scrollTop = box.scrollHeight;
 </script>
+
 </body>
 </html>

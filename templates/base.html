@@ -1,4 +1,4 @@
-
+{% load static %}
 <html lang="fr">
 <head>
   <meta charset="UTF-8"/>
@@ -11,13 +11,16 @@
     :root {
       --pink:#f72585; --purple:#7209b7; --cyan:#4cc9f0;
       --blue:#3a0ca3; --green:#00e676; --dark:#0a0a0f;
+      --surface:rgba(255,255,255,0.04); --border:rgba(255,255,255,0.07);
     }
     * { margin:0; padding:0; box-sizing:border-box; }
+    html, body { height:100%; }
     body {
       font-family:'DM Sans',sans-serif;
       background:var(--dark);
       color:#fff;
       min-height:100vh;
+      display:flex;
     }
     body::before {
       content:'';
@@ -28,187 +31,236 @@
       pointer-events:none; z-index:0;
     }
 
-    /* ── Navbar ── */
-    .navbar {
-      background:rgba(10,10,20,0.85);
-      border-bottom:1px solid rgba(247,37,133,0.1);
-      padding:0 32px; height:64px;
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width:220px; flex-shrink:0;
+      background:rgba(6,15,10,0.95);
+      border-right:1px solid rgba(247,37,133,0.10);
+      padding:28px 14px;
+      display:flex; flex-direction:column;
+      position:fixed; top:0; left:0; bottom:0;
+      z-index:100; overflow-y:auto;
+    }
+    .sidebar::-webkit-scrollbar { display:none; }
+
+    .sidebar-logo { display:flex; align-items:center; gap:10px; margin-bottom:6px; padding:0 6px; }
+    .logo-dot { width:28px; height:28px; border-radius:8px; background:linear-gradient(135deg,var(--pink),var(--purple),var(--cyan)); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:#fff; font-family:'Syne',sans-serif; }
+    .logo-text { font-family:'Syne',sans-serif; font-size:0.88rem; font-weight:700; background:linear-gradient(90deg,var(--pink),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+
+    .sidebar-role { font-size:0.68rem; color:rgba(255,255,255,0.25); text-transform:uppercase; letter-spacing:1px; padding:0 6px; margin-bottom:14px; }
+
+    .sidebar-user { display:flex; align-items:center; gap:9px; background:rgba(247,37,133,0.06); border:1px solid rgba(247,37,133,0.12); border-radius:12px; padding:10px 12px; margin-bottom:20px; }
+    .sidebar-av { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--pink),var(--purple)); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; color:#fff; overflow:hidden; flex-shrink:0; }
+    .sidebar-av img { width:100%; height:100%; object-fit:cover; }
+    .sidebar-uname { font-size:0.82rem; font-weight:600; color:#fff; }
+    .sidebar-urole { font-size:0.65rem; color:var(--pink); font-weight:600; }
+
+    .sidebar-nav { list-style:none; }
+    .sidebar-nav li { margin-bottom:2px; }
+    .sidebar-nav a { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:10px; color:rgba(255,255,255,0.45); text-decoration:none; font-size:0.85rem; font-weight:500; transition:all 0.2s; }
+    .sidebar-nav a i { width:16px; text-align:center; font-size:0.8rem; }
+    .sidebar-nav a:hover { color:rgba(255,255,255,0.8); background:rgba(255,255,255,0.05); }
+    .sidebar-nav a.active { color:#fff; background:linear-gradient(90deg,rgba(247,37,133,0.3),rgba(114,9,183,0.2)); border-left:2px solid var(--pink); font-weight:600; }
+    .sidebar-divider { height:1px; background:rgba(255,255,255,0.06); margin:14px 0; }
+    .sidebar-nav a.logout { color:rgba(255,100,100,0.6); }
+    .sidebar-nav a.logout:hover { color:#ff6b6b; background:rgba(255,100,100,0.08); }
+
+    /* Notif count dans sidebar */
+    .nav-badge { margin-left:auto; background:var(--pink); color:#fff; font-size:9px; padding:1px 6px; border-radius:999px; font-weight:700; }
+
+    /* ── MAIN WRAPPER ── */
+    .main-wrapper {
+      margin-left:220px;
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      min-height:100vh;
+      position:relative;
+      z-index:1;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      height:56px;
+      background:rgba(6,15,10,0.85);
+      border-bottom:1px solid rgba(247,37,133,0.08);
       display:flex; align-items:center; justify-content:space-between;
-      position:sticky; top:0; z-index:100;
-      backdrop-filter:blur(16px);
+      padding:0 28px;
+      position:sticky; top:0; z-index:50;
+      backdrop-filter:blur(12px);
     }
+    .topbar-left { display:flex; align-items:center; gap:8px; }
+    .topbar-breadcrumb { font-size:0.75rem; color:rgba(255,255,255,0.3); display:flex; align-items:center; gap:6px; }
+    .topbar-breadcrumb span { color:rgba(255,255,255,0.6); font-weight:600; }
+    .topbar-right { display:flex; align-items:center; gap:10px; }
 
-    /* Brand */
-    .navbar-brand {
-      display:flex; align-items:center; gap:10px;
-      text-decoration:none;
-    }
-    .brand-dot {
-      width:32px; height:32px; border-radius:10px;
-      background:linear-gradient(135deg,var(--pink),var(--purple),var(--cyan));
-      display:flex; align-items:center; justify-content:center;
-      font-weight:800; font-size:14px; color:#fff;
-      font-family:'Syne',sans-serif;
-    }
-    .brand-name {
-      font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:800;
-      background:linear-gradient(90deg,var(--pink),var(--cyan));
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    }
+    .topbar-notif { position:relative; color:rgba(255,255,255,0.5); text-decoration:none; font-size:1rem; transition:color 0.2s; }
+    .topbar-notif:hover { color:var(--pink); }
+    .topbar-badge { position:absolute; top:-6px; right:-7px; background:var(--pink); color:white; font-size:0.6rem; font-weight:700; min-width:15px; height:15px; border-radius:8px; display:flex; align-items:center; justify-content:center; border:2px solid var(--dark); animation:pulse 1.5s infinite; }
+    @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(247,37,133,0.5)} 70%{box-shadow:0 0 0 5px rgba(247,37,133,0)} 100%{box-shadow:0 0 0 0 rgba(247,37,133,0)} }
 
-    /* Nav links */
-    .navbar-right { display:flex; align-items:center; gap:6px; }
-    .nav-link {
-      color:rgba(255,255,255,0.5);
-      text-decoration:none; font-size:0.85rem; font-weight:500;
-      padding:7px 12px; border-radius:8px;
-      transition:all 0.2s; display:flex; align-items:center; gap:6px;
-      font-family:'DM Sans',sans-serif;
-    }
-    .nav-link:hover { color:#fff; background:rgba(255,255,255,0.06); }
+    .topbar-user { display:flex; align-items:center; gap:8px; background:var(--surface); border:1px solid var(--border); border-radius:999px; padding:5px 12px 5px 5px; }
+    .topbar-av { width:26px; height:26px; border-radius:50%; background:linear-gradient(135deg,var(--pink),var(--purple)); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; color:#fff; overflow:hidden; }
+    .topbar-av img { width:100%; height:100%; object-fit:cover; }
+    .topbar-user span { font-size:0.8rem; color:rgba(255,255,255,0.7); }
 
-    /* User chip */
-    .user-chip {
-      display:flex; align-items:center; gap:8px;
-      background:rgba(255,255,255,0.05);
-      border:1px solid rgba(255,255,255,0.08);
-      border-radius:999px; padding:5px 12px 5px 5px;
-    }
-    .user-initiale {
-      width:28px; height:28px; border-radius:50%;
-      background:linear-gradient(135deg,var(--pink),var(--purple));
-      display:flex; align-items:center; justify-content:center;
-      font-weight:800; font-size:11px; color:#fff;
-      font-family:'Syne',sans-serif;
-    }
-    .user-name { font-size:0.82rem; color:rgba(255,255,255,0.7); font-weight:500; }
-
-    /* Notif badge */
-    .notif-wrapper { position:relative; display:inline-flex; align-items:center; }
-    .notif-badge {
-      position:absolute; top:-8px; right:-10px;
-      background:var(--pink); color:white;
-      font-size:0.6rem; font-weight:700;
-      min-width:16px; height:16px; padding:0 4px;
-      border-radius:8px;
-      display:flex; align-items:center; justify-content:center;
-      border:2px solid var(--dark);
-      animation:pulse 1.5s infinite;
-    }
-    @keyframes pulse {
-      0%{box-shadow:0 0 0 0 rgba(247,37,133,0.5)}
-      70%{box-shadow:0 0 0 5px rgba(247,37,133,0)}
-      100%{box-shadow:0 0 0 0 rgba(247,37,133,0)}
-    }
-
-    /* Divider */
-    .nav-divider { width:1px; height:20px; background:rgba(255,255,255,0.08); margin:0 4px; }
-
-    /* Logout btn */
-    .btn-logout {
-      background:rgba(255,77,77,0.1);
-      border:1px solid rgba(255,77,77,0.25);
-      color:#ff6b6b !important;
-      padding:7px 14px; border-radius:8px;
-      font-size:0.82rem; font-weight:600;
-      display:flex; align-items:center; gap:6px;
-      text-decoration:none; transition:all 0.2s;
-      font-family:'DM Sans',sans-serif;
-    }
-    .btn-logout:hover { background:rgba(255,77,77,0.2); color:#ff4d4d !important; }
-
-    /* Admin badge */
-    .admin-link {
-      background:linear-gradient(135deg,rgba(247,37,133,0.15),rgba(114,9,183,0.15));
-      border:1px solid rgba(247,37,133,0.2);
-      color:var(--pink) !important;
-      padding:7px 14px; border-radius:8px;
-      font-size:0.82rem; font-weight:600;
-      display:flex; align-items:center; gap:6px;
-      text-decoration:none; transition:all 0.2s;
-    }
-    .admin-link:hover { background:linear-gradient(135deg,rgba(247,37,133,0.25),rgba(114,9,183,0.25)); }
-
-    /* ── Barre colorée en haut ── */
-    .top-bar {
+    /* ── TOP BAR ANIMÉE ── */
+    .top-color-bar {
       height:3px;
       background:linear-gradient(90deg,var(--pink),var(--purple),var(--cyan),var(--green),var(--cyan),var(--purple),var(--pink));
       background-size:200% 100%;
       animation:shimmer 3s linear infinite;
+      position:sticky; top:0; z-index:200;
     }
     @keyframes shimmer { 0%{background-position:0% 0%} 100%{background-position:200% 0%} }
 
-    /* ── Contenu ── */
+    /* ── CONTENT ── */
     .main-content {
-      max-width:1200px; margin:0 auto;
-      padding:32px 24px;
+      flex:1;
+      padding:28px 32px;
+      overflow-y:auto;
       position:relative; z-index:1;
+    }
+    .main-content::-webkit-scrollbar { width:4px; }
+    .main-content::-webkit-scrollbar-thumb { background:rgba(247,37,133,0.2); border-radius:2px; }
+
+    /* Admin : pas de sidebar */
+    .no-sidebar .sidebar { display:none; }
+    .no-sidebar .main-wrapper { margin-left:0; }
+
+    @media (max-width:768px) {
+      .sidebar { display:none; }
+      .main-wrapper { margin-left:0; }
     }
   </style>
 </head>
 <body>
 
-<!-- Barre animée en haut -->
-<div class="top-bar"></div>
+<!-- BARRE COLORÉE -->
+<div class="top-color-bar"></div>
 
-<nav class="navbar">
-  <a href="/" class="navbar-brand">
-    <div class="brand-dot">R</div>
-    <div class="brand-name">Réseau Alumni</div>
-  </a>
-
-  <div class="navbar-right">
-    {% if user.is_authenticated %}
-
-      <!-- User chip -->
-      <div class="user-chip">
-        <div class="user-initiale">{{ user.get_full_name|default:user.username|first|upper }}</div>
-        <span class="user-name">{{ user.get_full_name|default:user.username }}</span>
-      </div>
-
-      <div class="nav-divider"></div>
-
-      {% if not user.is_staff and not user.is_superuser %}
-        <a href="/offres/" class="nav-link"><i class="fas fa-briefcase"></i> Offres</a>
-        <a href="/favoris/" class="nav-link"><i class="fas fa-star"></i> Favoris</a>
-      {% endif %}
-
-      <!-- Notifications avec badge -->
-      <div class="notif-wrapper">
-        <a href="{% url 'notifications' %}" class="nav-link">
-          <i class="fas fa-bell"></i> Notifications
-        </a>
-        {% if nb_notifications > 0 %}
-          <span class="notif-badge">{{ nb_notifications }}</span>
-        {% endif %}
-      </div>
-
-      {% if user.is_staff or user.is_superuser %}
-        <a href="{% url 'admin_dashboard' %}" class="admin-link">
-          <i class="fas fa-shield-alt"></i> Admin
-        </a>
-      {% endif %}
-
-      <div class="nav-divider"></div>
-
-      {% if user.is_staff or user.is_superuser %}
-        <a href="/admin-logout/" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
-      {% else %}
-        <a href="/logout/" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
-      {% endif %}
-
-    {% else %}
-      <a href="{% url 'login' %}" class="nav-link"><i class="fas fa-sign-in-alt"></i> Connexion</a>
-      <a href="{% url 'register' %}" class="nav-link" style="background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;padding:7px 16px;border-radius:8px;font-weight:600;">
-        <i class="fas fa-user-plus"></i> S'inscrire
-      </a>
-    {% endif %}
+{% if user.is_authenticated and not user.is_staff and not user.is_superuser %}
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-dot">R</div>
+    <div class="logo-text">Réseau Alumni</div>
   </div>
-</nav>
 
-<div class="main-content">
-  {% block content %}{% endblock %}
+  {% if user.profile.role == 'alumni' %}
+  <div class="sidebar-role">Espace Alumni</div>
+  {% else %}
+  <div class="sidebar-role">Espace Étudiant</div>
+  {% endif %}
+
+  <div class="sidebar-user">
+    <div class="sidebar-av">
+      {% if user.profile.photo %}
+        <img src="{{ user.profile.photo.url }}">
+      {% else %}
+        {{ user.get_full_name|default:user.username|first|upper }}
+      {% endif %}
+    </div>
+    <div>
+      <div class="sidebar-uname">{{ user.get_full_name|default:user.username }}</div>
+      <div class="sidebar-urole">
+        {% if user.profile.role == 'alumni' %}⭐ Alumni{% else %}🎓 Étudiant{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- MENU ALUMNI -->
+  {% if user.profile.role == 'alumni' %}
+  <ul class="sidebar-nav">
+    <li><a href="{% url 'dashboard_alumni' %}" {% if request.resolver_match.url_name == 'dashboard_alumni' %}class="active"{% endif %}><i class="fas fa-th-large"></i> Dashboard</a></li>
+    <li><a href="{% url 'post_create' %}" {% if request.resolver_match.url_name == 'post_create' %}class="active"{% endif %}><i class="fas fa-pen"></i> Publier un post</a></li>
+    <li><a href="{% url 'offre_create' %}" {% if request.resolver_match.url_name == 'offre_create' %}class="active"{% endif %}><i class="fas fa-briefcase"></i> Publier une offre</a></li>
+    <li><a href="{% url 'fil_alumni' %}" {% if request.resolver_match.url_name == 'fil_alumni' %}class="active"{% endif %}><i class="fas fa-fire"></i> Le Fil</a></li>
+    <li>
+      <a href="{% url 'notifications' %}" {% if request.resolver_match.url_name == 'notifications' %}class="active"{% endif %}>
+        <i class="fas fa-bell"></i> Notifications
+        {% if nb_notifications > 0 %}<span class="nav-badge">{{ nb_notifications }}</span>{% endif %}
+      </a>
+    </li>
+    <li><a href="{% url 'chat_page' %}" {% if request.resolver_match.url_name == 'chat_page' %}class="active"{% endif %}><i class="fas fa-comment-dots"></i> Chat</a></li>
+    <li><a href="{% url 'profil_alumni' %}" {% if request.resolver_match.url_name == 'profil_alumni' %}class="active"{% endif %}><i class="fas fa-user-circle"></i> Profil</a></li>
+  </ul>
+
+  <!-- MENU ÉTUDIANT -->
+  {% else %}
+  <ul class="sidebar-nav">
+    <li><a href="{% url 'dashboard_etudiant' %}" {% if request.resolver_match.url_name == 'dashboard_etudiant' %}class="active"{% endif %}><i class="fas fa-th-large"></i> Dashboard</a></li>
+    <li><a href="{% url 'offres' %}" {% if request.resolver_match.url_name == 'offres' %}class="active"{% endif %}><i class="fas fa-briefcase"></i> Offres</a></li>
+    <li><a href="{% url 'posts_etudiant' %}" {% if request.resolver_match.url_name == 'posts_etudiant' %}class="active"{% endif %}><i class="fas fa-newspaper"></i> Posts</a></li>
+    <li><a href="{% url 'favoris' %}" {% if request.resolver_match.url_name == 'favoris' %}class="active"{% endif %}><i class="fas fa-star"></i> Favoris</a></li>
+    <li>
+      <a href="{% url 'notifications' %}" {% if request.resolver_match.url_name == 'notifications' %}class="active"{% endif %}>
+        <i class="fas fa-bell"></i> Notifications
+        {% if nb_notifications > 0 %}<span class="nav-badge">{{ nb_notifications }}</span>{% endif %}
+      </a>
+    </li>
+    <li><a href="{% url 'chat_page' %}" {% if request.resolver_match.url_name == 'chat_page' %}class="active"{% endif %}><i class="fas fa-comment-dots"></i> Chat</a></li>
+    <li><a href="{% url 'profil_etudiant' %}" {% if request.resolver_match.url_name == 'profil_etudiant' %}class="active"{% endif %}><i class="fas fa-user"></i> Profil</a></li>
+  </ul>
+  {% endif %}
+
+  <div class="sidebar-divider"></div>
+  <ul class="sidebar-nav">
+    <li><a href="/logout/" class="logout"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+  </ul>
+</aside>
+{% endif %}
+
+<!-- MAIN WRAPPER -->
+<div class="main-wrapper">
+
+  <!-- TOPBAR -->
+  {% if user.is_authenticated %}
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-breadcrumb">
+        <i class="fas fa-home" style="font-size:0.7rem"></i>
+        <i class="fas fa-chevron-right" style="font-size:0.55rem"></i>
+        <span>{% block topbar_title %}Accueil{% endblock %}</span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      {% if not user.is_staff %}
+      <a href="{% url 'notifications' %}" class="topbar-notif">
+        <i class="fas fa-bell"></i>
+        {% if nb_notifications > 0 %}<span class="topbar-badge">{{ nb_notifications }}</span>{% endif %}
+      </a>
+      {% endif %}
+      <div class="topbar-user">
+        <div class="topbar-av">
+          {% if user.is_authenticated and not user.is_staff %}
+            {% if user.profile.photo %}<img src="{{ user.profile.photo.url }}">
+            {% else %}{{ user.get_full_name|default:user.username|first|upper }}{% endif %}
+          {% else %}
+            {{ user.get_full_name|default:user.username|first|upper }}
+          {% endif %}
+        </div>
+        <span>{{ user.get_full_name|default:user.username }}</span>
+      </div>
+      {% if user.is_staff or user.is_superuser %}
+      <a href="{% url 'admin_dashboard' %}" style="display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(247,37,133,0.15),rgba(114,9,183,0.15));border:1px solid rgba(247,37,133,0.2);color:var(--pink);padding:6px 14px;border-radius:8px;font-size:0.8rem;font-weight:600;text-decoration:none;">
+        <i class="fas fa-shield-alt"></i> Admin
+      </a>
+      <a href="/admin-logout/" style="display:flex;align-items:center;gap:6px;background:rgba(255,77,77,0.1);border:1px solid rgba(255,77,77,0.25);color:#ff6b6b;padding:6px 14px;border-radius:8px;font-size:0.8rem;font-weight:600;text-decoration:none;">
+        <i class="fas fa-sign-out-alt"></i> Déconnexion
+      </a>
+      {% endif %}
+    </div>
+  </header>
+  {% endif %}
+
+  <!-- CONTENT -->
+  <div class="main-content">
+    {% block content %}{% endblock %}
+  </div>
+
 </div>
 
 </body>
 </html>
+

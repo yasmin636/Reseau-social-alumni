@@ -155,6 +155,12 @@ class Offre(models.Model):
         ('bac', 'Bac'),
     )
 
+    STATUS_OFFRE = (
+        (0, 'En attente'),
+        (1, 'Validée'),
+        (2, 'Refusée'),
+    )
+
     auteur = models.ForeignKey(User, on_delete=models.CASCADE, related_name="offres")
     type_offre = models.CharField(max_length=20, choices=TYPE_CHOICES, default='stage')
     titre = models.CharField(max_length=200)
@@ -165,32 +171,30 @@ class Offre(models.Model):
     date_limite = models.DateField(blank=True, null=True)
     date_creation = models.DateTimeField(auto_now_add=True)
     active = models.BooleanField(default=True)
+    status = models.IntegerField(choices=STATUS_OFFRE, default=0)
 
-    # Contact
     email_contact = models.EmailField(blank=True, null=True)
     telephone_contact = models.CharField(max_length=20, blank=True, null=True)
 
-    # Champs STAGE
-    duree_stage = models.CharField(max_length=50, blank=True, null=True, help_text="Ex: 3 mois, 6 mois")
-    indemnite = models.CharField(max_length=100, blank=True, null=True, help_text="Ex: 50 000 DJF/mois")
+    duree_stage = models.CharField(max_length=50, blank=True, null=True)
+    indemnite = models.CharField(max_length=100, blank=True, null=True)
 
-    # Champs EMPLOI / CDI / CDD
-    salaire = models.CharField(max_length=100, blank=True, null=True, help_text="Ex: 150 000 DJF/mois")
-    experience_requise = models.CharField(max_length=100, blank=True, null=True, help_text="Ex: 2 ans minimum")
+    salaire = models.CharField(max_length=100, blank=True, null=True)
+    experience_requise = models.CharField(max_length=100, blank=True, null=True)
 
-    # Champs ALTERNANCE
     ecole_partenaire = models.CharField(max_length=200, blank=True, null=True)
 
-    # Champs FREELANCE
-    budget = models.CharField(max_length=100, blank=True, null=True, help_text="Ex: 500 000 DJF")
-    delai = models.CharField(max_length=100, blank=True, null=True, help_text="Ex: 2 semaines")
+    budget = models.CharField(max_length=100, blank=True, null=True)
+    delai = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
         ordering = ["-date_creation"]
 
     def __str__(self):
         return f"{self.titre} — {self.entreprise}"
-    # ===============================
+
+
+# ===============================
 # MODELE LIKE OFFRE
 # ===============================
 class LikeOffre(models.Model):
@@ -220,3 +224,18 @@ class FavoriOffre(models.Model):
 
     def __str__(self):
         return f"{self.user.username} favori {self.offre.titre}"
+
+
+# ===============================
+# MODELE COMMENTAIRE OFFRE
+# ===============================
+class CommentOffre(models.Model):
+
+    offre = models.ForeignKey(Offre, on_delete=models.CASCADE, related_name='comments')
+    auteur = models.ForeignKey(User, on_delete=models.CASCADE)
+    contenu = models.TextField()
+    date_creation = models.DateTimeField(auto_now_add=True)
+    actif = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.auteur} → {self.offre}"

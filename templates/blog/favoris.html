@@ -63,21 +63,18 @@
         .feed { display:flex; flex-direction:column; gap:20px; max-width:620px; margin:0 auto; }
         .section-title { font-family:'Syne',sans-serif; font-size:0.85rem; font-weight:700; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:1px; margin:8px 0 4px; padding-left:4px; }
 
-        /* ══ CARTE POST favori — style Instagram blanc ══ */
         .post-card { border-radius:20px; overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,0.3); transition:transform 0.2s,box-shadow 0.2s; }
         .post-card:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(0,0,0,0.4); }
         .post-card-top { height:5px; background:linear-gradient(90deg,var(--pink),var(--purple),var(--cyan)); }
         .post-card-inner { background:#fff; }
         .post-card-bottom { height:5px; background:linear-gradient(90deg,var(--cyan),var(--purple),var(--pink)); }
 
-        /* ══ CARTE OFFRE favori — style Instagram blanc ══ */
         .offre-card { border-radius:20px; overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,0.3); transition:transform 0.2s,box-shadow 0.2s; }
         .offre-card:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(0,0,0,0.4); }
         .offre-card-top { height:5px; background:linear-gradient(90deg,var(--blue),var(--cyan),var(--green)); }
         .offre-card-inner { background:#fff; }
         .offre-card-bottom { height:5px; background:linear-gradient(90deg,var(--green),var(--cyan),var(--blue)); }
 
-        /* Header cartes */
         .post-header { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; }
         .post-author { display:flex; align-items:center; gap:10px; }
         .post-author-avatar { width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg,var(--pink),var(--purple)); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:15px; font-family:'Syne',sans-serif; flex-shrink:0; overflow:hidden; }
@@ -96,13 +93,11 @@
         .post-titre { font-size:0.95rem; font-weight:800; color:#111; margin-bottom:6px; font-family:'Syne',sans-serif; }
         .post-contenu { font-size:0.85rem; color:#444; line-height:1.7; }
 
-        /* Actions */
         .post-actions { display:flex; align-items:center; justify-content:space-between; gap:4px; padding:10px 14px; border-top:1px solid #f0f0f0; }
         .actions-left { display:flex; align-items:center; gap:4px; }
         .btn-post-action { background:none; border:none; color:#aaa; cursor:pointer; font-size:0.82rem; display:flex; align-items:center; gap:5px; padding:6px 10px; border-radius:8px; transition:all 0.2s; }
         .btn-post-action.liked { color:#f72585; }
 
-        /* Bouton retirer */
         .btn-retirer { background:rgba(247,37,133,0.08); border:1px solid rgba(247,37,133,0.2); color:var(--pink); border-radius:999px; padding:5px 12px; font-size:0.72rem; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:5px; transition:all 0.2s; }
         .btn-retirer:hover { background:rgba(255,77,109,0.15); border-color:rgba(255,77,109,0.3); color:#ff4d6d; }
 
@@ -128,6 +123,7 @@
     <div class="sidebar-role">Espace Étudiant</div>
     <ul class="sidebar-nav">
         <li><a href="{% url 'dashboard_etudiant' %}"><i class="fas fa-th-large"></i> Dashboard</a></li>
+        <li><a href="{% url 'fil_etudiant' %}"><i class="fas fa-stream"></i> Fil</a></li>
         <li><a href="{% url 'offres' %}"><i class="fas fa-briefcase"></i> Offres</a></li>
         <li><a href="{% url 'posts_etudiant' %}"><i class="fas fa-newspaper"></i> Posts</a></li>
         <li><a href="{% url 'favoris' %}" class="active"><i class="fas fa-star"></i> Favoris</a></li>
@@ -163,16 +159,13 @@
     </header>
 
     <div class="content">
-        {% with total=mes_favoris_posts|length|add:mes_favoris_offres|length %}
-        <div class="page-heading">
-            <h1>⭐ Mes Favoris</h1>
-            <span class="count-badge">{{ total }} favori{{ total|pluralize }}</span>
+      {% with total=nb_favoris %}
+<span class="count-badge">{{ total }} favori{{ total|pluralize }}</span>
         </div>
 
         <div class="feed">
             {% if mes_favoris_posts or mes_favoris_offres %}
 
-                <!-- ══ POSTS FAVORIS ══ -->
                 {% if mes_favoris_posts %}
                 <div class="section-title">📰 Posts</div>
                 {% for favori in mes_favoris_posts %}
@@ -217,7 +210,6 @@
                 {% endfor %}
                 {% endif %}
 
-                <!-- ══ OFFRES FAVORIS ══ -->
                 {% if mes_favoris_offres %}
                 <div class="section-title">💼 Offres</div>
                 {% for favori in mes_favoris_offres %}
@@ -269,8 +261,8 @@
             {% else %}
                 <div class="empty-state">
                     <i class="fas fa-star"></i>
-                    <p>Tu n'as pas encore de favoris.<br>Ajoute des posts ou offres depuis le dashboard !</p>
-                    <a href="{% url 'dashboard_etudiant' %}">← Retour au Dashboard</a>
+                    <p>Tu n'as pas encore de favoris.<br>Ajoute des posts ou offres depuis le fil !</p>
+                    <a href="{% url 'fil_etudiant' %}">← Retour au Fil</a>
                 </div>
             {% endif %}
         </div>
@@ -288,9 +280,15 @@ function showToast() {
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 2500);
 }
+
+// ✅ FIX : fonction unique et complète, plus de duplication
 function retirerFavoriPost(postId) {
-    fetch(`/post/${postId}/favori/`, { method:'POST', headers:{'X-CSRFToken':CSRF} })
-    .then(r => r.json()).then(data => {
+    fetch(`/post/${postId}/favori/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': CSRF }
+    })
+    .then(r => r.json())
+    .then(data => {
         if (!data.favoris) {
             const card = document.getElementById(`favori-post-${postId}`);
             card.style.transition = 'all 0.3s ease';
@@ -301,9 +299,14 @@ function retirerFavoriPost(postId) {
         }
     });
 }
+
 function retirerFavoriOffre(offreId) {
-    fetch(`/offre/${offreId}/favori/`, { method:'POST', headers:{'X-CSRFToken':CSRF} })
-    .then(r => r.json()).then(data => {
+    fetch(`/offre/${offreId}/favori/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': CSRF }
+    })
+    .then(r => r.json())
+    .then(data => {
         if (!data.favoris) {
             const card = document.getElementById(`favori-offre-${offreId}`);
             card.style.transition = 'all 0.3s ease';

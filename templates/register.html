@@ -7,636 +7,637 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Inscription — Réseau Alumni · Université de Djibouti</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@600;700&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <style>
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
-```
+
 :root {
-  --blue-deep:    #2a4e86;
-  --blue-mid:     #1a3a6b;
-  --blue-bright:  #1a73e8;
-  --blue-glow:    #4d9fff;
-  --red:          #c0392b;
-  --red-bright:   #e74c3c;
-  --green:        #2ecc71;
-  --gold:         #c9a84c;
-  --white:        #ffffff;
-  --glass-bg:     rgba(8, 18, 40, 0.78);
+  --green-deep: #0d3d26;
+  --green-mid: #1b6b42;
+  --green-bright: #2ecc71;
+  --green-glow: #43e97b;
+  --gold: #c9a84c;
+  --gold-light: #e8c97a;
+  --white: #ffffff;
+  --glass-bg: rgba(10, 35, 22, 0.72);
   --glass-border: rgba(255,255,255,0.10);
-  --muted:        rgba(255,255,255,0.40);
+  --text-muted: rgba(255,255,255,0.45);
+  --brown: #92400e;
+  --brown-light: #b45309;
+  --brown-glow: #f59e0b;
 }
 
 body {
   font-family: 'DM Sans', sans-serif;
   min-height: 100vh;
-  background: var(--blue-deep);
   display: flex;
   flex-direction: column;
   position: relative;
   overflow-x: hidden;
+  background: #050f0a;
 }
 
 /* ── BACKGROUND ── */
 .bg {
   position: fixed; inset: 0; z-index: 0;
+  background-image: url("{% static 'img/universite.jpeg' %}");
+  background-size: cover;
+  background-position: center 30%;
+  filter: brightness(0.55) saturate(1.1);
+  transform: scale(1.04);
+  animation: slowZoom 20s ease-in-out infinite alternate;
+}
+@keyframes slowZoom {
+  from { transform: scale(1.04); }
+  to   { transform: scale(1.09); }
+}
+
+.bg-overlay {
+  position: fixed; inset: 0; z-index: 1;
   background:
-    radial-gradient(ellipse 80% 60% at 20% 50%, rgba(26,58,107,0.55) 0%, transparent 65%),
-    radial-gradient(ellipse 60% 80% at 80% 30%, rgba(192,57,43,0.18) 0%, transparent 55%),
-    radial-gradient(ellipse 50% 50% at 50% 100%, rgba(26,115,232,0.12) 0%, transparent 60%),
-    linear-gradient(160deg, #080e1f 0%, #0d1e3a 40%, #0a1628 100%);
+    linear-gradient(to bottom, rgba(5,15,8,0.55) 0%, rgba(5,15,8,0.12) 35%, rgba(5,15,8,0.12) 65%, rgba(5,15,8,0.80) 100%),
+    linear-gradient(135deg, rgba(13,61,38,0.55) 0%, transparent 60%),
+    linear-gradient(to right, rgba(0,0,0,0.25) 0%, transparent 50%);
 }
 
-/* Subtle grid pattern */
-.bg-grid {
-  position: fixed; inset: 0; z-index: 1; pointer-events: none;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-  background-size: 48px 48px;
-  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+.scanlines {
+  position: fixed; inset: 0; z-index: 2; pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.04) 2px,
+    rgba(0,0,0,0.04) 4px
+  );
 }
 
-/* Floating orbs */
-.orb {
-  position: fixed; border-radius: 50%; pointer-events: none; z-index: 1;
-  filter: blur(80px);
-  animation: drift 12s ease-in-out infinite alternate;
-}
-.orb-1 { width:380px; height:380px; background:rgba(26,115,232,0.12); top:-100px; right:-80px; }
-.orb-2 { width:280px; height:280px; background:rgba(192,57,43,0.10); bottom:80px; left:-60px; animation-delay:-4s; }
-.orb-3 { width:220px; height:220px; background:rgba(46,204,113,0.07); top:40%; right:15%; animation-delay:-8s; }
-@keyframes drift {
-  from { transform: translate(0,0) scale(1); }
-  to   { transform: translate(20px, -30px) scale(1.08); }
-}
-
-/* ── TOP BAR ── */
+/* ── TOP HEADER BAR ── */
 .topbar {
-  position: relative; z-index: 20;
+  position: relative; z-index: 10;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 40px;
-  background: rgba(8,14,31,0.70);
-  backdrop-filter: blur(16px);
+  padding: 18px 40px;
+  background: rgba(5,15,8,0.55);
+  backdrop-filter: blur(14px);
   border-bottom: 1px solid rgba(255,255,255,0.06);
-  animation: slideDown 0.5s ease both;
+  animation: slideDown 0.6s ease both;
 }
-@keyframes slideDown { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:none} }
+@keyframes slideDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:none; } }
 
-.topbar-brand { display:flex; align-items:center; gap:14px; }
+.topbar-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.topbar-logo {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, var(--green-mid), var(--green-bright));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  box-shadow: 0 0 16px rgba(67,233,123,0.25);
+}
+.topbar-title { font-family: 'Playfair Display', serif; color: var(--white); font-size: 16px; font-weight: 600; letter-spacing: 0.3px; line-height: 1.2; }
+.topbar-sub { color: var(--text-muted); font-size: 11px; font-weight: 400; letter-spacing: 0.8px; text-transform: uppercase; }
 
-/* ── CUSTOM DJIBOUTI ALUMNI LOGO SVG ── */
-.logo-svg-wrap {
-  display: flex; align-items: center; gap: 13px;
+.topbar-nav { display: flex; align-items: center; gap: 16px; }
+.btn-outline {
+  padding: 7px 18px; border-radius: 8px; font-size: 12px; font-weight: 600;
+  text-decoration: none; color: rgba(255,255,255,0.55);
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.04);
+  transition: all 0.2s; letter-spacing: 0.3px;
 }
-.dj-logo {
-  display: flex; align-items: center; gap: 0;
-  position: relative;
+.btn-outline:hover { border-color: var(--green-glow); color: var(--green-glow); }
+.btn-green {
+  padding: 7px 18px; border-radius: 8px; font-size: 12px; font-weight: 700;
+  text-decoration: none; color: #fff;
+  background: linear-gradient(135deg, var(--green-mid), var(--green-bright));
+  box-shadow: 0 0 14px rgba(46,204,113,0.25);
+  transition: all 0.2s;
 }
-/* Two diamonds like France Alumni but in Djibouti colors */
-.dj-logo svg { width: 46px; height: 36px; }
+.btn-green:hover { opacity: 0.9; transform: translateY(-1px); }
 
-.brand-text-wrap { line-height: 1.1; }
-.brand-top {
-  font-family: 'Barlow Condensed', sans-serif;
-  color: var(--white);
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-.brand-bottom {
-  font-family: 'Barlow Condensed', sans-serif;
-  background: linear-gradient(90deg, #1a73e8, #4d9fff);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-top: -2px;
-  display: block;
-}
-
-.topbar-nav { display:flex; align-items:center; gap:24px; }
-.topbar-nav a {
-  color: rgba(255,255,255,0.38);
-  font-size: 12px; font-weight:500;
-  text-decoration:none; letter-spacing:0.5px; text-transform:uppercase;
-  transition: color 0.2s;
-}
-.topbar-nav a:hover { color: var(--blue-glow); }
-.topbar-badge {
-  background: rgba(26,115,232,0.14);
-  border: 1px solid rgba(26,115,232,0.28);
-  border-radius: 20px; padding: 5px 13px;
-  color: var(--blue-glow); font-size: 11px; font-weight:600; letter-spacing:0.5px;
-}
-
-/* ── PAGE BODY ── */
+/* ── MAIN LAYOUT ── */
 .page-body {
-  flex: 1; position:relative; z-index:5;
-  display: flex; align-items: flex-start; justify-content: center;
-  padding: 36px 24px 40px;
-  gap: 48px;
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  position: relative;
+  z-index: 5;
+  padding: 32px 24px 40px;
+  gap: 52px;
 }
 
-/* ── LEFT PANEL ── */
-.side-panel {
+/* ── LEFT SIDE PANEL ── */
+.side-content {
   flex: 0 0 300px;
   padding-top: 8px;
+  animation: fadeInLeft 0.8s ease 0.2s both;
   display: none;
-  animation: fadeLeft 0.7s ease 0.2s both;
 }
-@media (min-width: 1000px) { .side-panel { display:block; } }
-@keyframes fadeLeft { from{opacity:0;transform:translateX(-24px)} to{opacity:1;transform:none} }
-
-/* Big logo on side */
-.side-logo-big {
-  margin-bottom: 28px;
-  padding: 24px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 18px;
-  display: flex; flex-direction: column; align-items: center; gap: 12px;
-}
-.side-logo-big svg { width: 90px; height: 70px; }
-.side-logo-big .brand-top { font-size: 22px; text-align:center; }
-.side-logo-big .brand-bottom { font-size: 30px; text-align:center; }
+@media (min-width: 960px) { .side-content { display: block; } }
+@keyframes fadeInLeft { from { opacity:0; transform:translateX(-30px); } to { opacity:1; transform:none; } }
 
 .side-tag {
-  display: inline-flex; align-items: center; gap: 7px;
-  background: rgba(26,115,232,0.10);
-  border: 1px solid rgba(26,115,232,0.22);
-  border-radius: 20px; padding: 5px 13px;
-  color: var(--blue-glow); font-size: 11px; font-weight:600;
-  letter-spacing:1px; text-transform:uppercase; margin-bottom:16px;
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(67,233,123,0.10);
+  border: 1px solid rgba(67,233,123,0.20);
+  border-radius: 20px;
+  padding: 6px 14px;
+  color: var(--green-glow);
+  font-size: 11px; font-weight: 600; letter-spacing: 1px;
+  text-transform: uppercase; margin-bottom: 20px;
 }
-.side-tag::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--blue-glow); animation:blink 2s infinite; }
+.side-tag::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--green-glow); animation: blink 2s infinite; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
 .side-heading {
   font-family: 'Playfair Display', serif;
-  color: var(--white); font-size:28px; line-height:1.25; margin-bottom:12px; font-weight:700;
+  color: var(--white); font-size: 34px; line-height: 1.2;
+  margin-bottom: 14px; font-weight: 700;
 }
-.side-heading em { font-style:normal; background:linear-gradient(90deg,#1a73e8,#4d9fff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-.side-desc { color:rgba(255,255,255,0.38); font-size:13px; line-height:1.8; margin-bottom:28px; }
+.side-heading em {
+  font-style: normal;
+  background: linear-gradient(90deg, var(--green-bright), var(--green-glow));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.side-desc { color: rgba(255,255,255,0.42); font-size: 13px; line-height: 1.8; margin-bottom: 28px; }
 
-.step-list { display:flex; flex-direction:column; gap:14px; }
-.step-item { display:flex; align-items:center; gap:12px; }
+.how-title { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 14px; }
+.step { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 13px; }
 .step-num {
-  width:28px; height:28px; border-radius:8px; flex-shrink:0;
-  background: linear-gradient(135deg, var(--blue-mid), var(--blue-bright));
-  display:flex; align-items:center; justify-content:center;
-  font-size:13px; font-weight:700; color:#fff;
+  width: 26px; height: 26px; border-radius: 8px; flex-shrink: 0;
+  background: rgba(67,233,123,0.10); border: 1px solid rgba(67,233,123,0.22);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; color: var(--green-glow);
 }
-.step-text { color:rgba(255,255,255,0.45); font-size:13px; line-height:1.4; }
+.step-title { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.75); margin-bottom: 2px; }
+.step-desc { font-size: 11px; color: rgba(255,255,255,0.35); line-height: 1.5; }
+
+.lp-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 24px; }
+.lp-stat {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px; padding: 13px;
+}
+.lp-stat-num { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--green-glow); display: block; }
+.lp-stat-label { font-size: 10px; color: rgba(255,255,255,0.32); margin-top: 3px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
 
 /* ── CARD ── */
 .card {
-  position:relative; z-index:2;
+  position: relative; z-index: 2;
   background: var(--glass-bg);
   backdrop-filter: blur(24px) saturate(1.4);
   -webkit-backdrop-filter: blur(24px) saturate(1.4);
   border: 1px solid var(--glass-border);
   border-radius: 24px;
-  padding: 40px 38px;
-  width:100%; max-width:520px;
+  padding: 36px 38px 40px;
+  width: 100%; max-width: 460px;
   box-shadow:
-    0 40px 80px rgba(0,0,0,0.55),
+    0 40px 80px rgba(0,0,0,0.6),
     0 0 0 1px rgba(255,255,255,0.04) inset,
-    0 1px 0 rgba(255,255,255,0.10) inset;
-  animation: fadeUp 0.6s ease 0.1s both;
+    0 1px 0 rgba(255,255,255,0.12) inset;
+  animation: fadeInUp 0.7s ease 0.1s both;
 }
-@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+@keyframes fadeInUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:none; } }
 
 .card::before {
-  content:''; position:absolute; top:0; left:25%; right:25%; height:1px;
-  background: linear-gradient(90deg, transparent, var(--blue-bright), transparent);
+  content: '';
+  position: absolute;
+  top: 0; left: 20%; right: 20%; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--green-bright), transparent);
+  border-radius: 1px;
 }
 
 /* ── CARD HEADER ── */
-.card-head { text-align:center; margin-bottom:28px; }
+.card-head { text-align: center; margin-bottom: 24px; }
+.card-icon {
+  width: 60px; height: 60px;
+  background: linear-gradient(135deg, var(--green-deep), var(--green-mid));
+  border-radius: 18px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 28px; margin-bottom: 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 0 1px rgba(67,233,123,0.2);
+  position: relative;
+}
+.card-icon::after {
+  content: ''; position: absolute; inset: -4px;
+  border-radius: 22px; border: 1px solid rgba(67,233,123,0.15);
+}
+.card-title { font-family: 'Playfair Display', serif; color: var(--white); font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.card-sub { color: var(--text-muted); font-size: 13px; }
 
-/* Card logo */
-.card-logo-wrap {
-  display: inline-flex; flex-direction:column; align-items:center; gap:8px;
-  margin-bottom: 14px;
-}
-.card-logo-wrap svg { width:60px; height:46px; }
-.card-logo-wrap .brand-top { font-size:13px; }
-.card-logo-wrap .brand-bottom { font-size:18px; }
-
-.card-title {
-  font-family:'Playfair Display', serif;
-  color:var(--white); font-size:22px; font-weight:700; margin-bottom:4px;
-}
-.card-sub { color:var(--muted); font-size:13px; }
-
-/* ── TABS ── */
-.tabs {
-  display:flex; background:rgba(255,255,255,0.05);
-  border-radius:14px; padding:4px; margin-bottom:26px; gap:4px;
-}
-.tab {
-  flex:1; text-align:center; padding:12px 8px;
-  border-radius:11px; font-size:13px; font-weight:600;
-  cursor:pointer; color:rgba(255,255,255,0.38);
-  transition:all 0.25s; user-select:none;
-}
-.tab-etudiant-active {
-  background: linear-gradient(135deg,#1a4fa8,#1a73e8);
-  color:#fff; box-shadow:0 4px 14px rgba(26,115,232,0.35);
-}
-.tab-alumni-active {
-  background: linear-gradient(135deg,#c0392b,#e74c3c);
-  color:#fff; box-shadow:0 4px 14px rgba(231,76,60,0.35);
-}
-
-/* ── FORM ── */
-.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:0 14px; }
-.section-label {
-  color:rgba(255,255,255,0.30); font-size:10.5px;
-  text-transform:uppercase; letter-spacing:1.2px; margin:6px 0 14px;
-  display:flex; align-items:center; gap:8px;
-}
-.section-label::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.07); }
-
-label {
-  display:block; color:rgba(255,255,255,0.55);
-  font-size:11px; font-weight:600;
-  text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px;
-}
-
-.input-wrap { position:relative; }
-.input-wrap input { padding-left:42px; }
-.input-icon {
-  position:absolute; left:13px; top:50%; transform:translateY(-50%);
-  color:rgba(255,255,255,0.22); font-size:15px; pointer-events:none;
-}
-
-input[type="text"],
-input[type="email"],
-input[type="password"] {
-  width:100%;
-  background: rgba(255,255,255,0.05);
+/* ── TYPE SELECTOR ── */
+.type-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.type-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 16px 10px; border-radius: 14px; cursor: pointer;
+  background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.10);
-  border-radius: 12px; padding:12px 14px;
-  color:#fff; font-size:14px; font-family:'DM Sans',sans-serif;
-  margin-bottom:14px; outline:none;
+  color: rgba(255,255,255,0.45); font-size: 13px; font-weight: 500;
+  transition: all 0.22s; position: relative;
+}
+.type-btn:hover { border-color: rgba(67,233,123,0.3); background: rgba(67,233,123,0.06); color: rgba(255,255,255,0.7); transform: translateY(-2px); }
+.type-btn.active-etudiant {
+  background: rgba(67,233,123,0.10);
+  border-color: rgba(67,233,123,0.38);
+  color: var(--green-glow);
+  box-shadow: 0 0 0 1px rgba(67,233,123,0.15), 0 6px 20px rgba(67,233,123,0.12);
+  transform: translateY(-2px);
+}
+.type-btn.active-alumni {
+  background: rgba(245,158,11,0.10);
+  border-color: rgba(245,158,11,0.38);
+  color: var(--brown-glow);
+  box-shadow: 0 0 0 1px rgba(245,158,11,0.15), 0 6px 20px rgba(245,158,11,0.12);
+  transform: translateY(-2px);
+}
+.type-btn-icon { font-size: 1.8rem; }
+.type-btn-label { font-size: 0.88rem; font-weight: 700; }
+.type-btn-sub { font-size: 0.62rem; color: rgba(255,255,255,0.3); text-align: center; line-height: 1.3; }
+.type-btn.active-etudiant .type-btn-sub { color: rgba(67,233,123,0.6); }
+.type-btn.active-alumni .type-btn-sub { color: rgba(245,158,11,0.6); }
+.type-check {
+  position: absolute; top: 8px; right: 8px;
+  width: 18px; height: 18px; border-radius: 50%;
+  display: none; align-items: center; justify-content: center;
+}
+.type-btn.active-etudiant .type-check { display: flex; background: var(--green-bright); }
+.type-btn.active-alumni .type-check { display: flex; background: var(--brown-glow); }
+.type-check i { font-size: 8px; color: #000; font-weight: 900; }
+
+/* ── DIVIDER ── */
+.sec-div { display: flex; align-items: center; gap: 10px; margin: 16px 0 12px; }
+.sec-div-line { flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
+.sec-div-text { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.25); text-transform: uppercase; letter-spacing: 1.2px; white-space: nowrap; }
+
+/* ── FIELDS ── */
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.field { margin-bottom: 13px; }
+
+label.field-lbl {
+  display: block; color: rgba(255,255,255,0.45);
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.8px; margin-bottom: 6px;
+}
+
+input[type="text"], input[type="email"], input[type="password"] {
+  width: 100%;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.11);
+  border-radius: 11px;
+  padding: 12px 14px;
+  color: var(--white); font-size: 14px;
+  font-family: 'DM Sans', sans-serif; outline: none;
   transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
 }
 input:focus {
-  border-color: rgba(26,115,232,0.55);
+  border-color: rgba(67,233,123,0.5);
   background: rgba(255,255,255,0.08);
-  box-shadow: 0 0 0 3px rgba(26,115,232,0.10);
+  box-shadow: 0 0 0 3px rgba(67,233,123,0.08);
 }
-input::placeholder { color:rgba(255,255,255,0.20); }
+input::placeholder { color: rgba(255,255,255,0.22); }
 
-.checkbox-row {
-  display:flex; align-items:center; gap:12px;
-  margin-bottom:14px;
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(255,255,255,0.09);
-  border-radius:12px; padding:13px 16px; cursor:pointer;
+.input-with-icon {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.11);
+  border-radius: 11px; padding: 0 14px;
+  transition: all 0.22s;
 }
-.checkbox-row input[type="checkbox"] {
-  width:17px; height:17px; accent-color:#1a73e8;
-  cursor:pointer; margin-bottom:0; flex-shrink:0;
+.input-with-icon:focus-within {
+  border-color: rgba(67,233,123,0.5);
+  background: rgba(255,255,255,0.08);
+  box-shadow: 0 0 0 3px rgba(67,233,123,0.08);
 }
-.checkbox-row span { color:rgba(255,255,255,0.65); font-size:13px; }
+.input-with-icon i { color: rgba(255,255,255,0.25); font-size: 13px; flex-shrink: 0; }
+.input-with-icon input { border: none; background: transparent; box-shadow: none; padding: 12px 0; flex: 1; }
+.input-with-icon input:focus { box-shadow: none; border: none; }
 
-hr { border:none; border-top:1px solid rgba(255,255,255,0.07); margin:14px 0; }
+.check-field {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 11px; padding: 12px 14px;
+  cursor: pointer; margin-bottom: 13px; transition: all 0.2s;
+}
+.check-field:hover { border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.06); }
+.check-field input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--brown-glow); cursor: pointer; margin: 0; flex-shrink: 0; }
+.check-field span { font-size: 13px; color: rgba(255,255,255,0.55); font-weight: 500; }
 
-/* ── BUTTON ── */
-.btn {
-  width:100%; border:none; border-radius:12px;
-  padding:15px; font-size:14px; font-weight:700;
-  font-family:'DM Sans',sans-serif; letter-spacing:0.4px;
-  cursor:pointer; transition:all 0.25s; margin-top:6px;
-  position:relative; overflow:hidden;
+/* ── SUBMIT BUTTON ── */
+.submit-btn {
+  width: 100%; border: none; border-radius: 12px;
+  padding: 14px; font-size: 14px; font-weight: 700;
+  font-family: 'DM Sans', sans-serif; letter-spacing: 0.5px;
+  cursor: pointer; transition: all 0.25s; margin-top: 6px;
+  color: #fff; display: flex; align-items: center; justify-content: center; gap: 8px;
+  position: relative; overflow: hidden;
 }
-.btn::after { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,0.10),transparent); border-radius:12px; }
-.btn:hover { transform:translateY(-2px); }
-.btn-blue {
-  background: linear-gradient(135deg,#1a4fa8,#1a73e8,#4d9fff);
-  color:#fff; box-shadow:0 6px 22px rgba(26,115,232,0.30);
+.submit-btn::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.10), transparent);
+  border-radius: 12px;
 }
-.btn-blue:hover { box-shadow:0 10px 30px rgba(26,115,232,0.42); }
-.btn-red {
-  background: linear-gradient(135deg,#922b21,#c0392b,#e74c3c);
-  color:#fff; box-shadow:0 6px 22px rgba(192,57,43,0.30);
+.submit-btn:hover { transform: translateY(-2px); }
+.green-btn {
+  background: linear-gradient(135deg, #1b6b42 0%, #2ecc71 60%, #43e97b 100%);
+  box-shadow: 0 4px 20px rgba(46,204,113,0.28);
 }
-.btn-red:hover { box-shadow:0 10px 30px rgba(192,57,43,0.42); }
+.green-btn:hover { box-shadow: 0 8px 28px rgba(46,204,113,0.4); }
+.gold-btn {
+  background: linear-gradient(135deg, #92400e 0%, #b45309 50%, #f59e0b 100%);
+  box-shadow: 0 4px 20px rgba(245,158,11,0.28);
+}
+.gold-btn:hover { box-shadow: 0 8px 28px rgba(245,158,11,0.4); }
 
 /* ── ERRORS ── */
-.error-field { color:#ff7070; font-size:12px; margin-top:-10px; margin-bottom:12px; }
-.error-global {
-  background:rgba(229,57,53,0.10); border:1px solid rgba(229,57,53,0.28);
-  color:#ff7070; border-radius:12px;
-  padding:12px 16px; font-size:13px; margin-bottom:18px;
-  display:flex; align-items:center; gap:8px;
+.err-msg { color: #ff7070; font-size: 11px; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+.err-box {
+  background: rgba(229,57,53,0.10); border: 1px solid rgba(229,57,53,0.30);
+  color: #ff7070; border-radius: 12px; padding: 12px 14px;
+  font-size: 13px; margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
 }
 
-.link { text-align:center; color:rgba(255,255,255,0.35); font-size:13px; margin-top:20px; }
-.link a { color:var(--blue-glow); text-decoration:none; font-weight:600; }
-.link a:hover { opacity:0.8; }
+.divider {
+  display: flex; align-items: center; gap: 12px;
+  margin: 20px 0 14px;
+}
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
+.divider span { color: rgba(255,255,255,0.25); font-size: 11px; white-space: nowrap; }
+
+.login-link { text-align: center; font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 14px; }
+.login-link a { color: var(--green-glow); font-weight: 600; text-decoration: none; transition: opacity 0.2s; }
+.login-link a:hover { opacity: 0.8; }
 
 /* ── SUCCESS ── */
-.success-box { text-align:center; padding:10px 0; }
-.success-icon { font-size:66px; margin-bottom:14px; }
-.success-title { color:#4d9fff; font-family:'Playfair Display',serif; font-size:24px; font-weight:700; margin-bottom:12px; }
-.success-msg { color:rgba(255,255,255,0.68); font-size:14px; line-height:1.85; margin-bottom:22px; }
-.pending-badge {
-  display:inline-block;
-  background:rgba(255,193,7,0.10); border:1px solid rgba(255,193,7,0.35);
-  color:#ffd060; padding:10px 24px; border-radius:20px;
-  font-size:13px; font-weight:600; margin-bottom:26px;
+.success-box { text-align: center; padding: 16px 0; }
+.success-emoji { font-size: 52px; margin-bottom: 14px; animation: bounceIn 0.6s ease; }
+@keyframes bounceIn { 0%{transform:scale(0.5);opacity:0} 80%{transform:scale(1.08)} 100%{transform:scale(1);opacity:1} }
+.success-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--white); margin-bottom: 10px; }
+.success-msg { font-size: 13px; color: rgba(255,255,255,0.42); line-height: 1.9; margin-bottom: 18px; }
+.success-msg strong { color: rgba(255,255,255,0.75); }
+.pending-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(245,158,11,0.10); border: 1px solid rgba(245,158,11,0.25);
+  color: var(--brown-glow); padding: 8px 18px; border-radius: 999px;
+  font-size: 12px; font-weight: 600; margin-bottom: 20px;
 }
-.btn-back {
-  display:inline-block;
-  background:rgba(255,255,255,0.07);
-  color:rgba(255,255,255,0.7); padding:12px 28px;
-  border-radius:12px; text-decoration:none; font-size:14px; font-weight:500;
-  border:1px solid rgba(255,255,255,0.14); transition:background 0.2s;
+.back-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(67,233,123,0.10); color: var(--green-glow);
+  padding: 10px 20px; border-radius: 10px;
+  text-decoration: none; font-size: 13px; font-weight: 600;
+  border: 1px solid rgba(67,233,123,0.22); transition: all 0.2s;
 }
-.btn-back:hover { background:rgba(255,255,255,0.13); }
+.back-btn:hover { background: rgba(67,233,123,0.18); }
+
+.hidden { display: none; }
 
 /* ── FOOTER ── */
 .footerbar {
-  position:relative; z-index:10;
-  background:rgba(8,14,31,0.75);
-  backdrop-filter:blur(14px);
-  border-top:1px solid rgba(255,255,255,0.06);
-  padding:15px 40px;
-  display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
-  animation: slideUp 0.5s ease both;
+  position: relative; z-index: 10;
+  background: rgba(5,15,8,0.65);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding: 16px 40px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
 }
-@keyframes slideUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
-
-.footer-left { display:flex; align-items:center; gap:16px; }
-.footer-text { color:rgba(255,255,255,0.22); font-size:11px; letter-spacing:0.3px; }
-.footer-text strong { color:rgba(255,255,255,0.38); }
-.footer-right { display:flex; align-items:center; gap:16px; }
+.footer-text { color: rgba(255,255,255,0.25); font-size: 11px; letter-spacing: 0.4px; }
+.footer-text strong { color: rgba(255,255,255,0.4); }
+.footer-right { display: flex; align-items: center; gap: 14px; }
 .footer-pill {
-  display:flex; align-items:center; gap:7px;
-  background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07);
-  border-radius:20px; padding:5px 13px;
-  color:rgba(255,255,255,0.28); font-size:11px;
+  display: flex; align-items: center; gap: 7px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 20px; padding: 5px 13px;
+  color: rgba(255,255,255,0.28); font-size: 11px;
 }
-.dot-blue { width:6px; height:6px; border-radius:50%; background:var(--blue-bright); animation:blink 2s infinite; }
+.dot-green { width: 6px; height: 6px; border-radius: 50%; background: var(--green-bright); animation: blink 2s infinite; }
+.footer-copyright { color: rgba(255,255,255,0.18); font-size: 11px; }
 
-.hidden { display:none; }
-
-@media (max-width:600px) {
-  .topbar { padding:14px 18px; }
-  .topbar-nav { display:none; }
-  .card { padding:32px 22px; }
-  .grid-2 { grid-template-columns:1fr; }
-  .footerbar { padding:13px 18px; }
-  .footer-right { display:none; }
+@media (max-width: 600px) {
+  .topbar { padding: 14px 20px; }
+  .topbar-nav { display: none; }
+  .card { padding: 28px 20px 32px; }
+  .footerbar { padding: 14px 20px; }
+  .footer-right { display: none; }
+  .field-row { grid-template-columns: 1fr; }
 }
-```
+
 
   </style>
 </head>
 <body>
 
-  <!-- ── BACKGROUND ── -->
-
-  <div class="bg"></div>
-  <div class="bg-grid"></div>
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-
   <!-- ── TOP BAR ── -->
 
   <header class="topbar">
-    <div class="topbar-brand">
-      <div class="logo-svg-wrap">
-        <!-- Djibouti Alumni Logo: two diamonds in Djibouti flag colors (blue + green) with a red star feel -->
-        <svg viewBox="0 0 56 44" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:48px;height:38px">
-          <!-- Diamond 1: Djibouti blue -->
-          <rect x="2" y="10" width="22" height="22" rx="1" fill="#1a73e8" transform="rotate(45 13 21)"/>
-          <!-- Diamond 2: Djibouti green -->
-          <rect x="18" y="10" width="22" height="22" rx="1" fill="#2ecc71" transform="rotate(45 29 21)"/>
-          <!-- Small accent star-dot -->
-          <circle cx="21" cy="21" r="3.5" fill="white" opacity="0.9"/>
-        </svg>
-        <div class="brand-text-wrap">
-          <div class="brand-top">Djibouti 2026</div>
-          <span class="brand-bottom">Alumni</span>
-        </div>
+    <a href="/" class="topbar-brand">
+      <div class="topbar-logo">🎓</div>
+      <div>
+        <div class="topbar-title">Réseau Alumni</div>
+        <div class="topbar-sub">Université de Djibouti</div>
       </div>
-    </div>
+    </a>
     <nav class="topbar-nav">
-      <a href="#">Accueil</a>
-      <a href="#">Événements</a>
-      <a href="#">Contact</a>
-      <span class="topbar-badge">Inscription ouverte</span>
+      <a href="{% url 'login' %}" class="btn-outline">Se connecter</a>
+      <a href="{% url 'register' %}" class="btn-green">Inscription</a>
     </nav>
   </header>
 
-  <!-- ── PAGE BODY ── -->
+  <!-- ── BACKGROUND LAYERS ── -->
+
+  <div class="bg"></div>
+  <div class="bg-overlay"></div>
+  <div class="scanlines"></div>
+
+  <!-- ── MAIN BODY ── -->
 
   <main class="page-body">
 
-```
-<!-- Left side panel -->
-<aside class="side-panel">
-  <!-- Big logo -->
-  <div class="side-logo-big">
-    <svg viewBox="0 0 100 78" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="2" y="14" width="38" height="38" rx="2" fill="#1a73e8" transform="rotate(45 21 33)"/>
-      <rect x="30" y="14" width="38" height="38" rx="2" fill="#2ecc71" transform="rotate(45 49 33)"/>
-      <circle cx="37" cy="33" r="6" fill="white" opacity="0.92"/>
-    </svg>
-    <div class="brand-top">Djibouti 2026</div>
-    <span class="brand-bottom">Alumni</span>
+
+<!-- Left side info panel -->
+<aside class="side-content">
+  <div class="side-tag">Inscription ouverte</div>
+  <h2 class="side-heading">Rejoignez le<br/><em>Réseau Alumni</em></h2>
+  <p class="side-desc">Intégrez une communauté d'étudiants et de diplômés de l'Université de Djibouti, partout dans le monde.</p>
+
+  <div class="how-title">Comment ça marche</div>
+  <div class="step">
+    <div class="step-num">1</div>
+    <div>
+      <div class="step-title">Choisissez votre profil</div>
+      <div class="step-desc">Étudiant ou Alumni — sélectionnez et remplissez</div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div>
+      <div class="step-title">Soumettez votre demande</div>
+      <div class="step-desc">Votre compte est créé et en attente de validation</div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div>
+      <div class="step-title">Validation par l'admin</div>
+      <div class="step-desc">L'administrateur active votre compte manuellement</div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">4</div>
+    <div>
+      <div class="step-title">Accédez à votre espace</div>
+      <div class="step-desc">Connectez-vous et rejoignez la communauté</div>
+    </div>
   </div>
 
-  <div class="side-tag">Rejoindre le réseau</div>
-  <h2 class="side-heading">Construisez votre<br/><em>avenir</em> avec<br/>nous</h2>
-  <p class="side-desc">Créez votre profil et intégrez une communauté d'anciens et d'étudiants de l'Université de Djibouti, partout dans le monde.</p>
-
-  <div class="step-list">
-    <div class="step-item">
-      <div class="step-num">1</div>
-      <div class="step-text">Remplissez le formulaire d'inscription</div>
-    </div>
-    <div class="step-item">
-      <div class="step-num">2</div>
-      <div class="step-text">Attendez la validation de l'administrateur</div>
-    </div>
-    <div class="step-item">
-      <div class="step-num">3</div>
-      <div class="step-text">Accédez à votre espace personnel</div>
-    </div>
-    <div class="step-item">
-      <div class="step-num">4</div>
-      <div class="step-text">Connectez-vous avec la communauté</div>
-    </div>
+  <div class="lp-stats">
+    <div class="lp-stat"><span class="lp-stat-num">500+</span><span class="lp-stat-label">Membres actifs</span></div>
+    <div class="lp-stat"><span class="lp-stat-num">200+</span><span class="lp-stat-label">Offres publiées</span></div>
+    <div class="lp-stat"><span class="lp-stat-num">50+</span><span class="lp-stat-label">Alumni recruteurs</span></div>
+    <div class="lp-stat"><span class="lp-stat-num">100%</span><span class="lp-stat-label">Gratuit</span></div>
   </div>
 </aside>
 
-<!-- ── CARD ── -->
+<!-- ── REGISTER CARD ── -->
 <div class="card">
-
-  {% if success %}
-  <!-- ✅ SUCCESS -->
-  <div class="success-box">
-    <div class="success-icon">📬</div>
-    <div class="success-title">Inscription réussie !</div>
-    <p class="success-msg">
-      Bonjour <strong>{{ nom_complet }}</strong> 👋<br/>
-      Votre compte a bien été créé.<br/><br/>
-      <strong>Veuillez patienter</strong> — l'administrateur doit valider
-      et activer votre compte avant que vous puissiez vous connecter.
-    </p>
-    <div class="pending-badge">⏳ En attente de validation par l'admin</div>
-    <br/>
-    <a href="{% url 'login' %}" class="btn-back">← Retour à la connexion</a>
-  </div>
-
-  {% else %}
-  <!-- FORMULAIRE -->
   <div class="card-head">
-    <!-- Card logo small -->
-    <div class="card-logo-wrap">
-      <svg viewBox="0 0 70 54" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="1" y="9" width="26" height="26" rx="1.5" fill="#1a73e8" transform="rotate(45 14 22)"/>
-        <rect x="21" y="9" width="26" height="26" rx="1.5" fill="#2ecc71" transform="rotate(45 34 22)"/>
-        <circle cx="26" cy="22" r="4" fill="white" opacity="0.92"/>
-      </svg>
-      <div class="brand-top">Djibouti 2026</div>
-      <span class="brand-bottom">Alumni</span>
-    </div>
+    <div class="card-icon">📝</div>
     <h1 class="card-title">Créer un compte</h1>
     <p class="card-sub">Rejoignez le réseau officiel de l'université</p>
   </div>
 
-  <!-- TABS -->
-  <div class="tabs">
-    <div class="tab {% if user_type == 'etudiant' %}tab-etudiant-active{% endif %}"
-         id="tab-etudiant" onclick="selectType('etudiant')">
-      🎓 Étudiant
+  {% if success %}
+  <div class="success-box">
+    <div class="success-emoji">📬</div>
+    <div class="success-title">Inscription réussie !</div>
+    <p class="success-msg">Bonjour <strong>{{ nom_complet }}</strong> 👋<br/>Votre compte a bien été créé.<br/><br/><strong>Veuillez patienter</strong> — l'administrateur doit valider et activer votre compte avant que vous puissiez vous connecter.</p>
+    <div class="pending-pill">⏳ En attente de validation par l'admin</div><br/>
+    <a href="{% url 'login' %}" class="back-btn"><i class="fas fa-arrow-left"></i> Retour à la connexion</a>
+  </div>
+
+  {% else %}
+
+  <!-- TYPE BUTTONS -->
+  <div class="type-selector">
+    <div class="type-btn {% if user_type != 'alumni' %}active-etudiant{% endif %}" id="btn-etudiant" onclick="selectType('etudiant')">
+      <div class="type-check"><i class="fas fa-check"></i></div>
+      <div class="type-btn-icon">🎓</div>
+      <div class="type-btn-label">Étudiant</div>
+      <div class="type-btn-sub">Je suis à l'université</div>
     </div>
-    <div class="tab {% if user_type == 'alumni' %}tab-alumni-active{% endif %}"
-         id="tab-alumni" onclick="selectType('alumni')">
-      🏆 Alumni
+    <div class="type-btn {% if user_type == 'alumni' %}active-alumni{% endif %}" id="btn-alumni" onclick="selectType('alumni')">
+      <div class="type-check"><i class="fas fa-check"></i></div>
+      <div class="type-btn-icon">🏆</div>
+      <div class="type-btn-label">Alumni</div>
+      <div class="type-btn-sub">J'ai obtenu mon diplôme</div>
     </div>
   </div>
 
   {% if form.non_field_errors %}
-    <div class="error-global">⚠️ {{ form.non_field_errors }}</div>
+    <div class="err-box"><i class="fas fa-exclamation-triangle"></i> {{ form.non_field_errors }}</div>
   {% endif %}
 
   <form method="POST" id="register-form">
     {% csrf_token %}
     <input type="hidden" name="user_type" id="user_type" value="{{ user_type|default:'etudiant' }}"/>
 
-    <p class="section-label">Informations personnelles</p>
-    <div class="grid-2">
-      <div>
-        <label>Nom</label>
-        <input type="text" name="nom" placeholder="Votre nom"
-               value="{{ form.nom.value|default:'' }}" required/>
-        {% if form.nom.errors %}<p class="error-field">{{ form.nom.errors.0 }}</p>{% endif %}
+    <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-text">Informations personnelles</div><div class="sec-div-line"></div></div>
+
+    <div class="field-row">
+      <div class="field">
+        <label class="field-lbl">Nom</label>
+        <input type="text" name="nom" placeholder="Votre nom" value="{{ form.nom.value|default:'' }}" required/>
+        {% if form.nom.errors %}<p class="err-msg"><i class="fas fa-exclamation-circle"></i> {{ form.nom.errors.0 }}</p>{% endif %}
       </div>
-      <div>
-        <label>Prénom</label>
-        <input type="text" name="prenom" placeholder="Votre prénom"
-               value="{{ form.prenom.value|default:'' }}" required/>
-        {% if form.prenom.errors %}<p class="error-field">{{ form.prenom.errors.0 }}</p>{% endif %}
+      <div class="field">
+        <label class="field-lbl">Prénom</label>
+        <input type="text" name="prenom" placeholder="Votre prénom" value="{{ form.prenom.value|default:'' }}" required/>
+        {% if form.prenom.errors %}<p class="err-msg"><i class="fas fa-exclamation-circle"></i> {{ form.prenom.errors.0 }}</p>{% endif %}
       </div>
     </div>
 
-    <label>Nom d'utilisateur</label>
-    <div class="input-wrap">
-      <span class="input-icon">👤</span>
-      <input type="text" name="username" placeholder="nom_utilisateur"
-             value="{{ form.username.value|default:'' }}" required/>
+    <div class="field">
+      <label class="field-lbl">Nom d'utilisateur</label>
+      <div class="input-with-icon">
+        <i class="fas fa-user"></i>
+        <input type="text" name="username" placeholder="nom_utilisateur" value="{{ form.username.value|default:'' }}" required/>
+      </div>
+      {% if form.username.errors %}<p class="err-msg"><i class="fas fa-exclamation-circle"></i> {{ form.username.errors.0 }}</p>{% endif %}
     </div>
-    {% if form.username.errors %}<p class="error-field">{{ form.username.errors.0 }}</p>{% endif %}
 
-    <label>Adresse e-mail</label>
-    <div class="input-wrap">
-      <span class="input-icon">✉️</span>
-      <input type="email" name="email" placeholder="votre@email.com"
-             value="{{ form.email.value|default:'' }}" required/>
+    <div class="field">
+      <label class="field-lbl">Adresse e-mail</label>
+      <div class="input-with-icon">
+        <i class="fas fa-envelope"></i>
+        <input type="email" name="email" placeholder="votre@email.com" value="{{ form.email.value|default:'' }}" required/>
+      </div>
+      {% if form.email.errors %}<p class="err-msg"><i class="fas fa-exclamation-circle"></i> {{ form.email.errors.0 }}</p>{% endif %}
     </div>
-    {% if form.email.errors %}<p class="error-field">{{ form.email.errors.0 }}</p>{% endif %}
 
-    <hr/>
-
-    <!-- ÉTUDIANT FIELDS -->
+    <!-- ÉTUDIANT -->
     <div id="fields-etudiant" class="{% if user_type == 'alumni' %}hidden{% endif %}">
-      <p class="section-label">Informations académiques</p>
-      <div class="grid-2">
-        <div>
-          <label>Année actuelle</label>
-          <input type="text" name="annee_actuelle" placeholder="L1, L2, M1..."
-                 value="{{ form.annee_actuelle.value|default:'' }}"/>
+      <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-text">Informations académiques</div><div class="sec-div-line"></div></div>
+      <div class="field-row">
+        <div class="field">
+          <label class="field-lbl">Année actuelle</label>
+          <input type="text" name="annee_actuelle" placeholder="L1, L2, M1..." value="{{ form.annee_actuelle.value|default:'' }}"/>
         </div>
-        <div>
-          <label>Filière</label>
-          <input type="text" name="filiere" placeholder="Informatique..."
-                 value="{{ form.filiere.value|default:'' }}"/>
+        <div class="field">
+          <label class="field-lbl">Filière</label>
+          <input type="text" name="filiere" placeholder="Ex: Informatique" value="{{ form.filiere.value|default:'' }}"/>
         </div>
       </div>
     </div>
 
-    <!-- ALUMNI FIELDS -->
+    <!-- ALUMNI -->
     <div id="fields-alumni" class="{% if user_type != 'alumni' %}hidden{% endif %}">
-      <p class="section-label">Informations alumni</p>
-      <div class="grid-2">
-        <div>
-          <label>Année de licence</label>
-          <input type="text" name="annee_licence" placeholder="Ex: 2021"
-                 value="{{ form.annee_licence.value|default:'' }}"/>
+      <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-text">Informations alumni</div><div class="sec-div-line"></div></div>
+      <div class="field-row">
+        <div class="field">
+          <label class="field-lbl">Année de licence</label>
+          <input type="text" name="annee_licence" placeholder="Ex: 2021" value="{{ form.annee_licence.value|default:'' }}"/>
         </div>
-        <div>
-          <label>Filière étudiée</label>
-          <input type="text" name="filiere_alumni" placeholder="Informatique..."
-                 value="{{ form.filiere_alumni.value|default:'' }}"/>
+        <div class="field">
+          <label class="field-lbl">Filière étudiée</label>
+          <input type="text" name="filiere_alumni" placeholder="Ex: Informatique" value="{{ form.filiere_alumni.value|default:'' }}"/>
         </div>
       </div>
-      <label class="checkbox-row" style="text-transform:none;letter-spacing:0;">
-        <input type="checkbox" name="en_poste"
-               {% if form.en_poste.value %}checked{% endif %}/>
+      <label class="check-field">
+        <input type="checkbox" name="en_poste" {% if form.en_poste.value %}checked{% endif %}/>
         <span>💼 Je travaille actuellement</span>
       </label>
     </div>
 
-    <hr/>
-    <p class="section-label">Sécurité du compte</p>
+    <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-text">Sécurité</div><div class="sec-div-line"></div></div>
 
-    <label>Mot de passe</label>
-    <div class="input-wrap">
-      <span class="input-icon">🔒</span>
-      <input type="password" name="password" placeholder="••••••••" required/>
-    </div>
-    {% if form.password.errors %}<p class="error-field">{{ form.password.errors.0 }}</p>{% endif %}
-
-    <label>Confirmer le mot de passe</label>
-    <div class="input-wrap">
-      <span class="input-icon">🔒</span>
-      <input type="password" name="password_confirm" placeholder="••••••••" required/>
+    <div class="field">
+      <label class="field-lbl">Mot de passe</label>
+      <div class="input-with-icon">
+        <i class="fas fa-lock"></i>
+        <input type="password" name="password" placeholder="••••••••" required/>
+      </div>
+      {% if form.password.errors %}<p class="err-msg"><i class="fas fa-exclamation-circle"></i> {{ form.password.errors.0 }}</p>{% endif %}
     </div>
 
-    <button type="submit"
-            class="btn {% if user_type == 'alumni' %}btn-red{% else %}btn-blue{% endif %}"
-            id="btn-submit">
-      Créer mon compte →
+    <div class="field">
+      <label class="field-lbl">Confirmer le mot de passe</label>
+      <div class="input-with-icon">
+        <i class="fas fa-lock"></i>
+        <input type="password" name="password_confirm" placeholder="••••••••" required/>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn {% if user_type == 'alumni' %}gold-btn{% else %}green-btn{% endif %}" id="btn-submit">
+      <i class="fas fa-user-plus"></i> Créer mon compte →
     </button>
   </form>
 
-  <div class="link">
-    Déjà un compte ? <a href="{% url 'login' %}">Se connecter</a>
-  </div>
-  {% endif %}
+  <div class="divider"><span>Déjà un compte ?</span></div>
+  <div class="login-link"><a href="{% url 'login' %}">Se connecter</a></div>
 
+  {% endif %}
 </div>
 ```
 
@@ -645,39 +646,37 @@ hr { border:none; border-top:1px solid rgba(255,255,255,0.07); margin:14px 0; }
   <!-- ── FOOTER ── -->
 
   <footer class="footerbar">
-    <div class="footer-left">
-      <div class="footer-text">© 2026 <strong>Université de Djibouti</strong> — Tous droits réservés</div>
-    </div>
+    <div class="footer-text">©️ 2026 <strong>Université de Djibouti</strong> — Tous droits réservés</div>
     <div class="footer-right">
-      <div class="footer-pill"><div class="dot-blue"></div> Système opérationnel</div>
-      <div class="footer-pill">🔒 SSL sécurisé</div>
-      <div class="footer-pill" style="color:rgba(255,255,255,0.18)">v2.5.1</div>
+      <div class="footer-pill"><div class="dot-green"></div> Système opérationnel</div>
+      <div class="footer-pill"><i class="fas fa-lock" style="font-size:9px"></i> SSL sécurisé</div>
+      <div class="footer-copyright">v2.5.1</div>
     </div>
   </footer>
 
   <script>
-    function selectType(type) {
-      const te  = document.getElementById('tab-etudiant');
-      const ta  = document.getElementById('tab-alumni');
-      const fe  = document.getElementById('fields-etudiant');
-      const fa  = document.getElementById('fields-alumni');
-      const btn = document.getElementById('btn-submit');
-      const hid = document.getElementById('user_type');
+  function selectType(type) {
+    const fe = document.getElementById('fields-etudiant');
+    const fa = document.getElementById('fields-alumni');
+    const be = document.getElementById('btn-etudiant');
+    const ba = document.getElementById('btn-alumni');
+    const hid = document.getElementById('user_type');
+    const btn = document.getElementById('btn-submit');
 
-      te.className = 'tab';
-      ta.className = 'tab';
+    be.className = 'type-btn';
+    ba.className = 'type-btn';
 
-      if (type === 'etudiant') {
-        te.classList.add('tab-etudiant-active');
-        fe.classList.remove('hidden'); fa.classList.add('hidden');
-        btn.className = 'btn btn-blue';
-      } else {
-        ta.classList.add('tab-alumni-active');
-        fa.classList.remove('hidden'); fe.classList.add('hidden');
-        btn.className = 'btn btn-red';
-      }
-      hid.value = type;
+    if (type === 'etudiant') {
+      be.classList.add('active-etudiant');
+      fe.classList.remove('hidden'); fa.classList.add('hidden');
+      btn.className = 'submit-btn green-btn';
+    } else {
+      ba.classList.add('active-alumni');
+      fa.classList.remove('hidden'); fe.classList.add('hidden');
+      btn.className = 'submit-btn gold-btn';
     }
+    hid.value = type;
+  }
   </script>
 
 </body>

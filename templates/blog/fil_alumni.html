@@ -1,5 +1,7 @@
 {% load static %}
+
 <!DOCTYPE html>
+
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -9,18 +11,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        :root {
-            --green:#00e676; --teal:#00bcd4; --dark:#060f0a;
-            --pink:#f72585; --purple:#7209b7; --blue:#3a0ca3; --cyan:#4cc9f0;
-            --surface:rgba(255,255,255,0.04); --border:rgba(255,255,255,0.07);
-        }
+        :root { --green:#00e676; --teal:#00bcd4; --dark:#060f0a; --pink:#f72585; --purple:#7209b7; --blue:#3a0ca3; --cyan:#4cc9f0; }
         * { box-sizing:border-box; margin:0; padding:0; }
         body { font-family:'DM Sans',sans-serif; background:var(--dark); color:#fff; min-height:100vh; display:flex; }
-        body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; height:200%;
-            background:
-                radial-gradient(ellipse 600px 400px at 20% 30%,rgba(247,37,133,0.06) 0%,transparent 70%),
-                radial-gradient(ellipse 500px 500px at 80% 70%,rgba(76,201,240,0.05) 0%,transparent 70%);
-            pointer-events:none; z-index:0; }
+        body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; height:200%; background: radial-gradient(ellipse 600px 400px at 20% 30%,rgba(247,37,133,0.06) 0%,transparent 70%), radial-gradient(ellipse 500px 500px at 80% 70%,rgba(76,201,240,0.05) 0%,transparent 70%); pointer-events:none; z-index:0; }
         .sidebar { width:220px; background:rgba(6,15,10,0.95); border-right:1px solid rgba(0,230,118,0.1); padding:28px 14px; display:flex; flex-direction:column; position:relative; z-index:10; flex-shrink:0; }
         .sidebar-logo { display:flex; align-items:center; gap:10px; margin-bottom:6px; padding:0 6px; }
         .logo-dot { width:28px; height:28px; border-radius:8px; background:linear-gradient(135deg,var(--pink),var(--purple),var(--cyan)); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:#fff; font-family:'Syne',sans-serif; }
@@ -89,12 +83,20 @@
         .btn-post-action.en-favori { color:#f77f00; }
         .comments-section { display:none; padding:10px 16px 14px; border-top:1px solid #f0f0f0; background:#fafafa; }
         .comments-section.open { display:block; }
-        .comment-item { display:flex; gap:8px; margin-bottom:8px; animation:fadeIn 0.3s ease; }
+        .comment-item { display:flex; gap:8px; margin-bottom:8px; animation:fadeIn 0.3s ease; position:relative; }
         .comment-avatar { width:26px; height:26px; border-radius:50%; background:linear-gradient(135deg,var(--pink),var(--purple)); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:10px; flex-shrink:0; }
-        .comment-content { background:#fff; border:1px solid #eee; border-radius:10px; padding:7px 10px; flex:1; }
+        .comment-content { background:#fff; border:1px solid #eee; border-radius:10px; padding:7px 10px; flex:1; cursor:pointer; transition:background 0.15s; user-select:none; }
+        .comment-content:hover { background:#f9f9f9; }
         .comment-author { font-weight:700; font-size:0.75rem; color:var(--purple); margin-bottom:2px; }
         .comment-text { font-size:0.82rem; color:#333; }
         .comment-date { font-size:0.65rem; color:#bbb; margin-top:2px; }
+        .comment-menu { display:none; position:absolute; top:-4px; right:0; background:#fff; border:1px solid #eee; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.18); z-index:300; min-width:160px; overflow:hidden; animation:menuPop 0.15s ease; }
+        .comment-menu.open { display:block; }
+        @keyframes menuPop { from{opacity:0;transform:scale(0.88) translateY(-6px)} to{opacity:1;transform:scale(1) translateY(0)} }
+        .comment-menu-item { display:flex; align-items:center; gap:10px; padding:11px 16px; font-size:0.83rem; font-weight:600; cursor:pointer; border:none; background:none; width:100%; text-align:left; color:#333; transition:background 0.15s; }
+        .comment-menu-item:hover { background:#f5f5f5; }
+        .comment-menu-item.delete { color:#f72585; }
+        .comment-menu-item i { font-size:0.75rem; width:14px; text-align:center; }
         .comment-form { display:flex; gap:8px; margin-top:10px; align-items:center; position:relative; }
         .comment-input-wrap { flex:1; position:relative; display:flex; align-items:center; }
         .comment-form input { width:100%; background:#fff; border:1px solid #ddd; border-radius:999px; padding:7px 40px 7px 14px; color:#333; font-size:0.82rem; outline:none; transition:border-color 0.2s; }
@@ -102,7 +104,7 @@
         .comment-form input::placeholder { color:#bbb; }
         .emoji-btn { position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:1rem; color:#bbb; transition:color 0.2s; padding:0; line-height:1; }
         .emoji-btn:hover { color:#555; }
-        .emoji-picker { display:none; position:absolute; bottom:calc(100% + 8px); right:0; background:#fff; border:1px solid #eee; border-radius:14px; padding:10px; box-shadow:0 10px 40px rgba(0,0,0,0.15); z-index:100; width:260px; }
+        .emoji-picker { display:none; position:absolute; bottom:calc(100% + 8px); right:0; background:#fff; border:1px solid #eee; border-radius:14px; padding:10px; box-shadow:0 10px 40px rgba(0,0,0,0.15); z-index:400; width:260px; }
         .emoji-picker.open { display:block; animation:fadeIn 0.2s ease; }
         .emoji-categories { display:flex; gap:4px; margin-bottom:8px; flex-wrap:wrap; }
         .emoji-cat-btn { background:#f5f5f5; border:none; border-radius:8px; color:#666; font-size:0.7rem; padding:3px 8px; cursor:pointer; transition:all 0.15s; }
@@ -119,10 +121,7 @@
 <body>
 
 <aside class="sidebar">
-    <div class="sidebar-logo">
-        <div class="logo-dot">R</div>
-        <div class="logo-text">Réseau Alumni</div>
-    </div>
+    <div class="sidebar-logo"><div class="logo-dot">R</div><div class="logo-text">Réseau Alumni</div></div>
     <div class="sidebar-role">Espace Alumni</div>
     <ul class="sidebar-nav">
         <li><a href="{% url 'dashboard_alumni' %}"><i class="fas fa-th-large"></i> Dashboard</a></li>
@@ -141,9 +140,7 @@
 
 <div class="main">
     <header class="topbar">
-        <div class="topbar-title">
-            🔥 <strong>Le Fil</strong> — Posts & Offres du réseau
-        </div>
+        <div class="topbar-title">🔥 <strong>Le Fil</strong> — Posts & Offres du réseau</div>
         <div class="topbar-right">
             <a href="{% url 'notifications' %}" class="notif-btn">
                 <i class="fas fa-bell"></i>
@@ -162,246 +159,536 @@
         </div>
     </header>
 
-    <main class="content">
-        <div class="feed">
-            {% for item in feed %}
+<main class="content">
+    <div class="feed">
+        {% for item in feed %}
 
-            {% if item.type == 'offre' %}
-            <div class="offre-card" id="offre-card-{{ item.obj.id }}">
-                <div class="offre-card-top"></div>
-                <div class="offre-card-inner">
-                    <div class="post-header">
-                        <div class="post-author">
-                            <div class="post-author-avatar">
-                                {% if item.auteur.profile.photo %}
-                                    <img src="{{ item.auteur.profile.photo.url }}">
-                                {% else %}
-                                    {{ item.auteur.get_full_name|default:item.auteur.username|first|upper }}
-                                {% endif %}
-                            </div>
-                            <div>
-                                <div class="post-author-name">{{ item.auteur.get_full_name|default:item.auteur.username }}</div>
-                                <div class="post-author-role">Alumni · Université de Djibouti</div>
-                            </div>
+        {% if item.type == 'offre' %}
+        <div class="offre-card" id="offre-card-{{ item.obj.id }}">
+            <div class="offre-card-top"></div>
+            <div class="offre-card-inner">
+                <div class="post-header">
+                    <div class="post-author">
+                        <div class="post-author-avatar">
+                            {% if item.auteur.profile.photo %}<img src="{{ item.auteur.profile.photo.url }}">
+                            {% else %}{{ item.auteur.get_full_name|default:item.auteur.username|first|upper }}{% endif %}
                         </div>
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            <span class="post-date">{{ item.date|date:"d/m/Y" }}</span>
-                            <span class="offre-tag"><i class="fas fa-briefcase"></i> {{ item.obj.get_type_offre_display }}</span>
+                        <div>
+                            <div class="post-author-name">{{ item.auteur.get_full_name|default:item.auteur.username }}</div>
+                            <div class="post-author-role">Alumni · Université de Djibouti</div>
                         </div>
                     </div>
-                    <div class="post-body">
-                        <div class="post-titre">{{ item.obj.titre }}</div>
-                        <div class="offre-entreprise-meta">
-                            <span><i class="fas fa-building"></i> {{ item.obj.entreprise }}</span>
-                            <span><i class="fas fa-map-marker-alt"></i> {{ item.obj.ville }}</span>
-                            <span><i class="fas fa-graduation-cap"></i> {{ item.obj.get_niveau_requis_display }}</span>
-                            {% if item.obj.date_limite %}<span><i class="fas fa-calendar-alt"></i> Limite : {{ item.obj.date_limite|date:"d/m/Y" }}</span>{% endif %}
-                        </div>
-                        <div class="post-contenu" style="margin-top:8px;">{{ item.obj.description|truncatechars:200 }}</div>
-                    </div>
-                    <div class="post-actions">
-                        <button class="btn-post-action {% if item.liked_offre %}liked{% endif %}"
-                                id="like-offre-btn-{{ item.obj.id }}"
-                                onclick="toggleLikeOffre({{ item.obj.id }}, this)">
-                            <i class="fas fa-heart"></i>
-                            <span id="like-offre-count-{{ item.obj.id }}">{{ item.nb_likes_offre }}</span>
-                        </button>
-                        <button class="btn-post-action {% if item.en_favori_offre %}en-favori{% endif %}"
-                                id="favori-offre-btn-{{ item.obj.id }}"
-                                onclick="toggleFavoriOffre({{ item.obj.id }}, this)">
-                            <i class="fas fa-star"></i>
-                            <span id="favori-offre-count-{{ item.obj.id }}">{{ item.nb_favoris_offre }}</span>
-                        </button>
-                    </div>
-                </div>
-                <div class="offre-card-bottom"></div>
-            </div>
-
-            {% else %}
-            <div class="post-card" id="post-card-{{ item.obj.id }}">
-                <div class="post-card-top"></div>
-                <div class="post-card-inner">
-                    <div class="post-header">
-                        <div class="post-author">
-                            <div class="post-author-avatar">
-                                {% if item.auteur.profile.photo %}
-                                    <img src="{{ item.auteur.profile.photo.url }}">
-                                {% else %}
-                                    {{ item.auteur.get_full_name|default:item.auteur.username|first|upper }}
-                                {% endif %}
-                            </div>
-                            <div>
-                                <div class="post-author-name">{{ item.auteur.get_full_name|default:item.auteur.username }}</div>
-                                <div class="post-author-role">Alumni · Université de Djibouti</div>
-                            </div>
-                        </div>
+                    <div style="display:flex;align-items:center;gap:8px;">
                         <span class="post-date">{{ item.date|date:"d/m/Y" }}</span>
-                    </div>
-                    {% if item.obj.photo %}
-                    <img src="{{ item.obj.photo.url }}" class="post-photo" alt="">
-                    {% endif %}
-                    <div class="post-body">
-                        {% if item.obj.titre %}<div class="post-titre">{{ item.obj.titre }}</div>{% endif %}
-                        <div class="post-contenu">{{ item.obj.contenu }}</div>
-                    </div>
-                    <div class="likers-row {% if item.nb_likes == 0 %}hidden{% endif %}" id="likers-{{ item.obj.id }}"></div>
-                    <div class="post-actions">
-                        <button class="btn-post-action {% if item.liked %}liked{% endif %}"
-                                id="like-btn-{{ item.obj.id }}"
-                                onclick="toggleLike({{ item.obj.id }}, this)">
-                            <i class="fas fa-heart"></i>
-                            <span id="like-count-{{ item.obj.id }}">{{ item.nb_likes }}</span>
-                        </button>
-                        <button class="btn-post-action {% if item.en_favori %}en-favori{% endif %}"
-                                id="favori-btn-{{ item.obj.id }}"
-                                onclick="toggleFavori({{ item.obj.id }}, this)">
-                            <i class="fas fa-star"></i>
-                            <span id="favori-count-{{ item.obj.id }}">{{ item.nb_favoris }}</span>
-                        </button>
-                        <button class="btn-post-action" onclick="toggleComments({{ item.obj.id }})">
-                            <i class="fas fa-comment-alt"></i>
-                            <span id="comment-count-{{ item.obj.id }}">{{ item.nb_comments }}</span>
-                        </button>
-                    </div>
-                    <div class="comments-section" id="comments-{{ item.obj.id }}">
-                        <div id="comments-list-{{ item.obj.id }}">
-                            {% for comment in item.comments %}
-                            <div class="comment-item" data-comment-id="{{ comment.id }}">
-                                <div class="comment-avatar">{{ comment.auteur.get_full_name|default:comment.auteur.username|first|upper }}</div>
-                                <div class="comment-content">
-                                    <div class="comment-author">{{ comment.auteur.get_full_name|default:comment.auteur.username }}</div>
-                                    <div class="comment-text">{{ comment.contenu }}</div>
-                                    <div class="comment-date">{{ comment.date_creation|date:"d/m H:i" }}</div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        <div class="comment-form">
-                            <div class="comment-input-wrap">
-                                <input type="text" id="comment-input-{{ item.obj.id }}" placeholder="Écrire un commentaire…" onkeydown="if(event.key==='Enter') envoyerCommentaire({{ item.obj.id }})">
-                                <button class="emoji-btn" type="button" onclick="toggleEmojiPicker({{ item.obj.id }}, event)">😊</button>
-                                <div class="emoji-picker" id="emoji-picker-{{ item.obj.id }}">
-                                    <div class="emoji-categories">
-                                        <button class="emoji-cat-btn active" onclick="showEmojiCat('smileys',this)">😊</button>
-                                        <button class="emoji-cat-btn" onclick="showEmojiCat('gestures',this)">👋</button>
-                                        <button class="emoji-cat-btn" onclick="showEmojiCat('hearts',this)">❤️</button>
-                                        <button class="emoji-cat-btn" onclick="showEmojiCat('objects',this)">🎯</button>
-                                        <button class="emoji-cat-btn" onclick="showEmojiCat('nature',this)">🌿</button>
-                                    </div>
-                                    <div class="emoji-grid" id="emoji-grid-{{ item.obj.id }}"></div>
-                                </div>
-                            </div>
-                            <button class="comment-send-btn" onclick="envoyerCommentaire({{ item.obj.id }})"><i class="fas fa-paper-plane"></i></button>
-                        </div>
+                        <span class="offre-tag"><i class="fas fa-briefcase"></i> {{ item.obj.get_type_offre_display }}</span>
                     </div>
                 </div>
-                <div class="post-card-bottom"></div>
+                <div class="post-body">
+                    <div class="post-titre">{{ item.obj.titre }}</div>
+                    <div class="offre-entreprise-meta">
+                        <span><i class="fas fa-building"></i> {{ item.obj.entreprise }}</span>
+                        <span><i class="fas fa-map-marker-alt"></i> {{ item.obj.ville }}</span>
+                        <span><i class="fas fa-graduation-cap"></i> {{ item.obj.get_niveau_requis_display }}</span>
+                        {% if item.obj.date_limite %}<span><i class="fas fa-calendar-alt"></i> Limite : {{ item.obj.date_limite|date:"d/m/Y" }}</span>{% endif %}
+                    </div>
+                    <div class="post-contenu" style="margin-top:8px;">{{ item.obj.description|truncatechars:200 }}</div>
+                </div>
+                <div class="post-actions">
+                    <button class="btn-post-action {% if item.liked_offre %}liked{% endif %}"
+                            id="like-offre-btn-{{ item.obj.id }}"
+                            onclick="toggleLikeOffre({{ item.obj.id }}, this)">
+                        <i class="fas fa-heart"></i>
+                        <span id="like-offre-count-{{ item.obj.id }}">{{ item.nb_likes_offre }}</span>
+                    </button>
+                    <button class="btn-post-action {% if item.en_favori_offre %}en-favori{% endif %}"
+                            id="favori-offre-btn-{{ item.obj.id }}"
+                            onclick="toggleFavoriOffre({{ item.obj.id }}, this)">
+                        <i class="fas fa-star"></i>
+                        <span id="favori-offre-count-{{ item.obj.id }}">{{ item.nb_favoris_offre }}</span>
+                    </button>
+                    <button class="btn-post-action" onclick="toggleOffreComments({{ item.obj.id }})">
+                        <i class="fas fa-comment-alt"></i>
+                        <span id="comment-offre-count-{{ item.obj.id }}">{{ item.nb_comments_offre|default:0 }}</span>
+                    </button>
+                </div>
+                <div class="comments-section" id="offre-comments-{{ item.obj.id }}">
+                    <div id="offre-comments-list-{{ item.obj.id }}">
+                        {% for comment in item.comments_offre %}
+                        <div class="comment-item" data-comment-id="{{ comment.id }}"
+                             data-mine="{% if comment.auteur == user %}1{% else %}0{% endif %}">
+                            <div class="comment-avatar">{{ comment.auteur.get_full_name|default:comment.auteur.username|first|upper }}</div>
+                            <div class="comment-content"
+                                 onclick="toggleCommentMenu({{ comment.id }}, {% if comment.auteur == user %}true{% else %}false{% endif %}, event)">
+                                <div class="comment-author">{{ comment.auteur.get_full_name|default:comment.auteur.username }}</div>
+                                <div class="comment-text">{{ comment.contenu }}</div>
+                                <div class="comment-date">{{ comment.date_creation|date:"d/m H:i" }}</div>
+                            </div>
+                            {% if comment.auteur == user %}
+                            <div class="comment-menu" id="comment-menu-{{ comment.id }}">
+                                <button class="comment-menu-item delete"
+                                        onclick="supprimerCommentaireOffre({{ comment.id }}, {{ item.obj.id }}, event)">
+                                    <i class="fas fa-trash-alt"></i> Supprimer
+                                </button>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="comment-form">
+                        <div class="comment-input-wrap">
+                            <input type="text"
+                                   id="offre-comment-input-{{ item.obj.id }}"
+                                   placeholder="Écrire un commentaire…"
+                                   onkeydown="if(event.key==='Enter') envoyerCommentaireOffre({{ item.obj.id }})">
+                            <button class="emoji-btn" type="button"
+                                    onclick="toggleEmojiPickerOffre({{ item.obj.id }}, event)">😊</button>
+                            <div class="emoji-picker" id="offre-emoji-picker-{{ item.obj.id }}">
+                                <div class="emoji-categories">
+                                    <button class="emoji-cat-btn active" onclick="showEmojiCat('smileys',this)">😊</button>
+                                    <button class="emoji-cat-btn" onclick="showEmojiCat('gestures',this)">👋</button>
+                                    <button class="emoji-cat-btn" onclick="showEmojiCat('hearts',this)">❤️</button>
+                                    <button class="emoji-cat-btn" onclick="showEmojiCat('objects',this)">🎯</button>
+                                    <button class="emoji-cat-btn" onclick="showEmojiCat('nature',this)">🌿</button>
+                                </div>
+                                <div class="emoji-grid" id="offre-emoji-grid-{{ item.obj.id }}"></div>
+                            </div>
+                        </div>
+                        <button class="comment-send-btn" onclick="envoyerCommentaireOffre({{ item.obj.id }})">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
-            {% endif %}
-
-            {% empty %}
-            <div class="empty-state">
-                <i class="fas fa-newspaper"></i>
-                <p>Aucune publication pour le moment.</p>
-            </div>
-            {% endfor %}
+            <div class="offre-card-bottom"></div>
         </div>
-    </main>
+
+        {% else %}
+        <div class="post-card" id="post-card-{{ item.obj.id }}">
+            <div class="post-card-top"></div>
+            <div class="post-card-inner">
+                <div class="post-header">
+                    <div class="post-author">
+                        <div class="post-author-avatar">
+                            {% if item.auteur.profile.photo %}<img src="{{ item.auteur.profile.photo.url }}">
+                            {% else %}{{ item.auteur.get_full_name|default:item.auteur.username|first|upper }}{% endif %}
+                        </div>
+                        <div>
+                            <div class="post-author-name">{{ item.auteur.get_full_name|default:item.auteur.username }}</div>
+                            <div class="post-author-role">Alumni · Université de Djibouti</div>
+                        </div>
+                    </div>
+                    <span class="post-date">{{ item.date|date:"d/m/Y" }}</span>
+                </div>
+                {% if item.obj.photo %}<img src="{{ item.obj.photo.url }}" class="post-photo" alt="">{% endif %}
+                <div class="post-body">
+                    {% if item.obj.titre %}<div class="post-titre">{{ item.obj.titre }}</div>{% endif %}
+                    <div class="post-contenu">{{ item.obj.contenu }}</div>
+                </div>
+                <div class="likers-row {% if item.nb_likes == 0 %}hidden{% endif %}" id="likers-{{ item.obj.id }}"></div>
+                <div class="post-actions">
+                    <button class="btn-post-action {% if item.liked %}liked{% endif %}"
+                            id="like-btn-{{ item.obj.id }}"
+                            onclick="toggleLike({{ item.obj.id }}, this)">
+                        <i class="fas fa-heart"></i>
+                        <span id="like-count-{{ item.obj.id }}">{{ item.nb_likes }}</span>
+                    </button>
+                    <button class="btn-post-action {% if item.en_favori %}en-favori{% endif %}"
+                            id="favori-btn-{{ item.obj.id }}"
+                            onclick="toggleFavori({{ item.obj.id }}, this)">
+                        <i class="fas fa-star"></i>
+                        <span id="favori-count-{{ item.obj.id }}">{{ item.nb_favoris }}</span>
+                    </button>
+                    <button class="btn-post-action" onclick="toggleComments({{ item.obj.id }})">
+                        <i class="fas fa-comment-alt"></i>
+                        <span id="comment-count-{{ item.obj.id }}">{{ item.nb_comments }}</span>
+                    </button>
+                </div>
+                <div class="comments-section" id="comments-{{ item.obj.id }}">
+                    <div id="comments-list-{{ item.obj.id }}">
+                        {% for comment in item.comments %}
+                        <div class="comment-item" data-comment-id="{{ comment.id }}"
+                             data-mine="{% if comment.auteur == user %}1{% else %}0{% endif %}">
+                            <div class="comment-avatar">{{ comment.auteur.get_full_name|default:comment.auteur.username|first|upper }}</div>
+                            <div class="comment-content"
+                                 onclick="toggleCommentMenu({{ comment.id }}, {% if comment.auteur == user %}true{% else %}false{% endif %}, event)">
+                                <div class="comment-author">{{ comment.auteur.get_full_name|default:comment.auteur.username }}</div>
+                                <div class="comment-text">{{ comment.contenu }}</div>
+                                <div class="comment-date">{{ comment.date_creation|date:"d/m H:i" }}</div>
+                            </div>
+                            {% if comment.auteur == user %}
+                            <div class="comment-menu" id="comment-menu-{{ comment.id }}">
+                                <button class="comment-menu-item delete"
+                                        onclick="supprimerCommentaire({{ comment.id }}, event)">
+                                    <i class="fas fa-trash-alt"></i> Supprimer
+                                </button>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="comment-form">
+                        <div class="comment-input-wrap">
+                            <input type="text"
+                                   id="comment-input-{{ item.obj.id }}"
+                                   placeholder="Écrire un commentaire…"
+                                   onkeydown="if(event.key==='Enter') envoyerCommentaire({{ item.obj.id }})">
+                            <button class="emoji-btn" type="button"
+                                    onclick="toggleEmojiPicker({{ item.obj.id }}, event)">😊</button>
+                            <div class="emoji-picker" id="emoji-picker-{{ item.obj.id }}">
+                                <div class="emoji-categories">
+                                    <button class="emoji-cat-btn active" onclick="showEmojiCat('smileys',this)">😊</button>
+                                    <button class="emoji-cat-btn" onclick="showEmojiCat('gestures',this)">👋</button>
+                                    <button class="emoji-cat-btn" onclick="showEmojiCat('hearts',this)">❤️</button>
+                                    <button class="emoji-cat-btn" onclick="showEmojiCat('objects',this)">🎯</button>
+                                    <button class="emoji-cat-btn" onclick="showEmojiCat('nature',this)">🌿</button>
+                                </div>
+                                <div class="emoji-grid" id="emoji-grid-{{ item.obj.id }}"></div>
+                            </div>
+                        </div>
+                        <button class="comment-send-btn" onclick="envoyerCommentaire({{ item.obj.id }})">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="post-card-bottom"></div>
+        </div>
+        {% endif %}
+
+        {% empty %}
+        <div class="empty-state"><i class="fas fa-newspaper"></i><p>Aucune publication pour le moment.</p></div>
+        {% endfor %}
+    </div>
+</main>
+
+
 </div>
 
 <script>
 const CSRF = "{{ csrf_token }}";
+const MON_USERNAME = "{{ user.username }}";
+
 const EMOJIS = {
-    smileys:['😀','😂','🥰','😍','🤩','😎','🥳','😊','😇','🤗','😏','🤔','😅','😭','😱','🤯','😴','🤤','😋','🥺','😤','😡','🤑','🤫','😶','🫡'],
-    gestures:['👋','🤝','👍','👎','👏','🙌','🤲','🫶','💪','🖐️','✌️','🤞','🫰','🤟','🤘','👌','🤙','🫵','☝️','🫂'],
-    hearts:['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❤️‍🔥','💕','💞','💓','💗','💖','💘','💝','💟','❣️'],
-    objects:['🎯','🏆','🎓','📚','💡','🔥','⭐','✨','🎉','🎊','🎁','🚀','💎','🔑','🎵','🎶','📱','💻','🛡️','⚡'],
-    nature:['🌿','🌱','🌸','🌺','🌻','🌹','🍀','🌳','🌊','🌙','☀️','⛅','🌈','❄️','🌴','🌵','🦋','🐬','🦁','🐝'],
+    smileys:  ['😀','😂','🥰','😍','🤩','😎','🥳','😊','😇','🤗','😏','🤔','😅','😭','😱','🤯','😴','🤤','😋','🥺','😤','😡','🤑','🤫','😶','🫡'],
+    gestures: ['👋','🤝','👍','👎','👏','🙌','🤲','🫶','💪','🖐️','✌️','🤞','🫰','🤟','🤘','👌','🤙','🫵','☝️','🫂'],
+    hearts:   ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❤️‍🔥','💕','💞','💓','💗','💖','💘','💝','💟','❣️'],
+    objects:  ['🎯','🏆','🎓','📚','💡','🔥','⭐','✨','🎉','🎊','🎁','🚀','💎','🔑','🎵','🎶','📱','💻','🛡️','⚡'],
+    nature:   ['🌿','🌱','🌸','🌺','🌻','🌹','🍀','🌳','🌊','🌙','☀️','⛅','🌈','❄️','🌴','🌵','🦋','🐬','🦁','🐝'],
 };
-let currentEmojiCat='smileys', activePickerPostId=null;
+let currentEmojiCat = 'smileys';
+let activePickerPostId = null;
+let activePickerOffreId = null;
 
-function toggleEmojiPicker(postId,e){
+/* ══ MENU COMMENTAIRE (style WhatsApp) ══ */
+function toggleCommentMenu(commentId, isMine, e) {
     e.stopPropagation();
-    const picker=document.getElementById(`emoji-picker-${postId}`);
-    if(picker.classList.contains('open')){picker.classList.remove('open');activePickerPostId=null;}
-    else{document.querySelectorAll('.emoji-picker.open').forEach(p=>p.classList.remove('open'));activePickerPostId=postId;renderEmojiGrid(postId,currentEmojiCat);picker.classList.add('open');}
+    if (!isMine) return;
+    const menu = document.getElementById(`comment-menu-${commentId}`);
+    if (!menu) return;
+    const isOpen = menu.classList.contains('open');
+    closeAllMenus();
+    if (!isOpen) menu.classList.add('open');
 }
-function showEmojiCat(cat,btn){
-    currentEmojiCat=cat;
-    document.querySelectorAll('.emoji-cat-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    if(activePickerPostId) renderEmojiGrid(activePickerPostId,cat);
+function closeAllMenus() {
+    document.querySelectorAll('.comment-menu.open').forEach(m => m.classList.remove('open'));
 }
-function renderEmojiGrid(postId,cat){
-    const grid=document.getElementById(`emoji-grid-${postId}`);
-    grid.innerHTML='';
-    (EMOJIS[cat]||[]).forEach(emoji=>{const s=document.createElement('span');s.className='emoji-item';s.textContent=emoji;s.onclick=()=>insertEmoji(postId,emoji);grid.appendChild(s);});
-}
-function insertEmoji(postId,emoji){
-    const input=document.getElementById(`comment-input-${postId}`);
-    const pos=input.selectionStart;
-    input.value=input.value.slice(0,pos)+emoji+input.value.slice(pos);
-    input.focus();input.selectionStart=input.selectionEnd=pos+emoji.length;
-}
-document.addEventListener('click',()=>{document.querySelectorAll('.emoji-picker.open').forEach(p=>p.classList.remove('open'));activePickerPostId=null;});
 
-function toggleLike(postId,btn){
-    fetch(`/post/${postId}/like/`,{method:'POST',headers:{'X-CSRFToken':CSRF}})
-    .then(r=>r.json()).then(data=>{btn.classList.toggle('liked',data.liked);document.getElementById(`like-count-${postId}`).textContent=data.total;refreshPostStats(postId);});
-}
-function toggleFavori(postId,btn){
-    fetch(`/post/${postId}/favori/`,{method:'POST',headers:{'X-CSRFToken':CSRF}})
-    .then(r=>r.json()).then(data=>{btn.classList.toggle('en-favori',data.favoris);document.getElementById(`favori-count-${postId}`).textContent=data.total;});
-}
-function toggleLikeOffre(offreId,btn){
-    fetch(`/offre/${offreId}/like/`,{method:'POST',headers:{'X-CSRFToken':CSRF}})
-    .then(r=>r.json()).then(data=>{btn.classList.toggle('liked',data.liked);document.getElementById(`like-offre-count-${offreId}`).textContent=data.total;});
-}
-function toggleFavoriOffre(offreId,btn){
-    fetch(`/offre/${offreId}/favori/`,{method:'POST',headers:{'X-CSRFToken':CSRF}})
-    .then(r=>r.json()).then(data=>{btn.classList.toggle('en-favori',data.favoris);document.getElementById(`favori-offre-count-${offreId}`).textContent=data.total;});
-}
-function toggleComments(postId){document.getElementById(`comments-${postId}`).classList.toggle('open');}
-function envoyerCommentaire(postId){
-    const input=document.getElementById(`comment-input-${postId}`);
-    const text=input.value.trim();if(!text)return;
-    document.getElementById(`emoji-picker-${postId}`)?.classList.remove('open');
-    fetch(`/post/${postId}/commenter/`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded','X-CSRFToken':CSRF},body:`contenu=${encodeURIComponent(text)}`})
-    .then(r=>r.json()).then(data=>{
-        if(data.success){appendComment(postId,data.auteur,data.contenu,data.date,null);input.value='';const c=document.getElementById(`comment-count-${postId}`);c.textContent=parseInt(c.textContent)+1;}
+/* ══ SUPPRIMER COMMENTAIRE POST ══ */
+function supprimerCommentaire(commentId, e) {
+    e.stopPropagation();
+    closeAllMenus();
+    fetch(`/comment/${commentId}/supprimer/`, {
+        method: 'POST', headers: { 'X-CSRFToken': CSRF }
+    }).then(r => r.json()).then(data => {
+        if (data.success) {
+            const item = document.querySelector(`[data-comment-id="${commentId}"]`);
+            if (item) {
+                item.style.transition = 'all 0.3s ease';
+                item.style.opacity = '0';
+                item.style.transform = 'translateX(20px)';
+                setTimeout(() => {
+                    const postCard = item.closest('.post-card');
+                    if (postCard) {
+                        const postId = postCard.id.replace('post-card-', '');
+                        const counter = document.getElementById(`comment-count-${postId}`);
+                        if (counter) counter.textContent = Math.max(0, parseInt(counter.textContent) - 1);
+                    }
+                    item.remove();
+                }, 300);
+            }
+        }
     });
 }
-function appendComment(postId,auteur,contenu,date,commentId){
-    const list=document.getElementById(`comments-list-${postId}`);
-    if(commentId&&list.querySelector(`[data-comment-id="${commentId}"]`))return;
-    const div=document.createElement('div');div.className='comment-item';
-    if(commentId)div.setAttribute('data-comment-id',commentId);
-    div.innerHTML=`<div class="comment-avatar">${auteur[0].toUpperCase()}</div><div class="comment-content"><div class="comment-author">${auteur}</div><div class="comment-text">${contenu}</div><div class="comment-date">${date}</div></div>`;
+
+/* ══ SUPPRIMER COMMENTAIRE OFFRE ══ */
+function supprimerCommentaireOffre(commentId, offreId, e) {
+    e.stopPropagation();
+    closeAllMenus();
+    fetch(`/offre-comment/${commentId}/supprimer/`, {
+        method: 'POST', headers: { 'X-CSRFToken': CSRF }
+    }).then(r => r.json()).then(data => {
+        if (data.success) {
+            const item = document.querySelector(`[data-comment-id="${commentId}"]`);
+            if (item) {
+                item.style.transition = 'all 0.3s ease';
+                item.style.opacity = '0';
+                item.style.transform = 'translateX(20px)';
+                setTimeout(() => {
+                    const counter = document.getElementById(`comment-offre-count-${offreId}`);
+                    if (counter) counter.textContent = Math.max(0, parseInt(counter.textContent) - 1);
+                    item.remove();
+                }, 300);
+            }
+        }
+    });
+}
+
+document.addEventListener('click', () => {
+    closeAllMenus();
+    document.querySelectorAll('.emoji-picker.open').forEach(p => p.classList.remove('open'));
+    activePickerPostId = null;
+    activePickerOffreId = null;
+});
+
+/* ══ EMOJI POSTS ══ */
+function toggleEmojiPicker(postId, e) {
+    e.stopPropagation();
+    const picker = document.getElementById(`emoji-picker-${postId}`);
+    if (picker.classList.contains('open')) { picker.classList.remove('open'); activePickerPostId = null; }
+    else {
+        document.querySelectorAll('.emoji-picker.open').forEach(p => p.classList.remove('open'));
+        activePickerPostId = postId;
+        renderEmojiGrid(postId, currentEmojiCat);
+        picker.classList.add('open');
+    }
+}
+function renderEmojiGrid(postId, cat) {
+    const grid = document.getElementById(`emoji-grid-${postId}`);
+    if (!grid) return;
+    grid.innerHTML = '';
+    (EMOJIS[cat] || []).forEach(emoji => {
+        const s = document.createElement('span');
+        s.className = 'emoji-item'; s.textContent = emoji;
+        s.onclick = () => {
+            const input = document.getElementById(`comment-input-${postId}`);
+            const pos = input.selectionStart;
+            input.value = input.value.slice(0, pos) + emoji + input.value.slice(pos);
+            input.focus(); input.selectionStart = input.selectionEnd = pos + emoji.length;
+        };
+        grid.appendChild(s);
+    });
+}
+
+/* ══ EMOJI OFFRES ══ */
+function toggleEmojiPickerOffre(offreId, e) {
+    e.stopPropagation();
+    const picker = document.getElementById(`offre-emoji-picker-${offreId}`);
+    if (picker.classList.contains('open')) { picker.classList.remove('open'); activePickerOffreId = null; }
+    else {
+        document.querySelectorAll('.emoji-picker.open').forEach(p => p.classList.remove('open'));
+        activePickerOffreId = offreId;
+        renderEmojiGridOffre(offreId, currentEmojiCat);
+        picker.classList.add('open');
+    }
+}
+function renderEmojiGridOffre(offreId, cat) {
+    const grid = document.getElementById(`offre-emoji-grid-${offreId}`);
+    if (!grid) return;
+    grid.innerHTML = '';
+    (EMOJIS[cat] || []).forEach(emoji => {
+        const s = document.createElement('span');
+        s.className = 'emoji-item'; s.textContent = emoji;
+        s.onclick = () => {
+            const input = document.getElementById(`offre-comment-input-${offreId}`);
+            const pos = input.selectionStart;
+            input.value = input.value.slice(0, pos) + emoji + input.value.slice(pos);
+            input.focus(); input.selectionStart = input.selectionEnd = pos + emoji.length;
+        };
+        grid.appendChild(s);
+    });
+}
+
+function showEmojiCat(cat, btn) {
+    currentEmojiCat = cat;
+    document.querySelectorAll('.emoji-cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (activePickerPostId) renderEmojiGrid(activePickerPostId, cat);
+    if (activePickerOffreId) renderEmojiGridOffre(activePickerOffreId, cat);
+}
+
+/* ══ LIKES / FAVORIS ══ */
+function toggleLike(postId, btn) {
+    fetch(`/post/${postId}/like/`, { method:'POST', headers:{'X-CSRFToken':CSRF} })
+    .then(r => r.json()).then(data => {
+        btn.classList.toggle('liked', data.liked);
+        document.getElementById(`like-count-${postId}`).textContent = data.total;
+        refreshPostStats(postId);
+    });
+}
+function toggleFavori(postId, btn) {
+    fetch(`/post/${postId}/favori/`, { method:'POST', headers:{'X-CSRFToken':CSRF} })
+    .then(r => r.json()).then(data => {
+        btn.classList.toggle('en-favori', data.favoris);
+        document.getElementById(`favori-count-${postId}`).textContent = data.total;
+    });
+}
+function toggleLikeOffre(offreId, btn) {
+    fetch(`/offre/${offreId}/like/`, { method:'POST', headers:{'X-CSRFToken':CSRF} })
+    .then(r => r.json()).then(data => {
+        btn.classList.toggle('liked', data.liked);
+        document.getElementById(`like-offre-count-${offreId}`).textContent = data.total;
+    });
+}
+function toggleFavoriOffre(offreId, btn) {
+    fetch(`/offre/${offreId}/favori/`, { method:'POST', headers:{'X-CSRFToken':CSRF} })
+    .then(r => r.json()).then(data => {
+        btn.classList.toggle('en-favori', data.favoris);
+        document.getElementById(`favori-offre-count-${offreId}`).textContent = data.total;
+    });
+}
+
+/* ══ TOGGLE SECTIONS ══ */
+function toggleComments(postId) {
+    document.getElementById(`comments-${postId}`).classList.toggle('open');
+}
+function toggleOffreComments(offreId) {
+    document.getElementById(`offre-comments-${offreId}`).classList.toggle('open');
+}
+
+/* ══ ENVOYER COMMENTAIRE POST ══ */
+const sendingComment = {};
+function envoyerCommentaire(postId) {
+    if (sendingComment[postId]) return;
+    const input = document.getElementById(`comment-input-${postId}`);
+    const text = input.value.trim();
+    if (!text) return;
+    sendingComment[postId] = true;
+    document.getElementById(`emoji-picker-${postId}`)?.classList.remove('open');
+    fetch(`/post/${postId}/commenter/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': CSRF },
+        body: `contenu=${encodeURIComponent(text)}`
+    }).then(r => r.json()).then(data => {
+        if (data.success) {
+            appendComment(postId, data.auteur, data.contenu, data.date, data.id, true);
+            input.value = '';
+            const c = document.getElementById(`comment-count-${postId}`);
+            c.textContent = parseInt(c.textContent) + 1;
+        }
+    }).finally(() => { sendingComment[postId] = false; });
+}
+
+/* ══ ENVOYER COMMENTAIRE OFFRE ══ */
+const sendingOffreComment = {};
+function envoyerCommentaireOffre(offreId) {
+    if (sendingOffreComment[offreId]) return;
+    const input = document.getElementById(`offre-comment-input-${offreId}`);
+    const text = input.value.trim();
+    if (!text) return;
+    sendingOffreComment[offreId] = true;
+    document.getElementById(`offre-emoji-picker-${offreId}`)?.classList.remove('open');
+    fetch(`/offre/${offreId}/commenter/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': CSRF },
+        body: `contenu=${encodeURIComponent(text)}`
+    }).then(r => r.json()).then(data => {
+        if (data.success) {
+            appendOffreComment(offreId, data.auteur, data.contenu, data.date, data.id, true);
+            input.value = '';
+            const c = document.getElementById(`comment-offre-count-${offreId}`);
+            if (c) c.textContent = parseInt(c.textContent) + 1;
+        }
+    }).finally(() => { sendingOffreComment[offreId] = false; });
+}
+
+/* ══ APPEND COMMENTAIRE POST ══ */
+function appendComment(postId, auteur, contenu, date, commentId, isMine = false) {
+    const list = document.getElementById(`comments-list-${postId}`);
+    if (!commentId || !list) return;
+    if (list.querySelector(`[data-comment-id="${commentId}"]`)) return;
+    const div = document.createElement('div');
+    div.className = 'comment-item';
+    div.setAttribute('data-comment-id', commentId);
+    div.setAttribute('data-mine', isMine ? '1' : '0');
+    const menuHtml = isMine
+        ? `<div class="comment-menu" id="comment-menu-${commentId}">
+               <button class="comment-menu-item delete" onclick="supprimerCommentaire(${commentId}, event)">
+                   <i class="fas fa-trash-alt"></i> Supprimer
+               </button>
+           </div>` : '';
+    div.innerHTML = `
+        <div class="comment-avatar">${auteur[0].toUpperCase()}</div>
+        <div class="comment-content" onclick="toggleCommentMenu(${commentId}, ${isMine}, event)">
+            <div class="comment-author">${auteur}</div>
+            <div class="comment-text">${contenu}</div>
+            <div class="comment-date">${date}</div>
+        </div>${menuHtml}`;
     list.appendChild(div);
 }
-function refreshPostStats(postId){
-    fetch(`/post/${postId}/stats/`).then(r=>r.json()).then(data=>{
-        document.getElementById(`like-count-${postId}`).textContent=data.nb_likes;
-        document.getElementById(`favori-count-${postId}`).textContent=data.nb_favoris;
-        document.getElementById(`comment-count-${postId}`).textContent=data.nb_comments;
-        const likeBtn=document.getElementById(`like-btn-${postId}`);
-        if(likeBtn) likeBtn.classList.toggle('liked',data.user_liked);
-        const favoriBtn=document.getElementById(`favori-btn-${postId}`);
-        if(favoriBtn) favoriBtn.classList.toggle('en-favori',data.user_favori);
-        const row=document.getElementById(`likers-${postId}`);
-        if(data.likers&&data.likers.length>0){
-            row.classList.remove('hidden');
-            row.innerHTML='<span style="font-size:0.7rem;color:#999;margin-right:4px;">❤️</span>';
-            data.likers.forEach(l=>{const c=document.createElement('div');c.className='liker-chip';c.innerHTML=`<div class="liker-chip-avatar">${l[0].toUpperCase()}</div>${l}`;row.appendChild(c);});
-            if(data.nb_likes>data.likers.length){const m=document.createElement('span');m.style.cssText='font-size:0.7rem;color:#999;';m.textContent=`+${data.nb_likes-data.likers.length} autres`;row.appendChild(m);}
-        }else{row.classList.add('hidden');row.innerHTML='';}
-        if(data.comments)data.comments.forEach(c=>appendComment(postId,c.auteur,c.contenu,c.date,c.id));
-    }).catch(()=>{});
+
+/* ══ APPEND COMMENTAIRE OFFRE ══ */
+function appendOffreComment(offreId, auteur, contenu, date, commentId, isMine = false) {
+    const list = document.getElementById(`offre-comments-list-${offreId}`);
+    if (!commentId || !list) return;
+    if (list.querySelector(`[data-comment-id="${commentId}"]`)) return;
+    const div = document.createElement('div');
+    div.className = 'comment-item';
+    div.setAttribute('data-comment-id', commentId);
+    div.setAttribute('data-mine', isMine ? '1' : '0');
+    const menuHtml = isMine
+        ? `<div class="comment-menu" id="comment-menu-${commentId}">
+               <button class="comment-menu-item delete" onclick="supprimerCommentaireOffre(${commentId}, ${offreId}, event)">
+                   <i class="fas fa-trash-alt"></i> Supprimer
+               </button>
+           </div>` : '';
+    div.innerHTML = `
+        <div class="comment-avatar">${auteur[0].toUpperCase()}</div>
+        <div class="comment-content" onclick="toggleCommentMenu(${commentId}, ${isMine}, event)">
+            <div class="comment-author">${auteur}</div>
+            <div class="comment-text">${contenu}</div>
+            <div class="comment-date">${date}</div>
+        </div>${menuHtml}`;
+    list.appendChild(div);
 }
-const postIds=[{% for item in feed %}{% if item.type == 'post' %}{{ item.obj.id }},{% endif %}{% endfor %}];
-function pollAll(){postIds.forEach(id=>refreshPostStats(id));}
-setInterval(pollAll,5000);
-document.addEventListener('DOMContentLoaded',pollAll);
+
+/* ══ REFRESH STATS POSTS ══ */
+function refreshPostStats(postId) {
+    fetch(`/post/${postId}/stats/`).then(r => r.json()).then(data => {
+        document.getElementById(`like-count-${postId}`).textContent    = data.nb_likes;
+        document.getElementById(`favori-count-${postId}`).textContent  = data.nb_favoris;
+        document.getElementById(`comment-count-${postId}`).textContent = data.nb_comments;
+        const likeBtn   = document.getElementById(`like-btn-${postId}`);
+        const favoriBtn = document.getElementById(`favori-btn-${postId}`);
+        if (likeBtn)   likeBtn.classList.toggle('liked', data.user_liked);
+        if (favoriBtn) favoriBtn.classList.toggle('en-favori', data.user_favori);
+        const row = document.getElementById(`likers-${postId}`);
+        if (data.likers && data.likers.length > 0) {
+            row.classList.remove('hidden');
+            row.innerHTML = '<span style="font-size:0.7rem;color:#999;margin-right:4px;">❤️</span>';
+            data.likers.forEach(l => {
+                const c = document.createElement('div'); c.className = 'liker-chip';
+                c.innerHTML = `<div class="liker-chip-avatar">${l[0].toUpperCase()}</div>${l}`;
+                row.appendChild(c);
+            });
+            if (data.nb_likes > data.likers.length) {
+                const m = document.createElement('span');
+                m.style.cssText = 'font-size:0.7rem;color:#999;';
+                m.textContent = `+${data.nb_likes - data.likers.length} autres`;
+                row.appendChild(m);
+            }
+        } else { row.classList.add('hidden'); row.innerHTML = ''; }
+        if (data.comments) data.comments.forEach(c => {
+            const isMine = c.auteur_username === MON_USERNAME;
+            appendComment(postId, c.auteur, c.contenu, c.date, c.id, isMine);
+        });
+    }).catch(() => {});
+}
+
+const postIds = [{% for item in feed %}{% if item.type == 'post' %}{{ item.obj.id }},{% endif %}{% endfor %}];
+function pollAll() { postIds.forEach(id => refreshPostStats(id)); }
+setInterval(pollAll, 5000);
+document.addEventListener('DOMContentLoaded', pollAll);
 </script>
+
 </body>
 </html>

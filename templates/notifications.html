@@ -1,56 +1,172 @@
+
+
 {% extends "base.html" %}
 {% block title %}Notifications{% endblock %}
 {% block content %}
 <style>
-  .page-title {
-    font-size:22px; font-weight:700;
-    margin-bottom:24px; color:#fff;
-  }
-  .notif-list { display:flex; flex-direction:column; gap:12px; }
-  .notif-card {
-    background:rgba(8,28,21,0.7);
-    border:1px solid rgba(255,255,255,0.08);
-    border-radius:12px; padding:16px 20px;
-    display:flex; gap:16px; align-items:flex-start;
-  }
-  .notif-card.non-lue {
-    background:rgba(52,168,83,0.1);
-    border-color:rgba(52,168,83,0.3);
-  }
-  .notif-dot {
-    width:10px; height:10px; border-radius:50%;
-    background:#34a853; margin-top:5px; flex-shrink:0;
-  }
-  .notif-msg {
-    font-size:14px; color:#f1f5f2;
-    line-height:1.6; flex:1;
-  }
-  .notif-date {
-    font-size:12px; color:rgba(255,255,255,0.35);
-    margin-top:6px;
-  }
-  .empty {
-    text-align:center; color:rgba(255,255,255,0.3);
-    padding:60px 0; font-size:15px;
-  }
+    :root {
+        --pink:#f72585; --purple:#7209b7; --cyan:#4cc9f0;
+        --green:#00e676; --surface:rgba(255,255,255,0.04); --border:rgba(255,255,255,0.07);
+    }
+
+    /* CANVA SHAPES */
+    .canva-shapes { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+    .shape { position:absolute; border-radius:50%; animation:floatShape ease-in-out infinite alternate; }
+    .s1 { width:300px; height:300px; border:1.5px solid rgba(247,37,133,0.08); top:-80px; right:-60px; animation-duration:12s; }
+    .s2 { width:200px; height:200px; border:1.5px solid rgba(76,201,240,0.07); bottom:-80px; left:-60px; animation-duration:9s; animation-delay:-3s; }
+    .s3 { width:50px; height:50px; background:rgba(247,37,133,0.06); top:30%; right:8%; animation-duration:8s; }
+    .s4 { width:35px; height:35px; background:rgba(76,201,240,0.06); bottom:25%; left:5%; animation-duration:10s; animation-delay:-5s; }
+    .dot-grid { position:absolute; inset:0; background-image:radial-gradient(circle,rgba(247,37,133,0.07) 1px,transparent 1px); background-size:30px 30px; opacity:0.4; }
+    @keyframes floatShape { from{transform:translate(0,0)} to{transform:translate(10px,-15px)} }
+
+    /* PAGE HEADER */
+    .page-eyebrow { font-size:0.65rem; font-weight:700; color:var(--pink); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:6px; display:flex; align-items:center; gap:6px; position:relative; z-index:1; }
+    .page-eyebrow::before { content:''; width:5px; height:5px; border-radius:50%; background:var(--pink); animation:pulse 2s infinite; }
+    @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(247,37,133,0.5)} 70%{box-shadow:0 0 0 5px rgba(247,37,133,0)} 100%{box-shadow:0 0 0 0 rgba(247,37,133,0)} }
+    .page-title { font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; margin-bottom:4px; position:relative; z-index:1; }
+    .page-title span { background:linear-gradient(90deg,var(--pink),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .page-sub { font-size:0.83rem; color:rgba(255,255,255,0.35); margin-bottom:24px; position:relative; z-index:1; }
+
+    
+    /* FILTER TABS */
+    .filter-tabs { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; position:relative; z-index:1; }
+    .filter-tab { padding:6px 16px; border-radius:999px; font-size:0.78rem; font-weight:600; cursor:pointer; border:1px solid rgba(255,255,255,0.08); background:var(--surface); color:rgba(255,255,255,0.4); transition:all 0.2s; user-select:none; }
+    .filter-tab.active { background:linear-gradient(135deg,rgba(247,37,133,0.2),rgba(114,9,183,0.15)); border-color:rgba(247,37,133,0.35); color:var(--pink); }
+    .filter-tab:hover:not(.active) { color:rgba(255,255,255,0.7); border-color:rgba(255,255,255,0.15); }
+
+    /* NOTIF LIST */
+    .notif-list { display:flex; flex-direction:column; gap:10px; position:relative; z-index:1; max-width:760px; }
+
+    /* NOTIF CARD */
+    .notif-card {
+        background:var(--surface);
+        border:1px solid var(--border);
+        border-radius:14px;
+        padding:16px 18px 14px;
+        display:flex; gap:14px; align-items:flex-start;
+        transition:all 0.2s;
+        position:relative; overflow:hidden;
+        cursor:pointer;
+    }
+    .notif-card:hover { border-color:rgba(247,37,133,0.2); background:rgba(247,37,133,0.04); transform:translateX(4px); }
+
+    /* BARRE GAUCHE selon statut */
+    .notif-card.non-lue { border-left:3px solid var(--cyan); }
+    .notif-card.lue { border-left:3px solid rgba(255,255,255,0.08); opacity:0.7; }
+    .notif-card.lue:hover { opacity:1; }
+
+    /* BARRE BAS bleue/grise selon lu */
+    .notif-card::after {
+        content:''; position:absolute; bottom:0; left:0; right:0; height:2px;
+        transition:opacity 0.2s;
+    }
+    .notif-card.non-lue::after { background:linear-gradient(90deg,var(--cyan),var(--purple)); opacity:0.6; }
+    .notif-card.lue::after { background:rgba(255,255,255,0.05); opacity:1; }
+
+    /* ICON */
+    .notif-icon-wrap { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
+    .notif-card.non-lue .notif-icon-wrap { background:rgba(76,201,240,0.12); border:1px solid rgba(76,201,240,0.2); }
+    .notif-card.lue .notif-icon-wrap { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); }
+
+    /* CONTENT */
+    .notif-content { flex:1; }
+    .notif-msg { font-size:0.88rem; color:#f1f5f2; line-height:1.6; margin-bottom:6px; }
+    .notif-card.lue .notif-msg { color:rgba(255,255,255,0.5); }
+
+    /* FOOTER */
+    .notif-footer { display:flex; align-items:center; justify-content:space-between; }
+    .notif-date { font-size:0.7rem; color:rgba(255,255,255,0.25); display:flex; align-items:center; gap:5px; }
+    .notif-date i { font-size:0.62rem; }
+
+    /* STATUS BADGE */
+    .notif-status { display:inline-flex; align-items:center; gap:5px; font-size:0.65rem; font-weight:700; padding:2px 8px; border-radius:999px; }
+    .notif-status.new { background:rgba(76,201,240,0.12); color:var(--cyan); border:1px solid rgba(76,201,240,0.2); }
+    .notif-status.seen { background:rgba(255,255,255,0.04); color:rgba(255,255,255,0.25); border:1px solid rgba(255,255,255,0.06); }
+    .notif-status-dot { width:5px; height:5px; border-radius:50%; }
+    .notif-status.new .notif-status-dot { background:var(--cyan); animation:pulse 2s infinite; }
+    .notif-status.seen .notif-status-dot { background:rgba(255,255,255,0.2); }
+
+    /* EMPTY STATE */
+    .empty-state { text-align:center; padding:60px 20px; color:rgba(255,255,255,0.2); position:relative; z-index:1; }
+    .empty-state i { font-size:48px; margin-bottom:14px; display:block; color:rgba(247,37,133,0.2); }
+    .empty-state p { font-size:0.9rem; }
+
+    /* HIDDEN pour filtres */
+    .notif-hidden { display:none !important; }
 </style>
 
-<h1 class="page-title">Notifications</h1>
+<!-- CANVA SHAPES -->
+<div class="canva-shapes">
+    <div class="dot-grid"></div>
+    <div class="shape s1"></div>
+    <div class="shape s2"></div>
+    <div class="shape s3"></div>
+    <div class="shape s4"></div>
+</div>
 
+<!-- PAGE HEADER -->
+<div class="page-eyebrow">Centre de notifications</div>
+<div class="page-title">Vos <span>Notifications</span></div>
+<div class="page-sub">Restez informé de toute l'activité du réseau</div>
+
+<!-- NOTIF LIST -->
 {% if notifs %}
-  <div class="notif-list">
+<div class="notif-list" id="notif-list">
     {% for notif in notifs %}
-    <div class="notif-card {% if not notif.lue %}non-lue{% endif %}">
-      {% if not notif.lue %}<div class="notif-dot"></div>{% endif %}
-      <div style="flex:1;">
-        <div class="notif-msg">{{ notif.message }}</div>
-        <div class="notif-date">{{ notif.date_creation|date:"d/m/Y à H:i" }}</div>
-      </div>
+    <div class="notif-card {% if not notif.lue %}non-lue{% else %}lue{% endif %}"
+         data-statut="{% if not notif.lue %}non-lue{% else %}lue{% endif %}">
+
+        <div class="notif-icon-wrap">
+            {% if 'post' in notif.message|lower %}🖊️
+            {% elif 'offre' in notif.message|lower %}💼
+            {% elif 'message' in notif.message|lower %}💬
+            {% elif 'activé' in notif.message|lower or 'compte' in notif.message|lower %}✅
+            {% elif 'aimé' in notif.message|lower or 'like' in notif.message|lower %}❤️
+            {% elif 'commenté' in notif.message|lower %}💬
+            {% elif 'favori' in notif.message|lower %}⭐
+            {% else %}🔔{% endif %}
+        </div>
+
+        <div class="notif-content">
+            <div class="notif-msg">{{ notif.message }}</div>
+            <div class="notif-footer">
+                <div class="notif-date">
+                    <i class="fas fa-clock"></i>
+                    {{ notif.date_creation|date:"d/m/Y à H:i" }}
+                </div>
+                <div class="notif-status {% if not notif.lue %}new{% else %}seen{% endif %}">
+                    <div class="notif-status-dot"></div>
+                    {% if not notif.lue %}Nouveau{% else %}Lu{% endif %}
+                </div>
+            </div>
+        </div>
     </div>
     {% endfor %}
-  </div>
+</div>
 {% else %}
-  <div class="empty">Aucune notification pour le moment.</div>
+<div class="empty-state">
+    <i class="fas fa-bell-slash"></i>
+    <p>Aucune notification pour le moment.</p>
+</div>
 {% endif %}
 
+<script>
+function filtrerNotifs(type, btn) {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.notif-card').forEach(card => {
+        if (type === 'tout') {
+            card.classList.remove('notif-hidden');
+        } else {
+            if (card.dataset.statut === type) {
+                card.classList.remove('notif-hidden');
+            } else {
+                card.classList.add('notif-hidden');
+            }
+        }
+    });
+}
+</script>
 {% endblock %}
+
+

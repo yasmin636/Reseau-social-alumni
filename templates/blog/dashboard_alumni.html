@@ -1,351 +1,296 @@
 {% load static %}
-<!DOCTYPE html>
-<html lang="fr">
+<!DOCTYPE html><html lang="fr">
 <head>
     <meta charset="UTF-8">
     <title>Dashboard Alumni – Réseau Alumni</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         :root {
-            --navy: #0a1628;
-            --navy-2: #0d1f3c;
-            --navy-3: #112347;
-            --navy-4: #1a3a6b;
-            --gold: #c9a84c;
-            --gold-light: #e8c97a;
-            --gold-dim: rgba(201,168,76,0.15);
-            --white: #ffffff;
-            --text: rgba(255,255,255,0.90);
-            --text-dim: rgba(255,255,255,0.45);
-            --text-mid: rgba(255,255,255,0.65);
-            --border: rgba(255,255,255,0.07);
-            --border-2: rgba(201,168,76,0.20);
-            --sidebar-w: 260px;
+            --green:#00e676; --teal:#00bcd4; --dark:#060f0a;
+            --pink:#f72585; --purple:#7209b7; --blue:#3a0ca3; --cyan:#4cc9f0;
+            --gold:#f8961e; --surface:rgba(255,255,255,0.04); --border:rgba(255,255,255,0.07);
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { height: 100%; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--navy);
-            color: var(--text);
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* ── SIDEBAR ── */
-        .sidebar {
-            width: var(--sidebar-w);
-            background: var(--navy-2);
-            border-right: 1px solid var(--border);
-            display: flex; flex-direction: column;
-            position: fixed; top: 0; left: 0; bottom: 0;
-            z-index: 100; overflow-y: auto;
-        }
-        .sidebar-logo {
-            padding: 24px 20px 20px;
-            border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; gap: 12px;
-        }
-        .logo-icon {
-            width: 38px; height: 38px; border-radius: 10px;
-            background: linear-gradient(135deg, var(--gold), var(--gold-light));
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 800; font-size: 14px; color: var(--navy);
-            flex-shrink: 0;
-        }
-        .logo-text-main {
-            font-size: 0.95rem; font-weight: 700; color: var(--white);
-        }
-        .logo-text-sub {
-            font-size: 0.7rem; color: var(--text-dim);
-            text-transform: uppercase; letter-spacing: 0.8px;
-        }
-
-        .sidebar-user {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; gap: 10px;
-        }
-        .user-av {
-            width: 36px; height: 36px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--navy-4), var(--gold));
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: 13px; color: var(--white);
-            border: 2px solid var(--gold-dim); overflow: hidden; flex-shrink: 0;
-        }
-        .user-av img { width: 100%; height: 100%; object-fit: cover; }
-        .user-name { font-size: 0.84rem; font-weight: 600; color: var(--white); }
-        .user-role { font-size: 0.68rem; color: var(--gold); font-weight: 500; }
-
-        .nav-section-label {
-            padding: 16px 20px 6px;
-            font-size: 0.62rem; font-weight: 700;
-            color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px;
-        }
-        .sidebar-nav { list-style: none; padding: 0 10px; }
-        .sidebar-nav li { margin-bottom: 2px; }
-        .sidebar-nav a {
-            display: flex; align-items: center; gap: 10px;
-            padding: 10px 12px; border-radius: 8px;
-            color: var(--text-dim); text-decoration: none;
-            font-size: 0.84rem; font-weight: 500;
-            transition: all 0.18s;
-        }
-        .sidebar-nav a i { width: 16px; text-align: center; font-size: 0.8rem; }
-        .sidebar-nav a:hover { color: var(--white); background: rgba(255,255,255,0.05); }
-        .sidebar-nav a.active {
-            color: var(--gold-light);
-            background: var(--gold-dim);
-            border: 1px solid var(--border-2);
-            font-weight: 600;
-        }
-        .sidebar-divider { height: 1px; background: var(--border); margin: 12px 10px; }
-        .sidebar-nav a.logout { color: rgba(255,100,100,0.5); }
-        .sidebar-nav a.logout:hover { color: #ff6b6b; background: rgba(255,100,100,0.06); }
-
-        /* ── MAIN ── */
-        .main {
-            margin-left: var(--sidebar-w);
-            flex: 1; display: flex; flex-direction: column;
-            min-height: 100vh;
-        }
-
-        /* ── TOPBAR ── */
-        .topbar {
-            position: sticky; top: 0; z-index: 50;
-            height: 60px;
-            background: rgba(10,22,40,0.92);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 32px;
-        }
-        .topbar-title {
-            font-size: 0.95rem; font-weight: 600; color: var(--text);
-        }
-        .topbar-right { display: flex; align-items: center; gap: 16px; }
-        .notif-btn {
-            position: relative; color: var(--text-dim);
-            text-decoration: none; font-size: 1rem; transition: color 0.2s;
-        }
-        .notif-btn:hover { color: var(--gold); }
-        .badge-count {
-            position: absolute; top: -6px; right: -7px;
-            background: var(--gold); color: var(--navy);
-            font-size: 0.6rem; font-weight: 800;
-            min-width: 15px; height: 15px; border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            border: 2px solid var(--navy);
-        }
-        .topbar-chip {
-            display: flex; align-items: center; gap: 8px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid var(--border);
-            border-radius: 999px; padding: 5px 14px 5px 6px;
-        }
-        .topbar-av {
-            width: 26px; height: 26px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--navy-4), var(--gold));
-            display: flex; align-items: center; justify-content: center;
-            font-size: 10px; font-weight: 700; color: var(--white); overflow: hidden;
-        }
-        .topbar-av img { width: 100%; height: 100%; object-fit: cover; }
-        .topbar-chip span { font-size: 0.8rem; color: var(--text-mid); font-weight: 500; }
-
-        /* ── CONTENT ── */
-        .content { padding: 32px; flex: 1; overflow-y: auto; }
-
-        /* ── WELCOME BANNER ── */
-        .welcome-banner {
-            background: linear-gradient(135deg, var(--navy-3) 0%, var(--navy-4) 100%);
-            border: 1px solid var(--border-2);
-            border-radius: 16px;
-            padding: 28px 32px;
-            margin-bottom: 24px;
-            position: relative; overflow: hidden;
-        }
-        .welcome-banner::before {
-            content: '';
-            position: absolute; top: 0; left: 0; right: 0; height: 3px;
-            background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
-        }
-        .welcome-banner::after {
-            content: '';
-            position: absolute; right: -40px; top: -40px;
-            width: 200px; height: 200px; border-radius: 50%;
-            background: rgba(201,168,76,0.06);
-            pointer-events: none;
-        }
-        .welcome-eyebrow {
-            font-size: 0.72rem; font-weight: 600;
-            color: var(--gold); text-transform: uppercase;
-            letter-spacing: 1.5px; margin-bottom: 8px;
-        }
-        .welcome-title {
-            font-size: 1.6rem; font-weight: 800; color: var(--white);
-            margin-bottom: 6px; line-height: 1.2;
-        }
-        .welcome-sub { font-size: 0.88rem; color: var(--text-dim); }
-        .welcome-badges {
-            display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap;
-        }
-        .w-badge {
-            display: flex; align-items: center; gap: 6px;
-            padding: 5px 12px; border-radius: 6px;
-            font-size: 0.75rem; font-weight: 600;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: var(--text-mid);
-        }
-        .w-badge i { font-size: 0.7rem; color: var(--gold); }
-
-        /* ── STATS ── */
-        .stats-row {
-            display: grid; grid-template-columns: repeat(4,1fr);
-            gap: 14px; margin-bottom: 28px;
-        }
-        .stat-card {
-            background: var(--navy-2);
-            border: 1px solid var(--border);
-            border-radius: 12px; padding: 18px 20px;
-            transition: border-color 0.2s, transform 0.2s;
-        }
-        .stat-card:hover { border-color: var(--border-2); transform: translateY(-2px); }
-        .stat-icon { font-size: 1.4rem; margin-bottom: 10px; }
-        .stat-label {
-            font-size: 0.7rem; font-weight: 600;
-            color: var(--text-dim); text-transform: uppercase;
-            letter-spacing: 0.8px; margin-bottom: 5px;
-        }
-        .stat-value { font-size: 0.95rem; font-weight: 700; color: var(--white); }
-
-        /* ── SECTION TITLE ── */
-        .section-title {
-            font-size: 0.72rem; font-weight: 700;
-            color: var(--text-dim); text-transform: uppercase;
-            letter-spacing: 1.5px; margin-bottom: 16px;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .section-title::after {
-            content: ''; flex: 1; height: 1px;
-            background: var(--border);
-        }
-
-        /* ── ACTION CARDS ── */
-        .action-grid {
-            display: grid; grid-template-columns: repeat(3,1fr);
-            gap: 16px;
-        }
-        .action-card {
-            background: var(--navy-2);
-            border: 1px solid var(--border);
-            border-radius: 14px; overflow: hidden;
-            display: flex; flex-direction: column;
-            transition: transform 0.22s, border-color 0.22s, box-shadow 0.22s;
-            text-decoration: none;
-        }
-        .action-card:hover {
-            transform: translateY(-3px);
-            border-color: var(--border-2);
-            box-shadow: 0 12px 32px rgba(0,0,0,0.3);
-        }
-        .card-stripe { height: 4px; }
-        .c-post  .card-stripe { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
-        .c-offre .card-stripe { background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
-        .c-fil   .card-stripe { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
-
-        .card-body { padding: 22px 20px 18px; flex: 1; display: flex; flex-direction: column; }
-        .card-icon-wrap {
-            width: 44px; height: 44px; border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.3rem; margin-bottom: 14px;
-        }
-        .c-post  .card-icon-wrap { background: rgba(59,130,246,0.12); }
-        .c-offre .card-icon-wrap { background: var(--gold-dim); }
-        .c-fil   .card-icon-wrap { background: rgba(139,92,246,0.12); }
-
-        .card-title {
-            font-size: 0.95rem; font-weight: 700;
-            color: var(--white); margin-bottom: 6px;
-        }
-        .card-desc {
-            font-size: 0.81rem; color: var(--text-dim);
-            line-height: 1.6; flex: 1; margin-bottom: 18px;
-        }
-        .card-cta {
-            display: inline-flex; align-items: center; gap: 7px;
-            padding: 9px 16px; border-radius: 7px;
-            font-size: 0.8rem; font-weight: 600;
-            text-decoration: none; transition: all 0.18s;
-            width: fit-content;
-        }
-        .c-post  .card-cta { background: rgba(59,130,246,0.12); color: #60a5fa; border: 1px solid rgba(59,130,246,0.2); }
-        .c-offre .card-cta { background: var(--gold-dim); color: var(--gold-light); border: 1px solid var(--border-2); }
-        .c-fil   .card-cta { background: rgba(139,92,246,0.12); color: #a78bfa; border: 1px solid rgba(139,92,246,0.2); }
-        .card-cta:hover { filter: brightness(1.2); }
-
-        @media (max-width: 1024px) {
-            .sidebar { position: relative; width: 100%; height: auto; }
-            .main { margin-left: 0; }
-            .stats-row { grid-template-columns: 1fr 1fr; }
-            .action-grid { grid-template-columns: 1fr; }
-        }
-    </style>
+        * { box-sizing:border-box; margin:0; padding:0; }
+        body { font-family:'DM Sans',sans-serif; background:var(--dark); color:#fff; min-height:100vh; display:flex; }
+ 
+    /* CANVA ANIMATED BACKGROUND */
+    body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; height:200%;
+        background:
+            radial-gradient(ellipse 600px 400px at 20% 30%,rgba(247,37,133,0.06) 0%,transparent 70%),
+            radial-gradient(ellipse 500px 500px at 80% 70%,rgba(76,201,240,0.05) 0%,transparent 70%),
+            radial-gradient(ellipse 400px 400px at 50% 50%,rgba(248,150,30,0.03) 0%,transparent 70%);
+        pointer-events:none; z-index:0; animation:bgShift 15s ease-in-out infinite alternate; }
+    @keyframes bgShift { from{transform:translate(0,0)} to{transform:translate(20px,-20px)} }
+ 
+    /* FLOATING SHAPES */
+    .canva-shapes { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+    .shape { position:absolute; border-radius:50%; animation:floatShape ease-in-out infinite alternate; }
+    .s1 { width:300px; height:300px; border:1.5px solid rgba(247,37,133,0.08); top:-80px; right:-60px; animation-duration:12s; }
+    .s2 { width:200px; height:200px; border:1.5px solid rgba(76,201,240,0.07); top:-30px; right:-20px; animation-duration:9s; animation-delay:-3s; }
+    .s3 { width:400px; height:400px; border:1px solid rgba(114,9,183,0.06); bottom:-120px; left:-100px; animation-duration:14s; animation-delay:-6s; }
+    .s4 { width:80px; height:80px; background:rgba(247,37,133,0.06); top:25%; right:5%; animation-duration:8s; animation-delay:-2s; }
+    .s5 { width:60px; height:60px; background:rgba(76,201,240,0.06); bottom:30%; left:3%; animation-duration:10s; animation-delay:-7s; }
+    .s6 { width:40px; height:40px; border:1.5px solid rgba(248,150,30,0.12); top:60%; right:8%; border-radius:10px; transform:rotate(25deg); animation-duration:11s; animation-delay:-4s; }
+    .s7 { width:25px; height:25px; background:rgba(114,9,183,0.10); top:40%; right:12%; border-radius:6px; animation-duration:7s; animation-delay:-1s; }
+    .dot-grid { position:absolute; inset:0; background-image:radial-gradient(circle,rgba(247,37,133,0.08) 1px,transparent 1px); background-size:30px 30px; opacity:0.5; }
+    @keyframes floatShape { from{transform:translate(0,0) rotate(0deg)} to{transform:translate(12px,-18px) rotate(10deg)} }
+ 
+    /* SIDEBAR */
+    .sidebar { width:220px; background:rgba(6,15,10,0.95); border-right:1px solid rgba(247,37,133,0.10); padding:28px 14px; display:flex; flex-direction:column; position:fixed; top:0; left:0; bottom:0; z-index:100; overflow-y:auto; }
+    .sidebar::-webkit-scrollbar { display:none; }
+    .sidebar-logo { display:flex; align-items:center; gap:10px; margin-bottom:6px; padding:0 6px; }
+    .logo-dot { width:28px; height:28px; border-radius:8px; background:linear-gradient(135deg,var(--pink),var(--purple),var(--cyan)); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:#fff; font-family:'Syne',sans-serif; }
+    .logo-text { font-family:'Syne',sans-serif; font-size:0.88rem; font-weight:700; background:linear-gradient(90deg,var(--pink),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .sidebar-role { font-size:0.68rem; color:rgba(255,255,255,0.25); text-transform:uppercase; letter-spacing:1px; padding:0 6px; margin-bottom:14px; }
+ 
+    /* USER CARD IN SIDEBAR */
+    .sidebar-user { display:flex; align-items:center; gap:9px; background:rgba(247,37,133,0.06); border:1px solid rgba(247,37,133,0.12); border-radius:12px; padding:10px 12px; margin-bottom:20px; }
+    .sidebar-av { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--pink),var(--purple)); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; color:#fff; overflow:hidden; flex-shrink:0; }
+    .sidebar-av img { width:100%; height:100%; object-fit:cover; }
+    .sidebar-uname { font-size:0.82rem; font-weight:600; color:#fff; }
+    .sidebar-urole { font-size:0.65rem; color:var(--pink); font-weight:600; }
+ 
+    .sidebar-nav { list-style:none; flex:1; }
+    .sidebar-nav li { margin-bottom:2px; }
+    .sidebar-nav a { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:10px; color:rgba(255,255,255,0.45); text-decoration:none; font-size:0.85rem; font-weight:500; transition:all 0.2s; }
+    .sidebar-nav a i { width:16px; text-align:center; font-size:0.8rem; }
+    .sidebar-nav a:hover { color:rgba(255,255,255,0.8); background:rgba(255,255,255,0.05); }
+    .sidebar-nav a.active { color:#fff; background:linear-gradient(90deg,rgba(247,37,133,0.3),rgba(114,9,183,0.2)); border-left:2px solid var(--pink); font-weight:600; }
+    .sidebar-divider { height:1px; background:rgba(255,255,255,0.06); margin:14px 0; }
+    .sidebar-nav a.logout { color:rgba(255,100,100,0.6); }
+    .sidebar-nav a.logout:hover { color:#ff6b6b; background:rgba(255,100,100,0.08); }
+ 
+    /* MAIN */
+    .main { margin-left:220px; flex:1; display:flex; flex-direction:column; position:relative; z-index:1; }
+ 
+    /* TOPBAR */
+    .topbar { display:flex; justify-content:space-between; align-items:center; padding:14px 28px; background:rgba(6,15,10,0.85); border-bottom:1px solid rgba(247,37,133,0.10); backdrop-filter:blur(12px); position:sticky; top:0; z-index:50; }
+    .topbar-title { font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:600; color:rgba(255,255,255,0.7); }
+    .topbar-title strong { background:linear-gradient(90deg,var(--pink),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .topbar-right { display:flex; align-items:center; gap:14px; }
+    .notif-btn { position:relative; color:rgba(255,255,255,0.5); text-decoration:none; font-size:1rem; transition:color 0.2s; }
+    .notif-btn:hover { color:var(--pink); }
+    .badge-count { position:absolute; top:-6px; right:-7px; background:var(--pink); color:white; font-size:0.6rem; font-weight:700; min-width:15px; height:15px; border-radius:8px; display:flex; align-items:center; justify-content:center; border:2px solid var(--dark); animation:pulse 1.5s infinite; }
+    @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(247,37,133,0.5)} 70%{box-shadow:0 0 0 5px rgba(247,37,133,0)} 100%{box-shadow:0 0 0 0 rgba(247,37,133,0)} }
+    .user-chip { display:flex; align-items:center; gap:9px; }
+    .user-avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--pink),var(--purple)); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:13px; border:1.5px solid rgba(247,37,133,0.4); overflow:hidden; }
+    .user-avatar img { width:100%; height:100%; object-fit:cover; }
+    .user-chip span { font-size:0.85rem; color:rgba(255,255,255,0.7); font-weight:500; }
+ 
+    /* CONTENT */
+    .content { flex:1; overflow-y:auto; padding:24px 28px; }
+    .content::-webkit-scrollbar { width:4px; }
+    .content::-webkit-scrollbar-thumb { background:rgba(247,37,133,0.2); border-radius:2px; }
+ 
+    /* WELCOME BANNER */
+    .welcome-banner {
+        background:linear-gradient(135deg,rgba(247,37,133,0.12),rgba(114,9,183,0.10),rgba(76,201,240,0.08));
+        border:1px solid rgba(247,37,133,0.18);
+        border-radius:20px; padding:26px 28px; margin-bottom:22px;
+        position:relative; overflow:hidden;
+    }
+    .welcome-banner::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--pink),var(--purple),var(--cyan)); }
+    .welcome-banner::after { content:''; position:absolute; right:-40px; top:-40px; width:180px; height:180px; border-radius:50%; background:rgba(247,37,133,0.06); pointer-events:none; }
+    .welcome-eyebrow { font-size:0.68rem; font-weight:700; color:var(--pink); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:7px; display:flex; align-items:center; gap:6px; }
+    .welcome-eyebrow::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--pink); animation:pulse 2s infinite; }
+    .welcome-title { font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; color:#fff; margin-bottom:5px; line-height:1.2; }
+    .welcome-title span { background:linear-gradient(90deg,var(--pink),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .welcome-sub { font-size:0.84rem; color:rgba(255,255,255,0.4); margin-bottom:16px; }
+    .welcome-badges { display:flex; gap:8px; flex-wrap:wrap; }
+    .w-badge { display:flex; align-items:center; gap:6px; padding:5px 12px; border-radius:8px; font-size:0.73rem; font-weight:600; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); color:rgba(255,255,255,0.6); }
+    .w-badge i { font-size:0.68rem; color:var(--pink); }
+ 
+    /* STATS */
+    .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:24px; }
+    .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px 18px; transition:all 0.2s; position:relative; overflow:hidden; }
+    .stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--pink),var(--purple)); opacity:0; transition:opacity 0.2s; }
+    .stat-card:hover { border-color:rgba(247,37,133,0.25); transform:translateY(-2px); }
+    .stat-card:hover::before { opacity:1; }
+    .stat-icon { font-size:1.3rem; margin-bottom:8px; }
+    .stat-label { font-size:0.65rem; font-weight:700; color:rgba(255,255,255,0.3); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:4px; }
+    .stat-value { font-size:0.92rem; font-weight:700; color:#fff; font-family:'Syne',sans-serif; }
+ 
+    /* SECTION TITLE */
+    .section-title { font-size:0.68rem; font-weight:700; color:rgba(255,255,255,0.3); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+    .section-title::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.06); }
+ 
+    /* ACTION CARDS */
+    .action-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:28px; }
+    .action-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden; display:flex; flex-direction:column; transition:all 0.22s; text-decoration:none; }
+    .action-card:hover { transform:translateY(-3px); border-color:rgba(247,37,133,0.25); box-shadow:0 12px 32px rgba(247,37,133,0.10); }
+    .card-stripe { height:4px; }
+    .c-post .card-stripe { background:linear-gradient(90deg,var(--pink),var(--purple)); }
+    .c-offre .card-stripe { background:linear-gradient(90deg,var(--gold),#f3722c); }
+    .c-fil .card-stripe { background:linear-gradient(90deg,var(--cyan),var(--blue)); }
+    .card-body { padding:20px 18px 16px; flex:1; display:flex; flex-direction:column; }
+    .card-icon-wrap { width:42px; height:42px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; margin-bottom:12px; }
+    .c-post .card-icon-wrap { background:rgba(247,37,133,0.10); }
+    .c-offre .card-icon-wrap { background:rgba(248,150,30,0.10); }
+    .c-fil .card-icon-wrap { background:rgba(76,201,240,0.10); }
+    .card-title { font-size:0.92rem; font-weight:700; color:#fff; margin-bottom:5px; font-family:'Syne',sans-serif; }
+    .card-desc { font-size:0.8rem; color:rgba(255,255,255,0.4); line-height:1.6; flex:1; margin-bottom:14px; }
+    .card-cta { display:inline-flex; align-items:center; gap:7px; padding:8px 14px; border-radius:8px; font-size:0.78rem; font-weight:600; text-decoration:none; transition:all 0.18s; width:fit-content; }
+    .c-post .card-cta { background:rgba(247,37,133,0.10); color:var(--pink); border:1px solid rgba(247,37,133,0.2); }
+    .c-offre .card-cta { background:rgba(248,150,30,0.10); color:var(--gold); border:1px solid rgba(248,150,30,0.2); }
+    .c-fil .card-cta { background:rgba(76,201,240,0.10); color:var(--cyan); border:1px solid rgba(76,201,240,0.2); }
+    .card-cta:hover { filter:brightness(1.3); }
+ 
+    /* COMPLETION CARD */
+    .bottom-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .panel { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px; }
+    .panel-title { font-size:0.82rem; font-weight:700; color:#fff; margin-bottom:4px; font-family:'Syne',sans-serif; display:flex; align-items:center; gap:7px; }
+    .panel-title i { color:var(--pink); font-size:0.78rem; }
+    .panel-sub { font-size:0.75rem; color:rgba(255,255,255,0.3); margin-bottom:14px; }
+    .progress-bar-wrap { background:rgba(255,255,255,0.06); border-radius:999px; height:6px; margin-bottom:7px; overflow:hidden; }
+    .progress-bar-fill { height:100%; border-radius:999px; background:linear-gradient(90deg,var(--pink),var(--cyan)); width:75%; }
+    .progress-pct { font-size:0.75rem; font-weight:700; color:var(--pink); margin-bottom:14px; display:block; }
+    .ci-list { display:flex; flex-direction:column; gap:8px; }
+    .ci-item { display:flex; align-items:center; gap:8px; font-size:0.78rem; color:rgba(255,255,255,0.5); }
+    .ci-dot { width:16px; height:16px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.55rem; flex-shrink:0; }
+    .ci-done { background:rgba(0,230,118,0.15); color:var(--green); }
+    .ci-todo { background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.25); border:1px solid rgba(255,255,255,0.08); }
+    .btn-profil { display:inline-flex; align-items:center; gap:7px; margin-top:14px; padding:9px 16px; border-radius:8px; font-size:0.8rem; font-weight:700; text-decoration:none; background:linear-gradient(135deg,var(--pink),var(--purple)); color:#fff; transition:all 0.2s; }
+    .btn-profil:hover { transform:translateY(-1px); filter:brightness(1.1); }
+ 
+    /* TIP CARD */
+    .tip-card { background:linear-gradient(135deg,rgba(247,37,133,0.08),rgba(114,9,183,0.06)); border:1px solid rgba(247,37,133,0.14); border-radius:14px; padding:16px 18px; display:flex; gap:12px; align-items:flex-start; }
+    .tip-icon { font-size:1.4rem; flex-shrink:0; }
+    .tip-title { font-size:0.82rem; font-weight:700; color:var(--pink); margin-bottom:4px; }
+    .tip-text { font-size:0.76rem; color:rgba(255,255,255,0.45); line-height:1.6; }
+ 
+    /* ===== THEME TOGGLE BUTTON ===== */
+    .theme-toggle {
+        width:34px; height:34px; border-radius:10px;
+        border:1px solid rgba(255,255,255,0.10);
+        background:rgba(255,255,255,0.05);
+        color:rgba(255,255,255,0.6);
+        font-size:0.9rem; cursor:pointer;
+        display:flex; align-items:center; justify-content:center;
+        transition:all 0.2s;
+    }
+    .theme-toggle:hover { background:rgba(247,37,133,0.12); border-color:rgba(247,37,133,0.3); color:var(--pink); }
+ 
+    /* ===== LIGHT MODE OVERRIDES ===== */
+    body.light-mode {
+        background:#f4f6f8;
+        color:#1a1a2e;
+    }
+    body.light-mode::before {
+        background:
+            radial-gradient(ellipse 600px 400px at 20% 30%,rgba(247,37,133,0.04) 0%,transparent 70%),
+            radial-gradient(ellipse 500px 500px at 80% 70%,rgba(76,201,240,0.04) 0%,transparent 70%),
+            radial-gradient(ellipse 400px 400px at 50% 50%,rgba(248,150,30,0.02) 0%,transparent 70%);
+    }
+    body.light-mode .sidebar { background:rgba(255,255,255,0.97); border-right-color:rgba(247,37,133,0.15); }
+    body.light-mode .sidebar-role { color:rgba(0,0,0,0.35); }
+    body.light-mode .sidebar-user { background:rgba(247,37,133,0.05); border-color:rgba(247,37,133,0.15); }
+    body.light-mode .sidebar-uname { color:#1a1a2e; }
+    body.light-mode .sidebar-nav a { color:rgba(0,0,0,0.45); }
+    body.light-mode .sidebar-nav a:hover { color:rgba(0,0,0,0.8); background:rgba(0,0,0,0.04); }
+    body.light-mode .sidebar-nav a.active { color:#1a1a2e; background:linear-gradient(90deg,rgba(247,37,133,0.12),rgba(114,9,183,0.08)); }
+    body.light-mode .sidebar-divider { background:rgba(0,0,0,0.08); }
+    body.light-mode .sidebar-nav a.logout { color:rgba(200,50,50,0.7); }
+    body.light-mode .topbar { background:rgba(255,255,255,0.92); border-bottom-color:rgba(247,37,133,0.12); }
+    body.light-mode .topbar-title { color:rgba(0,0,0,0.7); }
+    body.light-mode .notif-btn { color:rgba(0,0,0,0.45); }
+    body.light-mode .user-chip span { color:rgba(0,0,0,0.65); }
+    body.light-mode .stat-card { background:rgba(255,255,255,0.9); border-color:rgba(0,0,0,0.07); box-shadow:0 2px 10px rgba(0,0,0,0.05); }
+    body.light-mode .stat-label { color:rgba(0,0,0,0.35); }
+    body.light-mode .stat-value { color:#1a1a2e; }
+    body.light-mode .section-title { color:rgba(0,0,0,0.35); }
+    body.light-mode .section-title::after { background:rgba(0,0,0,0.07); }
+    body.light-mode .action-card { background:rgba(255,255,255,0.92); border-color:rgba(0,0,0,0.07); box-shadow:0 2px 10px rgba(0,0,0,0.05); }
+    body.light-mode .card-title { color:#1a1a2e; }
+    body.light-mode .card-desc { color:rgba(0,0,0,0.45); }
+    body.light-mode .panel { background:rgba(255,255,255,0.92); border-color:rgba(0,0,0,0.07); box-shadow:0 2px 10px rgba(0,0,0,0.05); }
+    body.light-mode .panel-title { color:#1a1a2e; }
+    body.light-mode .panel-sub { color:rgba(0,0,0,0.35); }
+    body.light-mode .progress-bar-wrap { background:rgba(0,0,0,0.07); }
+    body.light-mode .ci-item { color:rgba(0,0,0,0.55); }
+    body.light-mode .ci-todo { background:rgba(0,0,0,0.05); border-color:rgba(0,0,0,0.10); color:rgba(0,0,0,0.3); }
+    body.light-mode .tip-card { background:linear-gradient(135deg,rgba(247,37,133,0.05),rgba(114,9,183,0.03)); border-color:rgba(247,37,133,0.15); }
+    body.light-mode .tip-text { color:rgba(0,0,0,0.5); }
+    body.light-mode .welcome-banner { background:linear-gradient(135deg,rgba(247,37,133,0.07),rgba(114,9,183,0.05),rgba(76,201,240,0.04)); border-color:rgba(247,37,133,0.18); }
+    body.light-mode .welcome-title { color:#1a1a2e; }
+    body.light-mode .welcome-sub { color:rgba(0,0,0,0.4); }
+    body.light-mode .w-badge { background:rgba(0,0,0,0.04); border-color:rgba(0,0,0,0.08); color:rgba(0,0,0,0.55); }
+    body.light-mode .dot-grid { background-image:radial-gradient(circle,rgba(247,37,133,0.07) 1px,transparent 1px); }
+    body.light-mode .theme-toggle { border-color:rgba(0,0,0,0.12); background:rgba(0,0,0,0.04); color:rgba(0,0,0,0.5); }
+    body.light-mode .theme-toggle:hover { background:rgba(247,37,133,0.08); border-color:rgba(247,37,133,0.25); }
+    body.light-mode .badge-count { border-color:#f4f6f8; }
+ 
+    @media (max-width:1024px) { .main{margin-left:0} .sidebar{position:relative;width:100%;height:auto} .stats-row{grid-template-columns:1fr 1fr} .action-grid{grid-template-columns:1fr} .bottom-grid{grid-template-columns:1fr} }
+</style>
+ 
+ 
 </head>
-<body>
-
-<!-- SIDEBAR -->
-<aside class="sidebar">
+<body><!-- CANVA SHAPES --><div class="canva-shapes">
+    <div class="dot-grid"></div>
+    <div class="shape s1"></div>
+    <div class="shape s2"></div>
+    <div class="shape s3"></div>
+    <div class="shape s4"></div>
+    <div class="shape s5"></div>
+    <div class="shape s6"></div>
+    <div class="shape s7"></div>
+</div><!-- SIDEBAR --><aside class="sidebar">
     <div class="sidebar-logo">
-        <div class="logo-icon">RA</div>
-        <div>
-            <div class="logo-text-main">Réseau Alumni</div>
-            <div class="logo-text-sub">Université de Djibouti</div>
-        </div>
+        <div class="logo-dot">R</div>
+        <div class="logo-text">Réseau Alumni</div>
     </div>
-    <div class="sidebar-user">
-        <div class="user-av">
-            {% if user.profile.photo %}
-                <img src="{{ user.profile.photo.url }}">
-            {% else %}
-                {{ user.get_full_name|default:user.username|first|upper }}
-            {% endif %}
-        </div>
-        <div>
-            <div class="user-name">{{ user.get_full_name|default:user.username }}</div>
-            <div class="user-role">Alumni</div>
-        </div>
+    <div class="sidebar-role">Espace Alumni</div>
+ 
+<div class="sidebar-user">
+    <div class="sidebar-av">
+        {% if user.profile.photo %}
+            <img src="{{ user.profile.photo.url }}">
+        {% else %}
+            {{ user.get_full_name|default:user.username|first|upper }}
+        {% endif %}
     </div>
-    <div class="nav-section-label">Menu</div>
-    <ul class="sidebar-nav">
-        <li><a href="{% url 'dashboard_alumni' %}" class="active"><i class="fas fa-th-large"></i> Dashboard</a></li>
-        <li><a href="{% url 'post_create' %}"><i class="fas fa-pen"></i> Publier un post</a></li>
-        <li><a href="{% url 'offre_create' %}"><i class="fas fa-briefcase"></i> Publier une offre</a></li>
-        <li><a href="{% url 'fil_alumni' %}"><i class="fas fa-fire"></i> Le Fil</a></li>
-        <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> Notifications</a></li>
-        <li><a href="{% url 'chat_page' %}"><i class="fas fa-comment-dots"></i> Chat</a></li>
-        <li><a href="{% url 'profil_alumni' %}"><i class="fas fa-user-circle"></i> Profil</a></li>
-    </ul>
-    <div class="sidebar-divider"></div>
-    <ul class="sidebar-nav">
-        <li><a href="{% url 'logout' %}" class="logout"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
-    </ul>
-</aside>
-
-<!-- MAIN -->
-<div class="main">
+    <div>
+        <div class="sidebar-uname">{{ user.get_full_name|default:user.username }}</div>
+        <div class="sidebar-urole">⭐ Alumni</div>
+    </div>
+</div>
+ 
+<ul class="sidebar-nav">
+    <li><a href="{% url 'dashboard_alumni' %}" class="active"><i class="fas fa-th-large"></i> Dashboard</a></li>
+    <li><a href="{% url 'post_create' %}"><i class="fas fa-pen"></i> Publier un post</a></li>
+    <li><a href="{% url 'offre_create' %}"><i class="fas fa-briefcase"></i> Publier une offre</a></li>
+    <li><a href="{% url 'fil_alumni' %}"><i class="fas fa-fire"></i> Le Fil</a></li>
+    <li><a href="{% url 'notifications' %}">
+        <i class="fas fa-bell"></i> Notifications
+        {% if nb_notifications > 0 %}<span style="margin-left:auto;background:var(--pink);color:#fff;font-size:9px;padding:1px 6px;border-radius:999px;font-weight:700;">{{ nb_notifications }}</span>{% endif %}
+    </a></li>
+    <li><a href="{% url 'chat_page' %}"><i class="fas fa-comment-dots"></i> Chat</a></li>
+    <li><a href="{% url 'profil_alumni' %}"><i class="fas fa-user-circle"></i> Profil</a></li>
+</ul>
+<div class="sidebar-divider"></div>
+<ul class="sidebar-nav">
+    <li><a href="{% url 'logout' %}" class="logout"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+</ul>
+ 
+ 
+</aside><!-- MAIN --><div class="main">
     <header class="topbar">
-        <div class="topbar-title">Tableau de bord</div>
+        <div class="topbar-title">
+            Bonjour, <strong>{{ user.get_full_name|default:user.username }}</strong> 👋
+        </div>
         <div class="topbar-right">
+            <!-- THEME TOGGLE BUTTON -->
+            <button class="theme-toggle" id="themeToggle" title="Changer le thème" onclick="toggleTheme()">
+                <i class="fas fa-moon" id="themeIcon"></i>
+            </button>
             <a href="{% url 'notifications' %}" class="notif-btn">
                 <i class="fas fa-bell"></i>
                 {% if nb_notifications > 0 %}<span class="badge-count">{{ nb_notifications }}</span>{% endif %}
             </a>
-            <div class="topbar-chip">
-                <div class="topbar-av">
+            <div class="user-chip">
+                <div class="user-avatar">
                     {% if user.profile.photo %}
                         <img src="{{ user.profile.photo.url }}">
                     {% else %}
@@ -356,89 +301,146 @@
             </div>
         </div>
     </header>
-
-    <div class="content">
-
-        <!-- Welcome Banner -->
-        <div class="welcome-banner">
-            <div class="welcome-eyebrow">Espace Alumni</div>
-            <div class="welcome-title">Bonjour, {{ user.get_full_name|default:user.username }} 👋</div>
-            <div class="welcome-sub">Bienvenue sur votre espace personnel — Réseau Alumni · Université de Djibouti</div>
-            <div class="welcome-badges">
-                <span class="w-badge"><i class="fas fa-graduation-cap"></i> {{ user.profile.filiere_alumni|default:"Filière non renseignée" }}</span>
-                <span class="w-badge"><i class="fas fa-calendar"></i> Promo {{ user.profile.annee_licence|default:"—" }}</span>
-                <span class="w-badge"><i class="fas fa-briefcase"></i> {% if user.profile.en_poste %}En poste{% else %}Disponible{% endif %}</span>
-                <span class="w-badge"><i class="fas fa-star"></i> Alumni actif</span>
-            </div>
-        </div>
-
-        <!-- Stats -->
-        <div class="stats-row">
-            <div class="stat-card">
-                <div class="stat-icon">🎓</div>
-                <div class="stat-label">Filière</div>
-                <div class="stat-value">{{ user.profile.filiere_alumni|default:"—" }}</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">📅</div>
-                <div class="stat-label">Promotion</div>
-                <div class="stat-value">{{ user.profile.annee_licence|default:"—" }}</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">💼</div>
-                <div class="stat-label">Situation</div>
-                <div class="stat-value">{% if user.profile.en_poste %}En poste{% else %}Disponible{% endif %}</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">⭐</div>
-                <div class="stat-label">Statut</div>
-                <div class="stat-value">Alumni ✓</div>
-            </div>
-        </div>
-
-        <!-- Actions -->
-        <div class="section-title">Actions disponibles</div>
-        <div class="action-grid">
-
-            <div class="action-card c-post">
-                <div class="card-stripe"></div>
-                <div class="card-body">
-                    <div class="card-icon-wrap">✍️</div>
-                    <div class="card-title">Publier un post</div>
-                    <div class="card-desc">Partagez vos expériences, conseils et actualités avec les étudiants et alumni du réseau.</div>
-                    <a href="{% url 'post_create' %}" class="card-cta">
-                        <i class="fas fa-arrow-right"></i> Créer un post
-                    </a>
-                </div>
-            </div>
-
-            <div class="action-card c-offre">
-                <div class="card-stripe"></div>
-                <div class="card-body">
-                    <div class="card-icon-wrap">💼</div>
-                    <div class="card-title">Publier une offre</div>
-                    <div class="card-desc">Proposez des stages, emplois ou missions freelance aux étudiants du réseau.</div>
-                    <a href="{% url 'offre_create' %}" class="card-cta">
-                        <i class="fas fa-arrow-right"></i> Publier une offre
-                    </a>
-                </div>
-            </div>
-
-            <div class="action-card c-fil">
-                <div class="card-stripe"></div>
-                <div class="card-body">
-                    <div class="card-icon-wrap">🔥</div>
-                    <div class="card-title">Le Fil</div>
-                    <div class="card-desc">Explorez tous les posts et offres du réseau. Likez, commentez et ajoutez en favoris.</div>
-                    <a href="{% url 'fil_alumni' %}" class="card-cta">
-                        <i class="fas fa-arrow-right"></i> Explorer le fil
-                    </a>
-                </div>
-            </div>
-
+ 
+<div class="content">
+ 
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+        <div class="welcome-eyebrow">Espace Alumni</div>
+        <div class="welcome-title">Bienvenue, <span>{{ user.get_full_name|default:user.username }}</span></div>
+        <div class="welcome-sub">Tableau de bord · Réseau Alumni · Université de Djibouti</div>
+        <div class="welcome-badges">
+            <span class="w-badge"><i class="fas fa-graduation-cap"></i> {{ user.profile.filiere_alumni|default:"Filière non renseignée" }}</span>
+            <span class="w-badge"><i class="fas fa-calendar"></i> Promo {{ user.profile.annee_licence|default:"—" }}</span>
+            <span class="w-badge"><i class="fas fa-briefcase"></i> {% if user.profile.en_poste %}En poste{% else %}Disponible{% endif %}</span>
+            <span class="w-badge"><i class="fas fa-star"></i> Alumni actif</span>
         </div>
     </div>
+ 
+    <!-- Stats -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-icon">🎓</div>
+            <div class="stat-label">Filière</div>
+            <div class="stat-value">{{ user.profile.filiere_alumni|default:"—" }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-label">Promotion</div>
+            <div class="stat-value">{{ user.profile.annee_licence|default:"—" }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">💼</div>
+            <div class="stat-label">Situation</div>
+            <div class="stat-value">{% if user.profile.en_poste %}En poste{% else %}Disponible{% endif %}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-label">Statut</div>
+            <div class="stat-value">Alumni ✓</div>
+        </div>
+    </div>
+ 
+    <!-- Actions -->
+    <div class="section-title">Actions disponibles</div>
+    <div class="action-grid">
+        <div class="action-card c-post">
+            <div class="card-stripe"></div>
+            <div class="card-body">
+                <div class="card-icon-wrap">✍️</div>
+                <div class="card-title">Publier un post</div>
+                <div class="card-desc">Partagez vos expériences, conseils et actualités avec les étudiants et alumni du réseau.</div>
+                <a href="{% url 'post_create' %}" class="card-cta"><i class="fas fa-arrow-right"></i> Créer un post</a>
+            </div>
+        </div>
+        <div class="action-card c-offre">
+            <div class="card-stripe"></div>
+            <div class="card-body">
+                <div class="card-icon-wrap">💼</div>
+                <div class="card-title">Publier une offre</div>
+                <div class="card-desc">Proposez des stages, emplois ou missions freelance aux étudiants du réseau.</div>
+                <a href="{% url 'offre_create' %}" class="card-cta"><i class="fas fa-arrow-right"></i> Publier une offre</a>
+            </div>
+        </div>
+        <div class="action-card c-fil">
+            <div class="card-stripe"></div>
+            <div class="card-body">
+                <div class="card-icon-wrap">🔥</div>
+                <div class="card-title">Le Fil</div>
+                <div class="card-desc">Explorez tous les posts et offres du réseau. Likez, commentez et ajoutez en favoris.</div>
+                <a href="{% url 'fil_alumni' %}" class="card-cta"><i class="fas fa-arrow-right"></i> Explorer le fil</a>
+            </div>
+        </div>
+    </div>
+ 
+    <!-- Bottom grid -->
+    <div class="bottom-grid">
+ 
+        <!-- Completion -->
+        <div class="panel">
+            <div class="panel-title"><i class="fas fa-user-check"></i> Complétion du profil</div>
+            <div class="panel-sub">Complétez votre profil pour être plus visible</div>
+            <div class="progress-bar-wrap"><div class="progress-bar-fill"></div></div>
+            <span class="progress-pct">75% complété</span>
+            <div class="ci-list">
+                <div class="ci-item"><div class="ci-dot ci-done"><i class="fas fa-check"></i></div> Nom et prénom</div>
+                <div class="ci-item"><div class="ci-dot ci-done"><i class="fas fa-check"></i></div> Filière et promotion</div>
+                <div class="ci-item"><div class="ci-dot ci-done"><i class="fas fa-check"></i></div> Email vérifié</div>
+                <div class="ci-item"><div class="ci-dot {% if user.profile.photo %}ci-done{% else %}ci-todo{% endif %}"><i class="fas {% if user.profile.photo %}fa-check{% else %}fa-times{% endif %}"></i></div> Photo de profil</div>
+                <div class="ci-item"><div class="ci-dot {% if user.profile.en_poste %}ci-done{% else %}ci-todo{% endif %}"><i class="fas {% if user.profile.en_poste %}fa-check{% else %}fa-times{% endif %}"></i></div> Situation professionnelle</div>
+            </div>
+            <a href="{% url 'profil_alumni' %}" class="btn-profil"><i class="fas fa-user-edit"></i> Compléter mon profil</a>
+        </div>
+ 
+        <!-- Tip -->
+        <div style="display:flex;flex-direction:column;gap:12px;">
+            <div class="tip-card">
+                <div class="tip-icon">💡</div>
+                <div>
+                    <div class="tip-title">Conseil du jour</div>
+                    <div class="tip-text">Publiez régulièrement des posts pour augmenter votre visibilité et aider les étudiants du réseau alumni.</div>
+                </div>
+            </div>
+            <div class="tip-card">
+                <div class="tip-icon">🚀</div>
+                <div>
+                    <div class="tip-title">Offres d'emploi</div>
+                    <div class="tip-text">Vous recrutez ? Publiez une offre et connectez-vous avec les meilleurs talents de l'université.</div>
+                </div>
+            </div>
+            <div class="tip-card">
+                <div class="tip-icon">💬</div>
+                <div>
+                    <div class="tip-title">Chat disponible</div>
+                    <div class="tip-text">Les étudiants peuvent vous contacter directement via le chat pour des conseils ou opportunités.</div>
+                </div>
+            </div>
+        </div>
+ 
+    </div>
+ 
 </div>
-
+ 
+ 
+</div>
+ 
+<script>
+    function toggleTheme() {
+        const body = document.body;
+        const icon = document.getElementById('themeIcon');
+        const isLight = body.classList.toggle('light-mode');
+        icon.className = isLight ? 'fas fa-sun' : 'fas fa-moon';
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    }
+ 
+    // Restore saved preference on page load
+    (function() {
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-mode');
+            document.getElementById('themeIcon').className = 'fas fa-sun';
+        }
+    })();
+</script>
+ 
 </body>
 </html>

@@ -1,170 +1,219 @@
 {% load static %}
+
 <!DOCTYPE html>
+
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Espace Étudiant – Réseau Alumni</title>
+    <title>Dashboard – Espace Étudiant</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,900;1,300&family=Cabinet+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        :root {
-            --green:#00e676; --teal:#00bcd4; --dark:#060f0a;
-            --pink:#f72585; --purple:#7209b7; --blue:#3a0ca3; --cyan:#4cc9f0;
-            --surface:rgba(255,255,255,0.04); --border:rgba(255,255,255,0.07);
-        }
-        * { box-sizing:border-box; margin:0; padding:0; }
-        body { font-family:'DM Sans',sans-serif; background:var(--dark); color:#fff; min-height:100vh; display:flex; }
-        body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; height:200%;
-            background:
-                radial-gradient(ellipse 600px 400px at 20% 30%,rgba(247,37,133,0.06) 0%,transparent 70%),
-                radial-gradient(ellipse 500px 500px at 80% 70%,rgba(76,201,240,0.05) 0%,transparent 70%);
-            pointer-events:none; z-index:0; }
+        :root{--cream:#faf8f4;--white:#ffffff;--ink:#1a1209;--ink2:#3d3020;--muted:#9c8e7a;--accent:#e8521a;--accent2:#2563eb;--accent3:#059669;--gold:#d97706;--border:#ede8df;--shadow:0 2px 20px rgba(26,18,9,0.08);--shadow-lg:0 8px 40px rgba(26,18,9,0.12);}
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Cabinet Grotesk',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;display:flex;}
+        .sidebar{width:230px;background:var(--white);border-right:1px solid var(--border);padding:28px 16px;display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto;}
+        .sidebar-logo{display:flex;align-items:center;gap:10px;margin-bottom:6px;padding:0 6px;}
+        .logo-mark{width:34px;height:34px;border-radius:10px;background:var(--ink);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:14px;font-weight:900;color:var(--cream);}
+        .logo-text{font-family:'Fraunces',serif;font-size:0.9rem;font-weight:600;color:var(--ink);line-height:1.2;}
+        .logo-text small{display:block;font-family:'Cabinet Grotesk',sans-serif;font-size:0.62rem;font-weight:500;color:var(--muted);}
+        .sidebar-divider{height:1px;background:var(--border);margin:16px 0;}
+        .sidebar-nav{list-style:none;flex:1;}
+        .sidebar-nav li{margin-bottom:2px;}
+        .sidebar-nav a{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;color:var(--muted);text-decoration:none;font-size:0.84rem;font-weight:600;transition:all 0.18s;}
+        .sidebar-nav a i{width:16px;text-align:center;font-size:0.78rem;}
+        .sidebar-nav a:hover{color:var(--ink);background:var(--cream);}
+        .sidebar-nav a.active{color:var(--white);background:var(--ink);}
+        .sidebar-nav a.logout{color:#dc2626;}
+        .sidebar-nav a.logout:hover{background:#fef2f2;}
+        .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+        .topbar{display:flex;justify-content:space-between;align-items:center;padding:16px 32px;background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;}
+        .topbar-greeting{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:600;color:var(--ink);}
+        .topbar-greeting span{color:var(--accent);}
+        .topbar-date{font-size:0.73rem;color:var(--muted);font-weight:500;margin-top:2px;}
+        .topbar-right{display:flex;align-items:center;gap:12px;}
+        .notif-btn{position:relative;width:38px;height:38px;border-radius:10px;background:var(--cream);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--ink2);text-decoration:none;font-size:0.88rem;transition:all 0.2s;}
+        .notif-btn:hover{background:var(--ink);color:var(--white);}
+        .badge-count{position:absolute;top:-4px;right:-4px;background:var(--accent);color:white;font-size:0.55rem;font-weight:800;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;border:2px solid var(--white);}
+        .user-chip{display:flex;align-items:center;gap:9px;background:var(--cream);border:1px solid var(--border);border-radius:999px;padding:5px 14px 5px 5px;}
+        .user-avatar{width:30px;height:30px;border-radius:50%;background:var(--ink);display:flex;align-items:center;justify-content:center;color:var(--cream);font-weight:800;font-size:12px;overflow:hidden;}
+        .user-avatar img{width:100%;height:100%;object-fit:cover;}
+        .user-chip-name{font-size:0.82rem;font-weight:700;color:var(--ink);}
+        .content{flex:1;overflow-y:auto;padding:32px;}
+        .content::-webkit-scrollbar{width:4px;}
+        .content::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
 
-        /* Sidebar */
-        .sidebar { width:220px; background:rgba(6,15,10,0.95); border-right:1px solid rgba(0,230,118,0.1); padding:28px 14px; display:flex; flex-direction:column; position:relative; z-index:10; flex-shrink:0; }
-        .sidebar-logo { display:flex; align-items:center; gap:10px; margin-bottom:6px; padding:0 6px; }
-        .logo-dot { width:28px; height:28px; border-radius:8px; background:linear-gradient(135deg,var(--pink),var(--purple),var(--cyan)); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:#fff; font-family:'Syne',sans-serif; }
-        .logo-text { font-family:'Syne',sans-serif; font-size:0.88rem; font-weight:700; background:linear-gradient(90deg,var(--pink),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-        .sidebar-role { font-size:0.68rem; color:rgba(255,255,255,0.25); text-transform:uppercase; letter-spacing:1px; padding:0 6px; margin-bottom:28px; }
-        .sidebar-nav { list-style:none; flex:1; }
-        .sidebar-nav li { margin-bottom:2px; }
-        .sidebar-nav a { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:10px; color:rgba(255,255,255,0.45); text-decoration:none; font-size:0.85rem; font-weight:500; transition:all 0.2s; }
-        .sidebar-nav a i { width:16px; text-align:center; font-size:0.8rem; }
-        .sidebar-nav a:hover { color:rgba(255,255,255,0.8); background:rgba(255,255,255,0.05); }
-        .sidebar-nav a.active { color:#fff; background:linear-gradient(90deg,rgba(247,37,133,0.3),rgba(114,9,183,0.2)); border-left:2px solid var(--pink); font-weight:600; }
-        .sidebar-divider { height:1px; background:rgba(255,255,255,0.06); margin:14px 0; }
-        .sidebar-nav a.logout { color:rgba(255,100,100,0.6); }
-        .sidebar-nav a.logout:hover { color:#ff6b6b; background:rgba(255,100,100,0.08); }
+    /* HERO */
+    .hero-banner{background:var(--ink);border-radius:20px;padding:32px 36px;display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;overflow:hidden;position:relative;}
+    .hero-banner::before{content:'';position:absolute;top:-60px;right:-60px;width:280px;height:280px;border-radius:50%;background:rgba(232,82,26,0.15);pointer-events:none;}
+    .hero-banner::after{content:'';position:absolute;bottom:-80px;right:120px;width:200px;height:200px;border-radius:50%;background:rgba(37,99,235,0.1);pointer-events:none;}
+    .hero-text{position:relative;z-index:1;}
+    .hero-label{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);border-radius:999px;padding:4px 12px;font-size:0.7rem;font-weight:600;letter-spacing:0.5px;margin-bottom:12px;}
+    .hero-label i{color:var(--gold);font-size:0.6rem;}
+    .hero-title{font-family:'Fraunces',serif;font-size:1.9rem;font-weight:900;color:var(--white);line-height:1.15;margin-bottom:8px;}
+    .hero-title em{color:var(--accent);font-style:italic;}
+    .hero-sub{font-size:0.83rem;color:rgba(255,255,255,0.5);max-width:300px;line-height:1.6;}
+    .hero-stats{display:flex;gap:16px;position:relative;z-index:1;}
+    .hero-stat{text-align:center;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:16px 20px;}
+    .hero-stat-val{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:900;color:var(--white);display:block;}
+    .hero-stat-label{font-size:0.68rem;color:rgba(255,255,255,0.45);font-weight:600;margin-top:2px;display:block;}
 
-        /* Main */
-        .main { flex:1; display:flex; flex-direction:column; overflow:hidden; position:relative; z-index:1; }
-        .topbar { display:flex; justify-content:space-between; align-items:center; padding:14px 28px; background:rgba(6,15,10,0.8); border-bottom:1px solid rgba(247,37,133,0.1); backdrop-filter:blur(12px); }
-        .topbar-title { font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:600; color:rgba(255,255,255,0.7); }
-        .topbar-title strong { background:linear-gradient(90deg,var(--pink),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-        .topbar-right { display:flex; align-items:center; gap:14px; }
-        .notif-btn { position:relative; color:rgba(255,255,255,0.5); text-decoration:none; font-size:1rem; transition:color 0.2s; }
-        .notif-btn:hover { color:var(--pink); }
-        .badge-count { position:absolute; top:-6px; right:-7px; background:var(--pink); color:white; font-size:0.6rem; font-weight:700; min-width:15px; height:15px; border-radius:8px; display:flex; align-items:center; justify-content:center; border:2px solid var(--dark); animation:pulse 1.5s infinite; }
-        @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(247,37,133,0.5)} 70%{box-shadow:0 0 0 5px rgba(247,37,133,0)} 100%{box-shadow:0 0 0 0 rgba(247,37,133,0)} }
-        .user-chip { display:flex; align-items:center; gap:9px; }
-        .user-avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--pink),var(--purple)); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:13px; border:1.5px solid rgba(247,37,133,0.4); overflow:hidden; }
-        .user-avatar img { width:100%; height:100%; object-fit:cover; }
-        .user-chip span { font-size:0.85rem; color:rgba(255,255,255,0.7); font-weight:500; }
+    /* PROFIL */
+    .profile-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px;}
+    .profile-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:12px;transition:all 0.2s;}
+    .profile-card:hover{border-color:var(--ink);transform:translateY(-1px);box-shadow:var(--shadow);}
+    .profile-card-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+    .profile-card-icon.orange{background:#fff7ed;color:var(--accent);}
+    .profile-card-icon.blue{background:#eff6ff;color:var(--accent2);}
+    .profile-card-icon.green{background:#f0fdf4;color:var(--accent3);}
+    .profile-card-label{font-size:0.68rem;color:var(--muted);font-weight:600;}
+    .profile-card-value{font-size:0.95rem;font-weight:800;color:var(--ink);margin-top:2px;}
 
-        .content { flex:1; overflow-y:auto; padding:24px 28px; }
-        .content::-webkit-scrollbar { width:4px; }
-        .content::-webkit-scrollbar-thumb { background:rgba(247,37,133,0.2); border-radius:2px; }
+    .section-title{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:600;color:var(--ink);margin-bottom:16px;}
+    .section-title span{color:var(--muted);font-family:'Cabinet Grotesk',sans-serif;font-size:0.78rem;font-weight:600;margin-left:8px;}
 
-        .info-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:24px; }
-        .info-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 16px; transition:all 0.2s; }
-        .info-card:hover { border-color:rgba(247,37,133,0.2); }
-        .info-card-label { font-size:9px; color:rgba(255,255,255,0.3); text-transform:uppercase; letter-spacing:1px; margin-bottom:5px; }
-        .info-card-value { font-size:14px; font-weight:600; color:#fff; font-family:'Syne',sans-serif; }
+    /* 3 BOUTONS */
+    .main-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px;}
+    .action-card{background:var(--white);border:1.5px solid var(--border);border-radius:20px;padding:28px 24px;text-decoration:none;display:flex;flex-direction:column;gap:12px;transition:all 0.25s cubic-bezier(0.34,1.56,0.64,1);position:relative;overflow:hidden;}
+    .action-card::before{content:'';position:absolute;bottom:-50px;right:-50px;width:130px;height:130px;border-radius:50%;opacity:0;transition:all 0.3s;}
+    .action-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg);}
+    .action-card:hover::before{opacity:1;bottom:-25px;right:-25px;}
+    .action-card.fil{border-color:rgba(232,82,26,0.2);}
+    .action-card.fil::before{background:rgba(232,82,26,0.07);}
+    .action-card.fil:hover{border-color:var(--accent);}
+    .action-card.offres{border-color:rgba(37,99,235,0.2);}
+    .action-card.offres::before{background:rgba(37,99,235,0.07);}
+    .action-card.offres:hover{border-color:var(--accent2);}
+    .action-card.posts{border-color:rgba(5,150,105,0.2);}
+    .action-card.posts::before{background:rgba(5,150,105,0.07);}
+    .action-card.posts:hover{border-color:var(--accent3);}
+    .action-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;}
+    .action-icon.orange{background:#fff7ed;color:var(--accent);}
+    .action-icon.blue{background:#eff6ff;color:var(--accent2);}
+    .action-icon.green{background:#f0fdf4;color:var(--accent3);}
+    .action-title{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:700;color:var(--ink);}
+    .action-desc{font-size:0.79rem;color:var(--muted);line-height:1.55;font-weight:500;}
+    .action-arrow{display:inline-flex;align-items:center;gap:5px;font-size:0.78rem;font-weight:800;margin-top:auto;padding-top:6px;}
+    .action-arrow.orange{color:var(--accent);}
+    .action-arrow.blue{color:var(--accent2);}
+    .action-arrow.green{color:var(--accent3);}
 
-        .feed { display:flex; flex-direction:column; gap:20px; max-width:620px; margin:0 auto; }
+    /* CAROUSEL */
+    .ads-carousel-section{margin-bottom:36px;}
+    .ads-carousel-wrap{position:relative;border-radius:20px;overflow:hidden;height:230px;box-shadow:var(--shadow-lg);}
+    .ads-carousel-track{display:flex;height:100%;transition:transform 0.55s cubic-bezier(0.77,0,0.175,1);}
+    .ad-slide{min-width:100%;height:100%;display:flex;align-items:center;padding:40px 52px;position:relative;overflow:hidden;flex-shrink:0;}
+    .ad-slide.s1{background:linear-gradient(135deg,#1a1209,#3d2800);}
+    .ad-slide.s2{background:linear-gradient(135deg,#0f172a,#1e3a8a);}
+    .ad-slide.s3{background:linear-gradient(135deg,#052e16,#065f46);}
+    .ad-slide.s4{background:linear-gradient(135deg,#2e1065,#5b21b6);}
+    .ad-slide.s5{background:linear-gradient(135deg,#450a0a,#991b1b);}
+    .ad-slide.s6{background:linear-gradient(135deg,#042f2e,#0f766e);}
+    .ad-slide.s7{background:linear-gradient(135deg,#1e3a5f,#0369a1);}
+    .ad-slide.s8{background:linear-gradient(135deg,#3b1f00,#b45309);}
+    .ad-slide.s9{background:linear-gradient(135deg,#0d1117,#2d333b);}
+    .ad-slide.s10{background:linear-gradient(135deg,#1a1a2e,#c2185b);}
+    .ad-slide.s11{background:linear-gradient(135deg,#0a2a1a,#15803d);}
+    .ad-slide.s12{background:linear-gradient(135deg,#1e1b4b,#4f46e5);}
+    .ad-slide.s13{background:linear-gradient(135deg,#2d1515,#ea580c);}
+    .ad-slide.s14{background:linear-gradient(135deg,#042040,#0284c7);}
+    .ad-slide.s15{background:linear-gradient(135deg,#1a0a2e,#a21caf);}
+    .ad-slide.s16{background:linear-gradient(135deg,#0c1a0c,#4d7c0f);}
+    .ad-slide.s17{background:linear-gradient(135deg,#1c1917,#57534e);}
+    .ad-slide.s18{background:linear-gradient(135deg,#0f0f23,#3730a3);}
+    .ad-slide.s19{background:linear-gradient(135deg,#1a2e1a,#16a34a);}
+    .ad-slide.s20{background:linear-gradient(135deg,#1e0a0a,#b91c1c);}
+    .ad-slide::before{content:'';position:absolute;top:-60px;right:-60px;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,0.05);pointer-events:none;}
+    .ad-slide::after{content:'';position:absolute;bottom:-80px;right:80px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.04);pointer-events:none;}
+    .ad-slide-emoji{font-size:3rem;line-height:1;flex-shrink:0;margin-right:32px;position:relative;z-index:1;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.3));}
+    .ad-slide-body{flex:1;position:relative;z-index:1;}
+    .ad-slide-badge{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 12px;font-size:0.62rem;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.75);border:1px solid rgba(255,255,255,0.15);}
+    .ad-slide-title{font-family:'Fraunces',serif;font-size:1.45rem;font-weight:900;color:#fff;line-height:1.2;margin-bottom:8px;}
+    .ad-slide-desc{font-size:0.81rem;color:rgba(255,255,255,0.55);line-height:1.6;max-width:500px;}
+    .ad-slide-cta{display:inline-flex;align-items:center;gap:7px;margin-top:14px;padding:8px 20px;border-radius:999px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:#fff;font-size:0.77rem;font-weight:800;text-decoration:none;transition:all 0.2s;}
+    .ad-slide-cta:hover{background:rgba(255,255,255,0.28);}
+    .ad-slide-counter{position:absolute;bottom:14px;right:52px;font-size:0.65rem;font-weight:800;color:rgba(255,255,255,0.3);z-index:10;letter-spacing:1px;}
+    .carousel-btn{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.75rem;cursor:pointer;transition:all 0.2s;z-index:10;user-select:none;}
+    .carousel-btn:hover{background:rgba(255,255,255,0.28);}
+    .carousel-btn.prev{left:14px;}
+    .carousel-btn.next{right:14px;}
+    .carousel-dots{display:flex;justify-content:center;gap:5px;margin-top:12px;flex-wrap:wrap;}
+    .carousel-dot{width:6px;height:6px;border-radius:50%;background:var(--border);cursor:pointer;transition:all 0.25s;}
+    .carousel-dot.active{background:var(--ink);width:18px;border-radius:999px;}
 
-        /* ══ CARTE POST — style Instagram blanc ══ */
-        .post-card {
-            border-radius:20px; overflow:hidden;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.3);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .post-card:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(0,0,0,0.4); }
-        .post-card-top { height:5px; background:linear-gradient(90deg,var(--pink),var(--purple),var(--cyan)); }
-        .post-card-inner { background:#fff; }
-        .post-card-bottom { height:5px; background:linear-gradient(90deg,var(--cyan),var(--purple),var(--pink)); }
+    /* STATS */
+    .stats-section{margin:28px 0;}
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+    .stat-card{background:var(--white);border:1px solid var(--border);border-radius:18px;padding:24px 20px;display:flex;flex-direction:column;gap:6px;transition:all 0.22s;position:relative;overflow:hidden;}
+    .stat-card::before{content:'';position:absolute;bottom:-30px;right:-30px;width:100px;height:100px;border-radius:50%;opacity:0.06;transition:all 0.3s;}
+    .stat-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);}
+    .stat-card.c1::before{background:var(--accent);}
+    .stat-card.c2::before{background:var(--accent2);}
+    .stat-card.c3::before{background:var(--accent3);}
+    .stat-card.c4::before{background:var(--gold);}
+    .stat-card:hover.c1{border-color:rgba(232,82,26,0.25);}
+    .stat-card:hover.c2{border-color:rgba(37,99,235,0.25);}
+    .stat-card:hover.c3{border-color:rgba(5,150,105,0.25);}
+    .stat-card:hover.c4{border-color:rgba(217,119,6,0.25);}
+    .stat-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:4px;}
+    .stat-icon.orange{background:#fff7ed;color:var(--accent);}
+    .stat-icon.blue{background:#eff6ff;color:var(--accent2);}
+    .stat-icon.green{background:#f0fdf4;color:var(--accent3);}
+    .stat-icon.gold{background:#fffbeb;color:var(--gold);}
+    .stat-number{font-family:'Fraunces',serif;font-size:2rem;font-weight:900;color:var(--ink);line-height:1;}
+    .stat-number .stat-unit{font-size:1rem;font-weight:700;color:var(--muted);}
+    .stat-label{font-size:0.78rem;font-weight:700;color:var(--ink);}
+    .stat-sub{font-size:0.68rem;color:var(--muted);font-weight:500;display:flex;align-items:center;gap:4px;margin-top:2px;}
+    .stat-sub i{font-size:0.6rem;}
+    .stat-sub.up{color:var(--accent3);}
 
-        /* ══ CARTE OFFRE — style Instagram blanc ══ */
-        .offre-card {
-            border-radius:20px; overflow:hidden;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.3);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .offre-card:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(0,0,0,0.4); }
-        .offre-card-top { height:5px; background:linear-gradient(90deg,var(--blue),var(--cyan),var(--green)); }
-        .offre-card-inner { background:#fff; }
-        .offre-card-bottom { height:5px; background:linear-gradient(90deg,var(--green),var(--cyan),var(--blue)); }
+    /* TICKER BAS */
+    .bottom-ticker{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:12px 0;overflow:hidden;margin-bottom:24px;}
+    .bottom-ticker-inner{display:flex;gap:48px;animation:ticker 30s linear infinite;white-space:nowrap;padding:0 24px;}
+    .bottom-ticker-inner:hover{animation-play-state:paused;}
+    @keyframes ticker{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+    .bottom-ticker-item{display:inline-flex;align-items:center;gap:8px;font-size:0.79rem;color:var(--ink2);font-weight:600;}
+    .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+    .dot.blue{background:var(--accent2);}
+    .dot.green{background:var(--accent3);}
 
-        /* Header des cartes */
-        .post-header { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; }
-        .post-author { display:flex; align-items:center; gap:10px; }
-        .post-author-avatar { width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg,var(--pink),var(--purple)); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:15px; font-family:'Syne',sans-serif; flex-shrink:0; overflow:hidden; }
-        .post-author-avatar img { width:100%; height:100%; object-fit:cover; }
-        .post-author-name { font-weight:700; font-size:0.9rem; color:#111; font-family:'Syne',sans-serif; }
-        .post-author-role { font-size:0.68rem; color:#7209b7; font-weight:600; }
-        .post-date { font-size:0.7rem; color:#999; }
+    /* FOOTER */
+    .dash-footer{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+    .footer-brand{display:flex;align-items:center;gap:10px;}
+    .footer-brand .logo-mark{width:26px;height:26px;font-size:11px;border-radius:7px;}
+    .footer-brand-text{font-size:0.8rem;font-weight:700;color:var(--ink);}
+    .footer-brand-text small{display:block;font-size:0.63rem;color:var(--muted);font-weight:500;}
+    .footer-links{display:flex;gap:20px;}
+    .footer-links a{font-size:0.74rem;color:var(--muted);text-decoration:none;font-weight:600;transition:color 0.2s;}
+    .footer-links a:hover{color:var(--ink);}
+    .footer-copy{font-size:0.7rem;color:var(--muted);font-weight:500;}
 
-        .btn-chat-post { background:linear-gradient(135deg,rgba(247,37,133,0.1),rgba(114,9,183,0.1)); border:1px solid rgba(247,37,133,0.3); color:var(--pink); border-radius:999px; padding:5px 12px; font-size:0.72rem; cursor:pointer; text-decoration:none; display:flex; align-items:center; gap:5px; transition:all 0.2s; font-weight:600; }
-        .btn-chat-post:hover { background:linear-gradient(135deg,rgba(247,37,133,0.2),rgba(114,9,183,0.2)); }
+    @media(max-width:900px){
+        body{flex-direction:column;}
+        .sidebar{width:100%;height:auto;}
+        .main-actions,.stats-grid{grid-template-columns:1fr 1fr;}
+        .profile-strip{grid-template-columns:1fr 1fr;}
+        .hero-stats{display:none;}
+        .content{padding:16px;}
+        .ad-slide{padding:24px 28px;}
+        .ad-slide-emoji{font-size:2rem;margin-right:20px;}
+        .ad-slide-title{font-size:1.1rem;}
+    }
+</style>
 
-        .offre-tag { display:inline-flex; align-items:center; gap:5px; background:rgba(58,12,163,0.1); border:1px solid rgba(58,12,163,0.25); color:var(--blue); border-radius:999px; padding:3px 10px; font-size:0.68rem; font-weight:700; text-transform:uppercase; }
-        .offre-entreprise-meta { font-size:0.78rem; color:#666; display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:5px; }
-        .offre-entreprise-meta span { display:flex; align-items:center; gap:4px; }
-        .offre-entreprise-meta i { color:var(--blue); font-size:0.7rem; }
-
-        .post-photo { width:100%; max-height:420px; object-fit:cover; display:block; }
-        .post-body { padding:12px 16px 10px; }
-        .post-titre { font-size:0.95rem; font-weight:800; color:#111; margin-bottom:6px; font-family:'Syne',sans-serif; }
-        .post-contenu { font-size:0.85rem; color:#444; line-height:1.7; }
-
-        /* Likers */
-        .likers-row { display:flex; align-items:center; gap:6px; padding:0 16px 8px; }
-        .likers-row.hidden { display:none; }
-        .liker-chip { display:flex; align-items:center; gap:5px; background:rgba(247,37,133,0.08); border:1px solid rgba(247,37,133,0.2); border-radius:999px; padding:3px 8px 3px 4px; font-size:0.7rem; color:#333; animation:fadeIn 0.3s ease; }
-        @keyframes fadeIn { from{opacity:0;transform:scale(0.85)} to{opacity:1;transform:scale(1)} }
-        .liker-chip-avatar { width:18px; height:18px; border-radius:50%; background:linear-gradient(135deg,#ff4d6d,#ff8fa3); display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:800; color:#fff; }
-
-        /* Actions */
-        .post-actions { display:flex; align-items:center; gap:4px; padding:10px 12px; border-top:1px solid #f0f0f0; }
-        .btn-post-action { background:none; border:none; color:#aaa; cursor:pointer; font-size:0.85rem; display:flex; align-items:center; gap:5px; padding:6px 10px; border-radius:8px; transition:all 0.2s; font-weight:500; }
-        .btn-post-action:hover { color:#333; background:rgba(0,0,0,0.04); }
-        .btn-post-action.liked { color:#f72585; }
-        .btn-post-action.en-favori { color:#f77f00; }
-
-        /* Commentaires */
-        .comments-section { display:none; padding:10px 16px 14px; border-top:1px solid #f0f0f0; background:#fafafa; }
-        .comments-section.open { display:block; }
-        .comment-item { display:flex; gap:8px; margin-bottom:8px; animation:fadeIn 0.3s ease; }
-        .comment-avatar { width:26px; height:26px; border-radius:50%; background:linear-gradient(135deg,var(--pink),var(--purple)); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:10px; flex-shrink:0; }
-        .comment-content { background:#fff; border:1px solid #eee; border-radius:10px; padding:7px 10px; flex:1; }
-        .comment-author { font-weight:700; font-size:0.75rem; color:var(--purple); margin-bottom:2px; }
-        .comment-text { font-size:0.82rem; color:#333; }
-        .comment-date { font-size:0.65rem; color:#bbb; margin-top:2px; }
-        .comment-form { display:flex; gap:8px; margin-top:10px; align-items:center; position:relative; }
-        .comment-input-wrap { flex:1; position:relative; display:flex; align-items:center; }
-        .comment-form input { width:100%; background:#fff; border:1px solid #ddd; border-radius:999px; padding:7px 40px 7px 14px; color:#333; font-size:0.82rem; outline:none; transition:border-color 0.2s; }
-        .comment-form input:focus { border-color:var(--pink); }
-        .comment-form input::placeholder { color:#bbb; }
-        .emoji-btn { position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:1rem; color:#bbb; transition:color 0.2s; padding:0; line-height:1; }
-        .emoji-btn:hover { color:#555; }
-        .emoji-picker { display:none; position:absolute; bottom:calc(100% + 8px); right:0; background:#fff; border:1px solid #eee; border-radius:14px; padding:10px; box-shadow:0 10px 40px rgba(0,0,0,0.15); z-index:100; width:260px; }
-        .emoji-picker.open { display:block; animation:fadeIn 0.2s ease; }
-        .emoji-categories { display:flex; gap:4px; margin-bottom:8px; flex-wrap:wrap; }
-        .emoji-cat-btn { background:#f5f5f5; border:none; border-radius:8px; color:#666; font-size:0.7rem; padding:3px 8px; cursor:pointer; transition:all 0.15s; }
-        .emoji-cat-btn:hover,.emoji-cat-btn.active { background:rgba(247,37,133,0.1); color:var(--pink); }
-        .emoji-grid { display:grid; grid-template-columns:repeat(8,1fr); gap:3px; }
-        .emoji-item { font-size:1.1rem; text-align:center; padding:5px 2px; cursor:pointer; border-radius:6px; transition:background 0.15s; line-height:1.4; }
-        .emoji-item:hover { background:#f5f5f5; }
-        .comment-send-btn { background:linear-gradient(135deg,var(--pink),var(--purple)); border:none; border-radius:999px; color:#fff; padding:7px 14px; font-size:0.82rem; cursor:pointer; font-weight:700; flex-shrink:0; }
-
-        .empty-state { text-align:center; padding:60px 20px; color:rgba(255,255,255,0.2); }
-        .empty-state i { font-size:40px; margin-bottom:14px; display:block; color:rgba(247,37,133,0.2); }
-
-        @media (max-width:768px) { body{flex-direction:column} .sidebar{width:100%} .info-cards{grid-template-columns:1fr 1fr} }
-    </style>
 </head>
 <body>
 
 <aside class="sidebar">
     <div class="sidebar-logo">
-        <div class="logo-dot">R</div>
-        <div class="logo-text">Réseau Alumni</div>
+        <div class="logo-mark">RA</div>
+        <div class="logo-text">Réseau Alumni<small>Université de Djibouti</small></div>
     </div>
-    <div class="sidebar-role">Espace Étudiant</div>
+    <div class="sidebar-divider"></div>
     <ul class="sidebar-nav">
         <li><a href="{% url 'dashboard_etudiant' %}" class="active"><i class="fas fa-th-large"></i> Dashboard</a></li>
+        <li><a href="{% url 'fil_etudiant' %}"><i class="fas fa-stream"></i> Fil</a></li>
         <li><a href="{% url 'offres' %}"><i class="fas fa-briefcase"></i> Offres</a></li>
         <li><a href="{% url 'posts_etudiant' %}"><i class="fas fa-newspaper"></i> Posts</a></li>
         <li><a href="{% url 'favoris' %}"><i class="fas fa-star"></i> Favoris</a></li>
@@ -180,8 +229,9 @@
 
 <div class="main">
     <header class="topbar">
-        <div class="topbar-title">
-            Bienvenue{% if user.is_authenticated %}, <strong>{{ user.get_full_name|default:user.username }}</strong>{% endif %} 👋
+        <div>
+            <div class="topbar-greeting">Bonjour, <span>{% if user.is_authenticated %}{{ user.get_full_name|default:user.username }}{% else %}Étudiant{% endif %}</span> 👋</div>
+            <div class="topbar-date" id="live-date"></div>
         </div>
         <div class="topbar-right">
             <a href="{% url 'notifications' %}" class="notif-btn">
@@ -190,284 +240,407 @@
             </a>
             <div class="user-chip">
                 <div class="user-avatar">
-                    {% if user.is_authenticated and user.profile.photo %}
-                        <img src="{{ user.profile.photo.url }}">
-                    {% else %}
-                        {{ user.get_full_name|default:user.username|first|upper }}
-                    {% endif %}
+                    {% if user.is_authenticated and user.profile.photo %}<img src="{{ user.profile.photo.url }}">
+                    {% else %}{{ user.get_full_name|default:user.username|first|upper }}{% endif %}
                 </div>
-                <span>{{ user.get_full_name|default:user.username }}</span>
+                <span class="user-chip-name">{{ user.get_full_name|default:user.username }}</span>
             </div>
         </div>
     </header>
 
-    <main class="content">
-        {% if user.is_authenticated %}
-        <div class="info-cards">
-            <div class="info-card">
-                <div class="info-card-label">Filière</div>
-                <div class="info-card-value">{{ user.profile.filiere|default:"—" }}</div>
+<main class="content">
+
+    <!-- HERO -->
+    <div class="hero-banner">
+        <div class="hero-text">
+            <div class="hero-label"><i class="fas fa-circle"></i> Espace Étudiant actif</div>
+            <div class="hero-title">Ton réseau,<br><em>ton avenir.</em></div>
+            <div class="hero-sub">Connecte-toi aux alumni, explore les offres et reste informé des opportunités.</div>
+        </div>
+        <div class="hero-stats">
+            <div class="hero-stat"><span class="hero-stat-val">{{ nb_notifications|default:"0" }}</span><span class="hero-stat-label">Notifs</span></div>
+            <div class="hero-stat"><span class="hero-stat-val">{{ nb_alumni|default:"500" }}+</span><span class="hero-stat-label">Alumni</span></div>
+            <div class="hero-stat"><span class="hero-stat-val">{{ nb_offres|default:"24" }}</span><span class="hero-stat-label">Offres</span></div>
+        </div>
+    </div>
+
+    <!-- PROFIL -->
+    {% if user.is_authenticated %}
+    <div class="profile-strip">
+        <div class="profile-card">
+            <div class="profile-card-icon orange"><i class="fas fa-graduation-cap"></i></div>
+            <div><div class="profile-card-label">Filière</div><div class="profile-card-value">{{ user.profile.filiere|default:"—" }}</div></div>
+        </div>
+        <div class="profile-card">
+            <div class="profile-card-icon blue"><i class="fas fa-calendar-alt"></i></div>
+            <div><div class="profile-card-label">Année</div><div class="profile-card-value">{{ user.profile.annee_actuelle|default:"—" }}</div></div>
+        </div>
+        <div class="profile-card">
+            <div class="profile-card-icon green"><i class="fas fa-check-circle"></i></div>
+            <div><div class="profile-card-label">Statut</div><div class="profile-card-value" style="color:var(--accent3);">Actif</div></div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- ACCÈS RAPIDE -->
+    <div class="section-title">Accès rapide <span>— Choisissez où aller</span></div>
+    <div class="main-actions">
+        <a href="{% url 'fil_etudiant' %}" class="action-card fil">
+            <div class="action-icon orange"><i class="fas fa-stream"></i></div>
+            <div class="action-title">Fil</div>
+            <div class="action-desc">Posts et offres des alumni en temps réel. Like, commente et réagis.</div>
+            <div class="action-arrow orange">Voir le fil <i class="fas fa-arrow-right"></i></div>
+        </a>
+        <a href="{% url 'offres' %}" class="action-card offres">
+            <div class="action-icon blue"><i class="fas fa-briefcase"></i></div>
+            <div class="action-title">Offres</div>
+            <div class="action-desc">Stages, emplois et alternances proposés par le réseau alumni.</div>
+            <div class="action-arrow blue">Voir les offres <i class="fas fa-arrow-right"></i></div>
+        </a>
+        <a href="{% url 'posts_etudiant' %}" class="action-card posts">
+            <div class="action-icon green"><i class="fas fa-newspaper"></i></div>
+            <div class="action-title">Posts</div>
+            <div class="action-desc">Articles, conseils et actualités publiés par les alumni.</div>
+            <div class="action-arrow green">Voir les posts <i class="fas fa-arrow-right"></i></div>
+        </a>
+    </div>
+
+    <!-- CAROUSEL 20 SLIDES -->
+    <div class="ads-carousel-section">
+        <div class="section-title">À explorer <span>— Apps, conseils, outils & opportunités</span></div>
+        <div class="ads-carousel-wrap" id="adCarousel">
+            <div class="ads-carousel-track" id="adTrack">
+
+                <div class="ad-slide s1">
+                    <div class="ad-slide-emoji">📚</div>
+                    <div class="ad-slide-body">
+                        <span class="ad-slide-badge"><i class="fas fa-mobile-alt"></i> Application</span>
+                        <div class="ad-slide-title">Notion — Organise tes cours</div>
+                        <div class="ad-slide-desc">Notes, projets, planning et révisions au même endroit. Version gratuite illimitée pour les étudiants.</div>
+                        <a class="ad-slide-cta" href="https://notion.so/students" target="_blank">Télécharger <i class="fas fa-external-link-alt"></i></a>
+                    </div>
+                    <span class="ad-slide-counter">01 / 20</span>
+                </div>
+
+                <div class="ad-slide s2">
+                    <div class="ad-slide-emoji">💻</div>
+                    <div class="ad-slide-body">
+                        <span class="ad-slide-badge"><i class="fas fa-laptop-code"></i> Plateforme</span>
+                        <div class="ad-slide-title">Coursera — Certifie-toi en ligne</div>
+                        <div class="ad-slide-desc">Des milliers de cours des meilleures universités du monde. Accès gratuit ou certifiant selon le programme.</div>
+                        <a class="ad-slide-cta" href="https://coursera.org" target="_blank">Explorer les cours <i class="fas fa-external-link-alt"></i></a>
+                    </div>
+                    <span class="ad-slide-counter">02 / 20</span>
+                </div>
+
+                <div class="ad-slide s3">
+                    <div class="ad-slide-emoji">🤝</div>
+                    <div class="ad-slide-body">
+                        <span class="ad-slide-badge"><i class="fas fa-users"></i> Réseau pro</span>
+                        <div class="ad-slide-title">LinkedIn — Construis ton réseau dès maintenant</div>
+                        <div class="ad-slide-desc">Rejoins 1 milliard de professionnels. Connecte-toi aux alumni UD et trouve des opportunités dès la L1.</div>
+                        <a class="ad-slide-cta" href="https://linkedin.com" target="_blank">Créer mon profil <i class="fas fa-external-link-alt"></i></a>
+                    </div>
+                    <span class="ad-slide-counter">03 / 20</span>
+                </div>
+
+                <div class="ad-slide s4">
+                    <div class="ad-slide-emoji">🧠</div>
+                    <div class="ad-slide-body">
+                        <span class="ad-slide-badge"><i class="fas fa-lightbulb"></i> Conseil carrière</span>
+                        <div class="ad-slide-title">Commence à networker dès la première année</div>
+                        <div class="ad-slide-desc">Les étudiants qui construisent leur réseau tôt décrochent 3× plus vite leur premier emploi. Commence aujourd'hui sur ce réseau.</div>
+                    </div>
+                    <span class="ad-slide-counter">04 / 20</span>
+                </div>
+
+                <div class="ad-slide s5">
+                    <div class="ad-slide-emoji">✈️</div>
+                    <div class="ad-slide-body">
+                        <span class="ad-slide-badge"><i class="fas fa-globe"></i> Mobilité internationale</span>
+                        <div class="ad-slide-title">Erasmus+ — Étudie à l'étranger</div>
+                        <div class="ad-slide-desc">Programme d'échange européen ouvert aux étudiants africains. Bourse couvrant voyage, logement et frais de vie.</div>
+                        <a class="ad-slide-cta" href="https://erasmusplus.eu" target="_blank">Candidater <i class="fas fa-external-link-alt"></i></a>
+                    </div>
+                    <span class="ad-slide-counter">05 / 20</span>
+                </div>
+
+                <div class="ad-slide s6">
+                    <div class="ad-slide-emoji">⌨️</div>
+                    <div class="ad-slide-body">
+                        <span class="ad-slide-badge"><i class="fas fa-code"></i> Apprendre à coder</span>
+                        <div class="ad-slide-title">freeCodeCamp — Dev web gratuit et certifiant</div>
+                        <div class="ad-slide-desc">HTML, CSS, JavaScript, Python, SQL... tout est gratuit et structuré. Plus de 10 000h de contenu, 9 certifications.</div>
+                        <a class="ad-slide-cta" href="https://freecodecamp.org" target="_blank">Commencer <i class="fas fa-external-link-alt"></i></a>
+                    </div>
+                    <span class="ad-slide-counter">06 / 20</span>
+                </div>
+
+                <div class="ad-slide s7">
+                    <div class="ad-slide-emoji">📝</div>
+                    <div class="ad-slide-body">
+                        <span class="ad-slide-badge"><i class="fas fa-file-alt"></i> Conseil CV</span>
+                        <div class="ad-slide-title">Ton CV doit tenir sur une page</div>
+                        <div class="ad-slide-desc">Un recruteur passe 7 secondes sur un CV. Synthétise, quantifie tes réalisations et soigne la mise en page. Qualité > quantité.</div>
+                    </div>
+                    <span class="ad-slide-counter">07 / 20</span>
+                </div>
+
+                <div class="ad-slide s8">
+                    <div class="ad-slide-emoji">🎙️</div>
+                    <div class="ad-slide-body">
+                        <span class="ad-slide-badge"><i class="fas fa-headphones"></i> Podcast</span>
+                        <div class="ad-slide-title">Podcast : "Génération Do It Yourself"</div>
+                        <div class="ad-slide-desc">Interviews d'entrepreneurs et leaders africains. Idéal pour s'inspirer durant les trajets ou en faisant du sport.</div>
+                        <a class="ad-slide-cta" href="https://open.spotify.com" target="_blank">Écouter sur Spotify <i class="fas fa-external-link-alt"></i></a>
+                    </div>
+                    <span class="ad-slide-counter">08 / 20</span>
+                </div>
+
+                <div class="ad-slide s9">
+                    <div class="ad-slide-emoji">🐙</div>
+                    <div class="ad-slide-body">
+                        <span class="ad-slide-badge"><i class="fas fa-code-branch"></i> Outil développeur</span>
+                        <div class="ad-slide-title">GitHub — Héberge et montre ton code</div>
+                        <div class="ad-slide-desc">Crée ton portfolio de projets, collabore avec d'autres devs et montre tes compétences concrètes aux recruteurs.</div>
+                        <a class="ad-slide-cta" href="https://github.com" target="_blank">Créer un compte <i class="fas fa-external-link-alt"></i></a>
+                    </div>
+                    <span class="ad-slide-counter">09 / 20</span>
+                </div>
+
+                <div class="ad-slide s10">
+                    <div class="ad-slide-emoji">💰</div>
+                    <div class="ad-slide-body">
+                        <span class="ad-slide-badge"><i class="fas fa-award"></i> Bourse</span>
+                        <div class="ad-slide-title">Bourse d'excellence UD 2025</div>
+                        <div class="ad-slide-desc">L'Université de Djibouti ouvre les candidatures pour ses bourses d'excellence. Dépôt des dossiers jusqu'au 30 Avril.</div>
+                        <a class="ad-slide-cta" href="#" target="_blank">Télécharger le dossier <i class="fas fa-external-link-alt"></i></a>
+                    </div>
+                    <span class="ad-slide-counter">10 / 20</span>
+                </div>
+
+                <div class="ad-slide s11">
+                    <div class="ad-slide-emoji">📊</div>
+                    <div class="ad-slide-body">
+                        <span class="ad-slide-badge"><i class="fas fa-chart-bar"></i> Bureautique</span>
+                        <div class="ad-slide-title">Google Workspace — Collaboration gratuite</div>
+                        <div class="ad-slide-desc">Docs, Sheets, Slides, Meet et Drive. Travaille et collabore en temps réel avec tes camarades depuis n'importe quel appareil.</div>
+                        <a class="ad-slide-cta" href="https://workspace.google.com" target="_blank">Accéder <i class="fas fa-external-link-alt"></i></a>
+                    </div>
+                    <span class="ad-slide-counter">11 / 20</span>
+                </div>
+
+                <div class="ad-slide s12">
+                    <div class="ad-slide-emoji">🧑‍💼</div>
+                    <div class="ad-slide-body">
+                        <span class="ad-slide-badge"><i class="fas fa-handshake"></i> Conseil entretien</span>
+                        <div class="ad-slide-title">Méthode STAR pour réussir tes entretiens</div>
+                        <div class="ad-slide-desc">Situation, Tâche, Action, Résultat. Structurer tes réponses avec STAR convainc 80% des recruteurs selon les études RH.</div>
+                    </div>
+                    <span class="ad-slide-counter">12 / 20</span>
+                </div>
+
+                <div class="ad-slide s13">
+                    <div class="ad-slide-emoji">🎓</div>
+                    <div class="ad-slide-body">
+                        <span class="ad-slide-badge"><i class="fas fa-university"></i> Formation en ligne</span>
+                        <div class="ad-slide-title">edX — Cours MIT, Harvard, Berkeley</div>
+                        <div class="ad-slide-desc">Accède aux cours des meilleures universités mondiales. Audit gratuit ou certificat payant. Disponible en français.</div>
+                        <a class="ad-slide-cta" href="https://edx.org" target="_blank">Voir les programmes <i class="fas fa-external-link-alt"></i></a>
+                    </div>
+                    <span class="ad-slide-counter">13 / 20</span>
+                </div>
+
+                <div class="ad-slide s14">
+                    <div class="ad-slide-emoji">🌐</div>
+                    <div class="ad-slide-body">
+                        <span class="ad-slide-badge"><i class="fas fa-language"></i> Langues</span>
+                        <div class="ad-slide-title">Duolingo — Une langue en 15 min/jour</div>
+                        <div class="ad-slide-desc">Anglais, arabe, français, espagnol... La régularité bat l'intensité. 15 minutes par jour pendant 6 mois changent tout.</div>
+                        <a class="ad-slide-cta" href="https://duolingo.com" target="_blank">Commencer gratuitement <i class="fas fa-external-link-alt"></i></a>
+                    </div>
+                    <span class="ad-slide-counter">14 / 20</span>
+                </div>
+
+                <div class="ad-slide s15">
+                    <div class="ad-slide-emoji">🤖</div>
+                    <div class="ad-slide-body">
+                        <span class="ad-slide-badge"><i class="fas fa-robot"></i> Intelligence Artificielle</span>
+                        <div class="ad-slide-title">ChatGPT & Claude — Tes assistants IA</div>
+                        <div class="ad-slide-desc">Rédiger, résumer, coder, réviser, traduire... Maîtriser les outils IA est devenu une compétence clé dans tous les secteurs.</div>
+                        <a class="ad-slide-cta" href="https://chat.openai.com" target="_blank">Essayer ChatGPT <i class="fas fa-external-link-alt"></i></a>
+                    </div>
+                    <span class="ad-slide-counter">15 / 20</span>
+                </div>
+
+                <div class="ad-slide s16">
+                    <div class="ad-slide-emoji">🌱</div>
+                    <div class="ad-slide-body">
+                        <span class="ad-slide-badge"><i class="fas fa-seedling"></i> Productivité</span>
+                        <div class="ad-slide-title">La technique Pomodoro pour mieux réviser</div>
+                        <div class="ad-slide-desc">25 min de travail concentré, 5 min de pause. 4 cycles puis 20 min de repos. Prouvé scientifiquement pour la mémorisation.</div>
+                    </div>
+                    <span class="ad-slide-counter">16 / 20</span>
+                </div>
+
+                <div class="ad-slide s17">
+                    <div class="ad-slide-emoji">🖊️</div>
+                    <div class="ad-slide-body">
+                        <span class="ad-slide-badge"><i class="fas fa-pen-nib"></i> Création visuelle</span>
+                        <div class="ad-slide-title">Canva — Présentations et CV pro</div>
+                        <div class="ad-slide-desc">CV, slides, affiches, infographies... Canva Pro est entièrement gratuit pour les étudiants. Milliers de templates prêts.</div>
+                        <a class="ad-slide-cta" href="https://canva.com/education" target="_blank">Activer Canva Pro <i class="fas fa-external-link-alt"></i></a>
+                    </div>
+                    <span class="ad-slide-counter">17 / 20</span>
+                </div>
+
+                <div class="ad-slide s18">
+                    <div class="ad-slide-emoji">📡</div>
+                    <div class="ad-slide-body">
+                        <span class="ad-slide-badge"><i class="fas fa-broadcast-tower"></i> Événement</span>
+                        <div class="ad-slide-title">Forum Emploi Université de Djibouti — Avril 2025</div>
+                        <div class="ad-slide-desc">Rencontre directe avec 20+ entreprises locales et internationales. Inscription gratuite. Apporte 5 copies de ton CV.</div>
+                        <a class="ad-slide-cta" href="#" target="_blank">S'inscrire <i class="fas fa-external-link-alt"></i></a>
+                    </div>
+                    <span class="ad-slide-counter">18 / 20</span>
+                </div>
+
+                <div class="ad-slide s19">
+                    <div class="ad-slide-emoji">🏆</div>
+                    <div class="ad-slide-body">
+                        <span class="ad-slide-badge"><i class="fas fa-trophy"></i> Compétition</span>
+                        <div class="ad-slide-title">Hackathon Tech Djibouti 2025 — 48h pour innover</div>
+                        <div class="ad-slide-desc">Forme une équipe de 3-5 personnes et résous un problème réel. Prix : 500 000 FDJ + accompagnement startup. Open à tous.</div>
+                        <a class="ad-slide-cta" href="#" target="_blank">S'inscrire maintenant <i class="fas fa-external-link-alt"></i></a>
+                    </div>
+                    <span class="ad-slide-counter">19 / 20</span>
+                </div>
+
+                <div class="ad-slide s20">
+                    <div class="ad-slide-emoji">💡</div>
+                    <div class="ad-slide-body">
+                        <span class="ad-slide-badge"><i class="fas fa-rocket"></i> Mentorat</span>
+                        <div class="ad-slide-title">Programme Mentorat Alumni × Étudiants</div>
+                        <div class="ad-slide-desc">Sois accompagné par un alumni en poste pendant 3 mois. Sessions mensuelles, conseils personnalisés, mises en relation directes.</div>
+                        <a class="ad-slide-cta" href="{% url 'fil_etudiant' %}">Rejoindre le programme <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <span class="ad-slide-counter">20 / 20</span>
+                </div>
+
             </div>
-            <div class="info-card">
-                <div class="info-card-label">Année</div>
-                <div class="info-card-value">{{ user.profile.annee_actuelle|default:"—" }}</div>
+            <button class="carousel-btn prev" id="adPrev"><i class="fas fa-chevron-left"></i></button>
+            <button class="carousel-btn next" id="adNext"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <div class="carousel-dots" id="adDots"></div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-section">
+        <div class="section-title">La plateforme en chiffres <span>— Données réelles</span></div>
+        <div class="stats-grid">
+            <div class="stat-card c1">
+                <div class="stat-icon orange"><i class="fas fa-user-tie"></i></div>
+                <div class="stat-number">{{ nb_alumni|default:"500" }}<span class="stat-unit">+</span></div>
+                <div class="stat-label">Alumni inscrits</div>
+                <div class="stat-sub up"><i class="fas fa-arrow-up"></i> +12 ce mois</div>
             </div>
-            <div class="info-card">
-                <div class="info-card-label">Statut</div>
-                <div class="info-card-value" style="color:var(--green);">Actif</div>
+            <div class="stat-card c2">
+                <div class="stat-icon blue"><i class="fas fa-briefcase"></i></div>
+                <div class="stat-number">{{ nb_offres|default:"24" }}</div>
+                <div class="stat-label">Offres actives</div>
+                <div class="stat-sub up"><i class="fas fa-arrow-up"></i> 3 nouvelles cette semaine</div>
+            </div>
+            <div class="stat-card c3">
+                <div class="stat-icon green"><i class="fas fa-newspaper"></i></div>
+                <div class="stat-number">{{ nb_posts|default:"87" }}</div>
+                <div class="stat-label">Posts publiés</div>
+                <div class="stat-sub"><i class="fas fa-clock"></i> Dernier il y a 2h</div>
+            </div>
+            <div class="stat-card c4">
+                <div class="stat-icon gold"><i class="fas fa-graduation-cap"></i></div>
+                <div class="stat-number">{{ nb_etudiants|default:"1 200" }}<span class="stat-unit">+</span></div>
+                <div class="stat-label">Étudiants actifs</div>
+                <div class="stat-sub up"><i class="fas fa-arrow-up"></i> +35 cette semaine</div>
             </div>
         </div>
-        {% endif %}
+    </div>
 
-        <div class="feed">
-            {% for item in feed %}
-
-            {% if item.type == 'offre' %}
-            <!-- ══ CARTE OFFRE style Instagram ══ -->
-            <div class="offre-card" id="offre-card-{{ item.obj.id }}">
-                <div class="offre-card-top"></div>
-                <div class="offre-card-inner">
-                    <div class="post-header">
-                        <div class="post-author">
-                            <div class="post-author-avatar">
-                                {% if item.auteur.profile.photo %}
-                                    <img src="{{ item.auteur.profile.photo.url }}">
-                                {% else %}
-                                    {{ item.auteur.get_full_name|default:item.auteur.username|first|upper }}
-                                {% endif %}
-                            </div>
-                            <div>
-                                <div class="post-author-name">{{ item.auteur.get_full_name|default:item.auteur.username }}</div>
-                                <div class="post-author-role">Alumni · Université de Djibouti</div>
-                            </div>
-                        </div>
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            <span class="post-date">{{ item.date|date:"d/m/Y" }}</span>
-                            <span class="offre-tag"><i class="fas fa-briefcase"></i> {{ item.obj.get_type_offre_display }}</span>
-                            <a href="{% url 'chat_avec' item.auteur.id %}" class="btn-chat-post">
-                                <i class="fas fa-comment"></i> Écrire
-                            </a>
-                        </div>
-                    </div>
-                    <div class="post-body">
-                        <div class="post-titre">{{ item.obj.titre }}</div>
-                        <div class="offre-entreprise-meta">
-                            <span><i class="fas fa-building"></i> {{ item.obj.entreprise }}</span>
-                            <span><i class="fas fa-map-marker-alt"></i> {{ item.obj.ville }}</span>
-                            <span><i class="fas fa-graduation-cap"></i> {{ item.obj.get_niveau_requis_display }}</span>
-                            {% if item.obj.date_limite %}<span><i class="fas fa-calendar-alt"></i> Limite : {{ item.obj.date_limite|date:"d/m/Y" }}</span>{% endif %}
-                        </div>
-                        <div class="post-contenu" style="margin-top:8px;">{{ item.obj.description|truncatechars:200 }}</div>
-                    </div>
-                    <div class="post-actions">
-                        <button class="btn-post-action {% if item.liked_offre %}liked{% endif %}"
-                                id="like-offre-btn-{{ item.obj.id }}"
-                                onclick="toggleLikeOffre({{ item.obj.id }}, this)">
-                            <i class="fas fa-heart"></i>
-                            <span id="like-offre-count-{{ item.obj.id }}">{{ item.nb_likes_offre }}</span>
-                        </button>
-                        <button class="btn-post-action {% if item.en_favori_offre %}en-favori{% endif %}"
-                                id="favori-offre-btn-{{ item.obj.id }}"
-                                onclick="toggleFavoriOffre({{ item.obj.id }}, this)">
-                            <i class="fas fa-star"></i>
-                            <span id="favori-offre-count-{{ item.obj.id }}">{{ item.nb_favoris_offre }}</span>
-                        </button>
-                    </div>
-                </div>
-                <div class="offre-card-bottom"></div>
-            </div>
-
-            {% else %}
-            <!-- ══ CARTE POST style Instagram ══ -->
-            <div class="post-card" id="post-card-{{ item.obj.id }}">
-                <div class="post-card-top"></div>
-                <div class="post-card-inner">
-                    <div class="post-header">
-                        <div class="post-author">
-                            <div class="post-author-avatar">
-                                {% if item.auteur.profile.photo %}
-                                    <img src="{{ item.auteur.profile.photo.url }}">
-                                {% else %}
-                                    {{ item.auteur.get_full_name|default:item.auteur.username|first|upper }}
-                                {% endif %}
-                            </div>
-                            <div>
-                                <div class="post-author-name">{{ item.auteur.get_full_name|default:item.auteur.username }}</div>
-                                <div class="post-author-role">Alumni · Université de Djibouti</div>
-                            </div>
-                        </div>
-                        <div style="display:flex;align-items:center;gap:10px;">
-                            <span class="post-date">{{ item.date|date:"d/m/Y" }}</span>
-                            <a href="{% url 'chat_avec' item.auteur.id %}" class="btn-chat-post">
-                                <i class="fas fa-comment"></i> Écrire
-                            </a>
-                        </div>
-                    </div>
-                    {% if item.obj.photo %}
-                    <img src="{{ item.obj.photo.url }}" class="post-photo" alt="">
-                    {% endif %}
-                    <div class="post-body">
-                        {% if item.obj.titre %}<div class="post-titre">{{ item.obj.titre }}</div>{% endif %}
-                        <div class="post-contenu">{{ item.obj.contenu }}</div>
-                    </div>
-                    <div class="likers-row {% if item.nb_likes == 0 %}hidden{% endif %}" id="likers-{{ item.obj.id }}"></div>
-                    <div class="post-actions">
-                        <button class="btn-post-action {% if item.liked %}liked{% endif %}"
-                                id="like-btn-{{ item.obj.id }}"
-                                onclick="toggleLike({{ item.obj.id }}, this)">
-                            <i class="fas fa-heart"></i>
-                            <span id="like-count-{{ item.obj.id }}">{{ item.nb_likes }}</span>
-                        </button>
-                        <button class="btn-post-action {% if item.en_favori %}en-favori{% endif %}"
-                                id="favori-btn-{{ item.obj.id }}"
-                                onclick="toggleFavori({{ item.obj.id }}, this)">
-                            <i class="fas fa-star"></i>
-                            <span id="favori-count-{{ item.obj.id }}">{{ item.nb_favoris }}</span>
-                        </button>
-                        <button class="btn-post-action" onclick="toggleComments({{ item.obj.id }})">
-                            <i class="fas fa-comment-alt"></i>
-                            <span id="comment-count-{{ item.obj.id }}">{{ item.nb_comments }}</span>
-                        </button>
-                    </div>
-                    <div class="comments-section" id="comments-{{ item.obj.id }}">
-                        <div id="comments-list-{{ item.obj.id }}">
-                            {% for comment in item.comments %}
-                            <div class="comment-item" data-comment-id="{{ comment.id }}">
-                                <div class="comment-avatar">{{ comment.auteur.get_full_name|default:comment.auteur.username|first|upper }}</div>
-                                <div class="comment-content">
-                                    <div class="comment-author">{{ comment.auteur.get_full_name|default:comment.auteur.username }}</div>
-                                    <div class="comment-text">{{ comment.contenu }}</div>
-                                    <div class="comment-date">{{ comment.date_creation|date:"d/m H:i" }}</div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        <div class="comment-form">
-                            <div class="comment-input-wrap">
-                                <input type="text" id="comment-input-{{ item.obj.id }}" placeholder="Écrire un commentaire…" onkeydown="if(event.key==='Enter') envoyerCommentaire({{ item.obj.id }})">
-                                <button class="emoji-btn" type="button" onclick="toggleEmojiPicker({{ item.obj.id }}, event)">😊</button>
-                                <div class="emoji-picker" id="emoji-picker-{{ item.obj.id }}">
-                                    <div class="emoji-categories">
-                                        <button class="emoji-cat-btn active" onclick="showEmojiCat('smileys',this)">😊</button>
-                                        <button class="emoji-cat-btn" onclick="showEmojiCat('gestures',this)">👋</button>
-                                        <button class="emoji-cat-btn" onclick="showEmojiCat('hearts',this)">❤️</button>
-                                        <button class="emoji-cat-btn" onclick="showEmojiCat('objects',this)">🎯</button>
-                                        <button class="emoji-cat-btn" onclick="showEmojiCat('nature',this)">🌿</button>
-                                    </div>
-                                    <div class="emoji-grid" id="emoji-grid-{{ item.obj.id }}"></div>
-                                </div>
-                            </div>
-                            <button class="comment-send-btn" onclick="envoyerCommentaire({{ item.obj.id }})"><i class="fas fa-paper-plane"></i></button>
-                        </div>
-                    </div>
-                </div>
-                <div class="post-card-bottom"></div>
-            </div>
-            {% endif %}
-
-            {% empty %}
-            <div class="empty-state">
-                <i class="fas fa-newspaper"></i>
-                <p>Aucune publication pour le moment.</p>
-            </div>
-            {% endfor %}
+    <!-- TICKER BAS -->
+    <div class="bottom-ticker">
+        <div class="bottom-ticker-inner">
+            <span class="bottom-ticker-item"><span class="dot"></span> Réseau Alumni — Université de Djibouti</span>
+            <span class="bottom-ticker-item"><span class="dot blue"></span> Connecte-toi à plus de 500 diplômés</span>
+            <span class="bottom-ticker-item"><span class="dot green"></span> Nouvelle offre chez Djibouti Telecom</span>
+            <span class="bottom-ticker-item"><span class="dot"></span> Ton prochain employeur est dans ce réseau</span>
+            <span class="bottom-ticker-item"><span class="dot blue"></span> Programme de mentorat — Inscris-toi</span>
+            <span class="bottom-ticker-item"><span class="dot green"></span> Prochaine conférence alumni : 28 Avril 2025</span>
+            <span class="bottom-ticker-item"><span class="dot"></span> Réseau Alumni — Université de Djibouti</span>
+            <span class="bottom-ticker-item"><span class="dot blue"></span> Connecte-toi à plus de 500 diplômés</span>
+            <span class="bottom-ticker-item"><span class="dot green"></span> Nouvelle offre chez Djibouti Telecom</span>
+            <span class="bottom-ticker-item"><span class="dot"></span> Ton prochain employeur est dans ce réseau</span>
+            <span class="bottom-ticker-item"><span class="dot blue"></span> Programme de mentorat — Inscris-toi</span>
+            <span class="bottom-ticker-item"><span class="dot green"></span> Prochaine conférence alumni : 28 Avril 2025</span>
         </div>
-    </main>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="dash-footer">
+        <div class="footer-brand">
+            <div class="logo-mark">RA</div>
+            <div class="footer-brand-text">Réseau Alumni<small>© 2025 Université de Djibouti</small></div>
+        </div>
+        <div class="footer-links">
+            <a href="#">À propos</a>
+            <a href="#">Contact</a>
+            <a href="#">Confidentialité</a>
+        </div>
+        <div class="footer-copy">Plateforme officielle des diplômés</div>
+    </div>
+
+</main>
+
+
 </div>
 
 <script>
-const CSRF = "{{ csrf_token }}";
-const EMOJIS = {
-    smileys:['😀','😂','🥰','😍','🤩','😎','🥳','😊','😇','🤗','😏','🤔','😅','😭','😱','🤯','😴','🤤','😋','🥺','😤','😡','🤑','🤫','😶','🫡'],
-    gestures:['👋','🤝','👍','👎','👏','🙌','🤲','🫶','💪','🖐️','✌️','🤞','🫰','🤟','🤘','👌','🤙','🫵','☝️','🫂'],
-    hearts:['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❤️‍🔥','💕','💞','💓','💗','💖','💘','💝','💟','❣️'],
-    objects:['🎯','🏆','🎓','📚','💡','🔥','⭐','✨','🎉','🎊','🎁','🚀','💎','🔑','🎵','🎶','📱','💻','🛡️','⚡'],
-    nature:['🌿','🌱','🌸','🌺','🌻','🌹','🍀','🌳','🌊','🌙','☀️','⛅','🌈','❄️','🌴','🌵','🦋','🐬','🦁','🐝'],
-};
-let currentEmojiCat='smileys', activePickerPostId=null;
+    function updateDate(){
+        const now=new Date();
+        document.getElementById('live-date').textContent=now.toLocaleDateString('fr-FR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    }
+    updateDate();setInterval(updateDate,60000);
 
-function toggleEmojiPicker(postId,e){
-    e.stopPropagation();
-    const picker=document.getElementById(`emoji-picker-${postId}`);
-    if(picker.classList.contains('open')){picker.classList.remove('open');activePickerPostId=null;}
-    else{document.querySelectorAll('.emoji-picker.open').forEach(p=>p.classList.remove('open'));activePickerPostId=postId;renderEmojiGrid(postId,currentEmojiCat);picker.classList.add('open');}
-}
-function showEmojiCat(cat,btn){
-    currentEmojiCat=cat;
-    document.querySelectorAll('.emoji-cat-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    if(activePickerPostId) renderEmojiGrid(activePickerPostId,cat);
-}
-function renderEmojiGrid(postId,cat){
-    const grid=document.getElementById(`emoji-grid-${postId}`);
-    grid.innerHTML='';
-    (EMOJIS[cat]||[]).forEach(emoji=>{const s=document.createElement('span');s.className='emoji-item';s.textContent=emoji;s.onclick=()=>insertEmoji(postId,emoji);grid.appendChild(s);});
-}
-function insertEmoji(postId,emoji){
-    const input=document.getElementById(`comment-input-${postId}`);
-    const pos=input.selectionStart;
-    input.value=input.value.slice(0,pos)+emoji+input.value.slice(pos);
-    input.focus();input.selectionStart=input.selectionEnd=pos+emoji.length;
-}
-document.addEventListener('click',()=>{document.querySelectorAll('.emoji-picker.open').forEach(p=>p.classList.remove('open'));activePickerPostId=null;});
-
-function toggleLike(postId,btn){
-    fetch(`/post/${postId}/like/`,{method:'POST',headers:{'X-CSRFToken':CSRF}})
-    .then(r=>r.json()).then(data=>{btn.classList.toggle('liked',data.liked);document.getElementById(`like-count-${postId}`).textContent=data.total;refreshPostStats(postId);});
-}
-function toggleFavori(postId,btn){
-    fetch(`/post/${postId}/favori/`,{method:'POST',headers:{'X-CSRFToken':CSRF}})
-    .then(r=>r.json()).then(data=>{btn.classList.toggle('en-favori',data.favoris);document.getElementById(`favori-count-${postId}`).textContent=data.total;});
-}
-function toggleLikeOffre(offreId,btn){
-    fetch(`/offre/${offreId}/like/`,{method:'POST',headers:{'X-CSRFToken':CSRF}})
-    .then(r=>r.json()).then(data=>{btn.classList.toggle('liked',data.liked);document.getElementById(`like-offre-count-${offreId}`).textContent=data.total;});
-}
-function toggleFavoriOffre(offreId,btn){
-    fetch(`/offre/${offreId}/favori/`,{method:'POST',headers:{'X-CSRFToken':CSRF}})
-    .then(r=>r.json()).then(data=>{btn.classList.toggle('en-favori',data.favoris);document.getElementById(`favori-offre-count-${offreId}`).textContent=data.total;});
-}
-function toggleComments(postId){document.getElementById(`comments-${postId}`).classList.toggle('open');}
-function envoyerCommentaire(postId){
-    const input=document.getElementById(`comment-input-${postId}`);
-    const text=input.value.trim();if(!text)return;
-    document.getElementById(`emoji-picker-${postId}`)?.classList.remove('open');
-    fetch(`/post/${postId}/commenter/`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded','X-CSRFToken':CSRF},body:`contenu=${encodeURIComponent(text)}`})
-    .then(r=>r.json()).then(data=>{
-        if(data.success){appendComment(postId,data.auteur,data.contenu,data.date,null);input.value='';const c=document.getElementById(`comment-count-${postId}`);c.textContent=parseInt(c.textContent)+1;}
-    });
-}
-function appendComment(postId,auteur,contenu,date,commentId){
-    const list=document.getElementById(`comments-list-${postId}`);
-    if(commentId&&list.querySelector(`[data-comment-id="${commentId}"]`))return;
-    const div=document.createElement('div');div.className='comment-item';
-    if(commentId)div.setAttribute('data-comment-id',commentId);
-    div.innerHTML=`<div class="comment-avatar">${auteur[0].toUpperCase()}</div><div class="comment-content"><div class="comment-author">${auteur}</div><div class="comment-text">${contenu}</div><div class="comment-date">${date}</div></div>`;
-    list.appendChild(div);
-}
-function refreshPostStats(postId){
-    fetch(`/post/${postId}/stats/`).then(r=>r.json()).then(data=>{
-        document.getElementById(`like-count-${postId}`).textContent=data.nb_likes;
-        document.getElementById(`favori-count-${postId}`).textContent=data.nb_favoris;
-        document.getElementById(`comment-count-${postId}`).textContent=data.nb_comments;
-        const likeBtn=document.getElementById(`like-btn-${postId}`);
-        if(likeBtn) likeBtn.classList.toggle('liked',data.user_liked);
-        const favoriBtn=document.getElementById(`favori-btn-${postId}`);
-        if(favoriBtn) favoriBtn.classList.toggle('en-favori',data.user_favori);
-        const row=document.getElementById(`likers-${postId}`);
-        if(data.likers&&data.likers.length>0){
-            row.classList.remove('hidden');
-            row.innerHTML='<span style="font-size:0.7rem;color:#999;margin-right:4px;">❤️</span>';
-            data.likers.forEach(l=>{const c=document.createElement('div');c.className='liker-chip';c.innerHTML=`<div class="liker-chip-avatar">${l[0].toUpperCase()}</div>${l}`;row.appendChild(c);});
-            if(data.nb_likes>data.likers.length){const m=document.createElement('span');m.style.cssText='font-size:0.7rem;color:#999;';m.textContent=`+${data.nb_likes-data.likers.length} autres`;row.appendChild(m);}
-        }else{row.classList.add('hidden');row.innerHTML='';}
-        if(data.comments)data.comments.forEach(c=>appendComment(postId,c.auteur,c.contenu,c.date,c.id));
-    }).catch(()=>{});
-}
-const postIds=[{% for item in feed %}{% if item.type == 'post' %}{{ item.obj.id }},{% endif %}{% endfor %}];
-function pollAll(){postIds.forEach(id=>refreshPostStats(id));}
-setInterval(pollAll,5000);
-document.addEventListener('DOMContentLoaded',pollAll);
+    (function(){
+        const track=document.getElementById('adTrack');
+        const dotsWrap=document.getElementById('adDots');
+        const TOTAL=20;
+        let current=0,timer=null;
+        for(let i=0;i<TOTAL;i++){
+            const d=document.createElement('div');
+            d.className='carousel-dot'+(i===0?' active':'');
+            d.dataset.idx=i;
+            d.addEventListener('click',function(){stop();goTo(+this.dataset.idx);start();});
+            dotsWrap.appendChild(d);
+        }
+        function goTo(idx){
+            current=(idx+TOTAL)%TOTAL;
+            track.style.transform='translateX(-'+(current*100)+'%)';
+            dotsWrap.querySelectorAll('.carousel-dot').forEach(function(d,i){d.classList.toggle('active',i===current);});
+        }
+        function next(){goTo(current+1);}
+        function prev(){goTo(current-1);}
+        function start(){timer=setInterval(next,5000);}
+        function stop(){clearInterval(timer);}
+        document.getElementById('adNext').addEventListener('click',function(){stop();next();start();});
+        document.getElementById('adPrev').addEventListener('click',function(){stop();prev();start();});
+        const wrap=document.getElementById('adCarousel');
+        wrap.addEventListener('mouseenter',stop);
+        wrap.addEventListener('mouseleave',start);
+        let sx=0;
+        track.addEventListener('touchstart',function(e){sx=e.touches[0].clientX;});
+        track.addEventListener('touchend',function(e){const dx=sx-e.changedTouches[0].clientX;if(Math.abs(dx)>40){stop();dx>0?next():prev();start();}});
+        start();
+    })();
 </script>
+
 </body>
 </html>
