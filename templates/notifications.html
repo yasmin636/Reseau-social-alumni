@@ -2,159 +2,573 @@
 
 {% extends "base.html" %}
 {% block title %}Notifications{% endblock %}
+{% block topbar_title %}Notifications{% endblock %}
 {% block content %}
 <style>
-    :root {
-        --pink:#f72585; --purple:#7209b7; --cyan:#4cc9f0;
-        --green:#00e676; --surface:rgba(255,255,255,0.04); --border:rgba(255,255,255,0.07);
+    /* Thème : variables par zone (clair / sombre) */
+    .notifications-page {
+        --np-pink: #e91e8c;
+        --np-purple: #7c3aed;
+        --np-cyan: #06b6d4;
+        --np-green: #10b981;
+        --np-bg: linear-gradient(165deg, #070c0a 0%, #0f1412 45%, #0a100d 100%);
+        --np-surface: rgba(255, 255, 255, 0.045);
+        --np-surface-hover: rgba(247, 37, 133, 0.06);
+        --np-border: rgba(255, 255, 255, 0.09);
+        --np-text: #eef7f2;
+        --np-text-muted: rgba(255, 255, 255, 0.42);
+        --np-text-dim: rgba(255, 255, 255, 0.28);
+        --np-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+        --np-timeline: rgba(247, 37, 133, 0.25);
+        --np-chip-bg: rgba(255, 255, 255, 0.06);
+        margin: -28px -32px;
+        padding: 28px 32px 40px;
+        min-height: calc(100vh - 120px);
+        background: var(--np-bg);
+        position: relative;
+        overflow: hidden;
     }
 
-    /* CANVA SHAPES */
-    .canva-shapes { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
-    .shape { position:absolute; border-radius:50%; animation:floatShape ease-in-out infinite alternate; }
-    .s1 { width:300px; height:300px; border:1.5px solid rgba(247,37,133,0.08); top:-80px; right:-60px; animation-duration:12s; }
-    .s2 { width:200px; height:200px; border:1.5px solid rgba(76,201,240,0.07); bottom:-80px; left:-60px; animation-duration:9s; animation-delay:-3s; }
-    .s3 { width:50px; height:50px; background:rgba(247,37,133,0.06); top:30%; right:8%; animation-duration:8s; }
-    .s4 { width:35px; height:35px; background:rgba(76,201,240,0.06); bottom:25%; left:5%; animation-duration:10s; animation-delay:-5s; }
-    .dot-grid { position:absolute; inset:0; background-image:radial-gradient(circle,rgba(247,37,133,0.07) 1px,transparent 1px); background-size:30px 30px; opacity:0.4; }
-    @keyframes floatShape { from{transform:translate(0,0)} to{transform:translate(10px,-15px)} }
+    .notifications-page[data-theme="light"] {
+        --np-bg: linear-gradient(165deg, #f8fafc 0%, #f1f5f9 40%, #e8f4f8 100%);
+        --np-surface: #ffffff;
+        --np-surface-hover: rgba(124, 58, 237, 0.06);
+        --np-border: rgba(15, 23, 42, 0.08);
+        --np-text: #0f172a;
+        --np-text-muted: #475569;
+        --np-text-dim: #94a3b8;
+        --np-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+        --np-timeline: rgba(124, 58, 237, 0.2);
+        --np-chip-bg: rgba(15, 23, 42, 0.06);
+    }
 
-    /* PAGE HEADER */
-    .page-eyebrow { font-size:0.65rem; font-weight:700; color:var(--pink); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:6px; display:flex; align-items:center; gap:6px; position:relative; z-index:1; }
-    .page-eyebrow::before { content:''; width:5px; height:5px; border-radius:50%; background:var(--pink); animation:pulse 2s infinite; }
-    @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(247,37,133,0.5)} 70%{box-shadow:0 0 0 5px rgba(247,37,133,0)} 100%{box-shadow:0 0 0 0 rgba(247,37,133,0)} }
-    .page-title { font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; margin-bottom:4px; position:relative; z-index:1; }
-    .page-title span { background:linear-gradient(90deg,var(--pink),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-    .page-sub { font-size:0.83rem; color:rgba(255,255,255,0.35); margin-bottom:24px; position:relative; z-index:1; }
+    .np-grid-bg {
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(124, 58, 237, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(124, 58, 237, 0.03) 1px, transparent 1px);
+        background-size: 48px 48px;
+        pointer-events: none;
+        mask-image: linear-gradient(180deg, black 0%, transparent 85%);
+    }
 
-    
-    /* FILTER TABS */
-    .filter-tabs { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; position:relative; z-index:1; }
-    .filter-tab { padding:6px 16px; border-radius:999px; font-size:0.78rem; font-weight:600; cursor:pointer; border:1px solid rgba(255,255,255,0.08); background:var(--surface); color:rgba(255,255,255,0.4); transition:all 0.2s; user-select:none; }
-    .filter-tab.active { background:linear-gradient(135deg,rgba(247,37,133,0.2),rgba(114,9,183,0.15)); border-color:rgba(247,37,133,0.35); color:var(--pink); }
-    .filter-tab:hover:not(.active) { color:rgba(255,255,255,0.7); border-color:rgba(255,255,255,0.15); }
+    .notifications-page[data-theme="light"] .np-grid-bg {
+        background-image:
+            linear-gradient(rgba(6, 182, 212, 0.06) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(6, 182, 212, 0.06) 1px, transparent 1px);
+    }
 
-    /* NOTIF LIST */
-    .notif-list { display:flex; flex-direction:column; gap:10px; position:relative; z-index:1; max-width:760px; }
+    /* Barre supérieure : titre + stats (thème : barre du haut dans base.html) */
+    .np-topbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 22px;
+        position: relative;
+        z-index: 2;
+    }
 
-    /* NOTIF CARD */
+    .np-heading-block { flex: 1; min-width: 200px; }
+
+    .np-kicker {
+        font-size: 0.62rem;
+        font-weight: 800;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--np-cyan);
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .np-kicker i { font-size: 0.55rem; opacity: 0.8; }
+
+    .np-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 1.65rem;
+        font-weight: 800;
+        color: var(--np-text);
+        line-height: 1.15;
+        margin-bottom: 6px;
+    }
+
+    .np-title em {
+        font-style: normal;
+        background: linear-gradient(105deg, var(--np-pink), var(--np-purple), var(--np-cyan));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .np-lede {
+        font-size: 0.86rem;
+        color: var(--np-text-muted);
+        max-width: 420px;
+        line-height: 1.5;
+    }
+
+    .np-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* Cartes stats */
+    .np-stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .np-stat {
+        padding: 10px 14px;
+        border-radius: 12px;
+        border: 1px solid var(--np-border);
+        background: var(--np-surface);
+        min-width: 0;
+    }
+
+    .np-stat-val {
+        font-family: 'Syne', sans-serif;
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: var(--np-text);
+        line-height: 1;
+    }
+
+    .np-stat-val.accent { color: var(--np-cyan); }
+
+    .np-stat-label {
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--np-text-dim);
+        margin-top: 4px;
+    }
+
+    /* Filtres */
+    .np-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 22px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .np-filter {
+        padding: 8px 16px;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        border: 1px solid var(--np-border);
+        background: var(--np-chip-bg);
+        color: var(--np-text-muted);
+        transition: all 0.2s;
+        user-select: none;
+    }
+
+    .np-filter:hover {
+        color: var(--np-text);
+        border-color: rgba(233, 30, 140, 0.25);
+    }
+
+    .np-filter.active {
+        background: linear-gradient(135deg, rgba(233, 30, 140, 0.22), rgba(124, 58, 237, 0.18));
+        border-color: rgba(233, 30, 140, 0.4);
+        color: var(--np-pink);
+    }
+
+    .notifications-page[data-theme="light"] .np-filter.active {
+        color: #7c3aed;
+        border-color: rgba(124, 58, 237, 0.35);
+    }
+
+    /* Liste + timeline */
+    .np-list-wrap {
+        position: relative;
+        z-index: 2;
+        max-width: 820px;
+    }
+
+    .np-timeline-line {
+        position: absolute;
+        left: 18px;
+        top: 8px;
+        bottom: 8px;
+        width: 2px;
+        background: linear-gradient(180deg, var(--np-pink), var(--np-purple), var(--np-cyan));
+        border-radius: 2px;
+        opacity: 0.45;
+    }
+
+    .np-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding-left: 8px;
+    }
+
+    .notif-hidden { display: none !important; }
+
     .notif-card {
-        background:var(--surface);
-        border:1px solid var(--border);
-        border-radius:14px;
-        padding:16px 18px 14px;
-        display:flex; gap:14px; align-items:flex-start;
-        transition:all 0.2s;
-        position:relative; overflow:hidden;
-        cursor:pointer;
+        margin-left: 28px;
+        background: var(--np-surface);
+        border: 1px solid var(--np-border);
+        border-radius: 16px;
+        padding: 0;
+        display: flex;
+        gap: 0;
+        align-items: stretch;
+        transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--np-shadow);
     }
-    .notif-card:hover { border-color:rgba(247,37,133,0.2); background:rgba(247,37,133,0.04); transform:translateX(4px); }
 
-    /* BARRE GAUCHE selon statut */
-    .notif-card.non-lue { border-left:3px solid var(--cyan); }
-    .notif-card.lue { border-left:3px solid rgba(255,255,255,0.08); opacity:0.7; }
-    .notif-card.lue:hover { opacity:1; }
-
-    /* BARRE BAS bleue/grise selon lu */
-    .notif-card::after {
-        content:''; position:absolute; bottom:0; left:0; right:0; height:2px;
-        transition:opacity 0.2s;
+    .notif-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(233, 30, 140, 0.22);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
     }
-    .notif-card.non-lue::after { background:linear-gradient(90deg,var(--cyan),var(--purple)); opacity:0.6; }
-    .notif-card.lue::after { background:rgba(255,255,255,0.05); opacity:1; }
 
-    /* ICON */
-    .notif-icon-wrap { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
-    .notif-card.non-lue .notif-icon-wrap { background:rgba(76,201,240,0.12); border:1px solid rgba(76,201,240,0.2); }
-    .notif-card.lue .notif-icon-wrap { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); }
+    .notifications-page[data-theme="light"] .notif-card:hover {
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1);
+    }
 
-    /* CONTENT */
-    .notif-content { flex:1; }
-    .notif-msg { font-size:0.88rem; color:#f1f5f2; line-height:1.6; margin-bottom:6px; }
-    .notif-card.lue .notif-msg { color:rgba(255,255,255,0.5); }
+    .notif-card.non-lue {
+        border-left: 4px solid var(--np-cyan);
+    }
 
-    /* FOOTER */
-    .notif-footer { display:flex; align-items:center; justify-content:space-between; }
-    .notif-date { font-size:0.7rem; color:rgba(255,255,255,0.25); display:flex; align-items:center; gap:5px; }
-    .notif-date i { font-size:0.62rem; }
+    .notif-card.lue {
+        border-left: 4px solid var(--np-border);
+        opacity: 0.92;
+    }
 
-    /* STATUS BADGE */
-    .notif-status { display:inline-flex; align-items:center; gap:5px; font-size:0.65rem; font-weight:700; padding:2px 8px; border-radius:999px; }
-    .notif-status.new { background:rgba(76,201,240,0.12); color:var(--cyan); border:1px solid rgba(76,201,240,0.2); }
-    .notif-status.seen { background:rgba(255,255,255,0.04); color:rgba(255,255,255,0.25); border:1px solid rgba(255,255,255,0.06); }
-    .notif-status-dot { width:5px; height:5px; border-radius:50%; }
-    .notif-status.new .notif-status-dot { background:var(--cyan); animation:pulse 2s infinite; }
-    .notif-status.seen .notif-status-dot { background:rgba(255,255,255,0.2); }
+    .notif-card.lue:hover { opacity: 1; }
 
-    /* EMPTY STATE */
-    .empty-state { text-align:center; padding:60px 20px; color:rgba(255,255,255,0.2); position:relative; z-index:1; }
-    .empty-state i { font-size:48px; margin-bottom:14px; display:block; color:rgba(247,37,133,0.2); }
-    .empty-state p { font-size:0.9rem; }
+    .notif-rail {
+        width: 52px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding-top: 16px;
+        background: rgba(0, 0, 0, 0.15);
+    }
 
-    /* HIDDEN pour filtres */
-    .notif-hidden { display:none !important; }
+    .notifications-page[data-theme="light"] .notif-rail {
+        background: rgba(241, 245, 249, 0.9);
+    }
+
+    .notif-icon-wrap {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.15rem;
+        line-height: 1;
+    }
+
+    .notif-card.non-lue .notif-icon-wrap {
+        background: linear-gradient(145deg, rgba(6, 182, 212, 0.2), rgba(124, 58, 237, 0.15));
+        border: 1px solid rgba(6, 182, 212, 0.35);
+    }
+
+    .notif-card.lue .notif-icon-wrap {
+        background: var(--np-chip-bg);
+        border: 1px solid var(--np-border);
+        opacity: 0.9;
+    }
+
+    .notif-body {
+        flex: 1;
+        padding: 14px 18px 14px 4px;
+        min-width: 0;
+    }
+
+    .notif-meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+
+    .notif-type {
+        font-size: 0.62rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 3px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--np-border);
+    }
+
+    .notif-type.type-post { color: #f472b6; border-color: rgba(244, 114, 182, 0.35); background: rgba(244, 114, 182, 0.08); }
+    .notif-type.type-offre { color: #60a5fa; border-color: rgba(96, 165, 250, 0.35); background: rgba(96, 165, 250, 0.08); }
+    .notif-type.type-msg { color: #34d399; border-color: rgba(52, 211, 153, 0.35); background: rgba(52, 211, 153, 0.08); }
+    .notif-type.type-compte { color: #a78bfa; border-color: rgba(167, 139, 250, 0.35); background: rgba(167, 139, 250, 0.08); }
+    .notif-type.type-like { color: #fb7185; border-color: rgba(251, 113, 133, 0.35); background: rgba(251, 113, 133, 0.08); }
+    .notif-type.type-fav { color: #fbbf24; border-color: rgba(251, 191, 36, 0.35); background: rgba(251, 191, 36, 0.08); }
+    .notif-type.type-def { color: var(--np-text-muted); }
+
+    .notif-msg {
+        font-size: 0.9rem;
+        color: var(--np-text);
+        line-height: 1.65;
+        margin-bottom: 10px;
+    }
+
+    .notif-card.lue .notif-msg {
+        color: var(--np-text-muted);
+    }
+
+    .notif-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .notif-date {
+        font-size: 0.72rem;
+        color: var(--np-text-dim);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .notif-date .notif-rel {
+        font-weight: 700;
+        color: var(--np-cyan);
+    }
+
+    .notifications-page[data-theme="light"] .notif-date .notif-rel {
+        color: #0891b2;
+    }
+
+    .notif-date i { font-size: 0.65rem; opacity: 0.8; }
+
+    .notif-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.65rem;
+        font-weight: 800;
+        padding: 4px 10px;
+        border-radius: 999px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .notif-status.new {
+        background: rgba(6, 182, 212, 0.15);
+        color: var(--np-cyan);
+        border: 1px solid rgba(6, 182, 212, 0.3);
+    }
+
+    .notif-status.seen {
+        background: var(--np-chip-bg);
+        color: var(--np-text-dim);
+        border: 1px solid var(--np-border);
+    }
+
+    .notif-status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+    }
+
+    .notif-status.new .notif-status-dot {
+        background: var(--np-cyan);
+        animation: np-pulse 2s infinite;
+    }
+
+    .notif-status.seen .notif-status-dot {
+        background: var(--np-text-dim);
+    }
+
+    @keyframes np-pulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.45); }
+        50% { box-shadow: 0 0 0 6px rgba(6, 182, 212, 0); }
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 64px 24px;
+        position: relative;
+        z-index: 2;
+        border: 2px dashed var(--np-border);
+        border-radius: 20px;
+        background: var(--np-surface);
+        max-width: 480px;
+        margin: 0 auto;
+    }
+
+    .empty-state i {
+        font-size: 52px;
+        margin-bottom: 16px;
+        display: block;
+        opacity: 0.35;
+        color: var(--np-pink);
+    }
+
+    .empty-state p {
+        font-size: 0.95rem;
+        color: var(--np-text-muted);
+        line-height: 1.5;
+    }
+
+    .empty-state .np-lede-small {
+        font-size: 0.8rem;
+        color: var(--np-text-dim);
+        margin-top: 8px;
+    }
 </style>
 
-<!-- CANVA SHAPES -->
-<div class="canva-shapes">
-    <div class="dot-grid"></div>
-    <div class="shape s1"></div>
-    <div class="shape s2"></div>
-    <div class="shape s3"></div>
-    <div class="shape s4"></div>
-</div>
+<div class="notifications-page" id="notifications-page" data-theme="dark">
+    <div class="np-grid-bg" aria-hidden="true"></div>
 
-<!-- PAGE HEADER -->
-<div class="page-eyebrow">Centre de notifications</div>
-<div class="page-title">Vos <span>Notifications</span></div>
-<div class="page-sub">Restez informé de toute l'activité du réseau</div>
-
-<!-- NOTIF LIST -->
-{% if notifs %}
-<div class="notif-list" id="notif-list">
-    {% for notif in notifs %}
-    <div class="notif-card {% if not notif.lue %}non-lue{% else %}lue{% endif %}"
-         data-statut="{% if not notif.lue %}non-lue{% else %}lue{% endif %}">
-
-        <div class="notif-icon-wrap">
-            {% if 'post' in notif.message|lower %}🖊️
-            {% elif 'offre' in notif.message|lower %}💼
-            {% elif 'message' in notif.message|lower %}💬
-            {% elif 'activé' in notif.message|lower or 'compte' in notif.message|lower %}✅
-            {% elif 'aimé' in notif.message|lower or 'like' in notif.message|lower %}❤️
-            {% elif 'commenté' in notif.message|lower %}💬
-            {% elif 'favori' in notif.message|lower %}⭐
-            {% else %}🔔{% endif %}
+    <div class="np-topbar">
+        <div class="np-heading-block">
+            <div class="np-kicker"><i class="fas fa-satellite-dish"></i> Fil d’activité en direct</div>
+            <h1 class="np-title">Vos <em>notifications</em></h1>
+            <p class="np-lede">Synthèse des interactions sur vos posts, offres, messages et alertes compte — triez par statut ou changez le thème pour une lecture confortable.</p>
         </div>
-
-        <div class="notif-content">
-            <div class="notif-msg">{{ notif.message }}</div>
-            <div class="notif-footer">
-                <div class="notif-date">
-                    <i class="fas fa-clock"></i>
-                    {{ notif.date_creation|date:"d/m/Y à H:i" }}
+        <div class="np-actions">
+            {% if notifs %}
+            <div class="np-stats">
+                <div class="np-stat">
+                    <div class="np-stat-val accent">{{ nb_non_lues }}</div>
+                    <div class="np-stat-label">Non lues</div>
                 </div>
-                <div class="notif-status {% if not notif.lue %}new{% else %}seen{% endif %}">
-                    <div class="notif-status-dot"></div>
-                    {% if not notif.lue %}Nouveau{% else %}Lu{% endif %}
+                <div class="np-stat">
+                    <div class="np-stat-val">{{ total_notifs }}</div>
+                    <div class="np-stat-label">Total</div>
                 </div>
             </div>
+            {% endif %}
         </div>
     </div>
-    {% endfor %}
+
+    {% if notifs %}
+    <div class="np-filters" role="tablist" aria-label="Filtrer les notifications">
+        <button type="button" class="np-filter active" data-filter="tout" onclick="filtrerNotifs('tout', this)">Tout <span style="opacity:.6;font-weight:600">({{ total_notifs }})</span></button>
+        <button type="button" class="np-filter" data-filter="non-lue" onclick="filtrerNotifs('non-lue', this)">Non lues <span style="opacity:.6;font-weight:600">({{ nb_non_lues }})</span></button>
+        <button type="button" class="np-filter" data-filter="lue" onclick="filtrerNotifs('lue', this)">Lues <span style="opacity:.6;font-weight:600">({{ nb_lues }})</span></button>
+    </div>
+
+    <div class="np-list-wrap">
+        <div class="np-timeline-line" aria-hidden="true"></div>
+        <div class="np-list" id="notif-list">
+            {% for notif in notifs %}
+            {% with m=notif.message|lower %}
+            <div class="notif-card {% if not notif.lue %}non-lue{% else %}lue{% endif %}"
+                 data-statut="{% if not notif.lue %}non-lue{% else %}lue{% endif %}">
+
+                <div class="notif-rail">
+                    <div class="notif-icon-wrap" aria-hidden="true">
+                        {% if 'post' in m %}📝
+                        {% elif 'offre' in m %}💼
+                        {% elif 'message' in m %}💬
+                        {% elif 'activé' in m or 'compte' in m %}✅
+                        {% elif 'aimé' in m or 'like' in m %}❤️
+                        {% elif 'commenté' in m %}💬
+                        {% elif 'favori' in m %}⭐
+                        {% else %}🔔{% endif %}
+                    </div>
+                </div>
+
+                <div class="notif-body">
+                    <div class="notif-meta-row">
+                        {% if 'post' in m %}
+                            <span class="notif-type type-post">Publication</span>
+                        {% elif 'offre' in m %}
+                            <span class="notif-type type-offre">Offre</span>
+                        {% elif 'message' in m %}
+                            <span class="notif-type type-msg">Message</span>
+                        {% elif 'activé' in m or 'compte' in m %}
+                            <span class="notif-type type-compte">Compte</span>
+                        {% elif 'aimé' in m or 'like' in m %}
+                            <span class="notif-type type-like">J’aime</span>
+                        {% elif 'commenté' in m %}
+                            <span class="notif-type type-post">Commentaire</span>
+                        {% elif 'favori' in m %}
+                            <span class="notif-type type-fav">Favori</span>
+                        {% else %}
+                            <span class="notif-type type-def">Activité</span>
+                        {% endif %}
+                    </div>
+                    <div class="notif-msg">{{ notif.message }}</div>
+                    <div class="notif-footer">
+                        <div class="notif-date">
+                            <span class="notif-rel" data-rel-time="{{ notif.date_creation|date:'c' }}">—</span>
+                            <span style="opacity:.5">·</span>
+                            <i class="fas fa-clock"></i>
+                            {{ notif.date_creation|date:"d/m/Y" }}
+                            <span style="opacity:.6">à</span>
+                            {{ notif.date_creation|date:"H:i" }}
+                        </div>
+                        <div class="notif-status {% if not notif.lue %}new{% else %}seen{% endif %}">
+                            <span class="notif-status-dot"></span>
+                            {% if not notif.lue %}À lire{% else %}Archivée{% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endwith %}
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-inbox"></i>
+        <p><strong>Aucune notification</strong> pour l’instant.</p>
+        <p class="np-lede-small">Les alertes apparaîtront ici lorsque quelqu’un interagit avec votre contenu ou vous envoie un message.</p>
+    </div>
+    {% endif %}
 </div>
-{% else %}
-<div class="empty-state">
-    <i class="fas fa-bell-slash"></i>
-    <p>Aucune notification pour le moment.</p>
-</div>
-{% endif %}
 
 <script>
+(function () {
+    function relTime(iso) {
+        if (!iso) return '';
+        var t = new Date(iso).getTime();
+        if (isNaN(t)) return '';
+        var diff = Date.now() - t;
+        var s = Math.floor(diff / 1000);
+        var m = Math.floor(s / 60);
+        var h = Math.floor(m / 60);
+        var d = Math.floor(h / 24);
+        if (s < 60) return 'À l’instant';
+        if (m < 60) return 'Il y a ' + m + ' min';
+        if (h < 24) return 'Il y a ' + h + ' h';
+        if (d < 7) return 'Il y a ' + d + ' j';
+        return '';
+    }
+
+    document.querySelectorAll('.notif-rel[data-rel-time]').forEach(function (el) {
+        var iso = el.getAttribute('data-rel-time');
+        el.textContent = relTime(iso) || 'Récent';
+    });
+})();
+
 function filtrerNotifs(type, btn) {
-    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.np-filter').forEach(function (t) { t.classList.remove('active'); });
     btn.classList.add('active');
-    document.querySelectorAll('.notif-card').forEach(card => {
+    document.querySelectorAll('.notif-card').forEach(function (card) {
         if (type === 'tout') {
             card.classList.remove('notif-hidden');
         } else {
@@ -168,5 +582,3 @@ function filtrerNotifs(type, btn) {
 }
 </script>
 {% endblock %}
-
-

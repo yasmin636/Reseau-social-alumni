@@ -50,6 +50,11 @@
     <a href="{% url 'favoris' %}" class="sidebar-link">
       <span class="sidebar-icon">⭐</span> Favoris
     </a>
+    {% if user.profile.role == "etudiant" %}
+    <a href="{% url 'recommandations_etudiant' %}" class="sidebar-link">
+      <span class="sidebar-icon">💡</span> Recommandations
+    </a>
+    {% endif %}
     <a href="{% url 'notifications' %}" class="sidebar-link">
       <span class="sidebar-icon">🔔</span> Notifications
     </a>

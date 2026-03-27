@@ -49,8 +49,9 @@ def login_view(request):
                 profile = Profile.objects.create(user=user, role='etudiant', compte_active=False)
             if user_type == "etudiant" and profile.role != "etudiant":
                 return render(request, "login.html", {
-                    "error": "Ce compte est un compte Alumni. Veuillez sélectionner Alumni.",
-                    "user_type": user_type
+                    "error": "alumni_only",
+                    "user_type": user_type,
+                    "promoted_from_etudiant": getattr(profile, "promoted_from_etudiant", False),
                 })
             if user_type == "alumni" and profile.role != "alumni":
                 return render(request, "login.html", {
@@ -63,6 +64,9 @@ def login_view(request):
             if profile.role == "etudiant":
                 return redirect("dashboard_etudiant")
             elif profile.role == "alumni":
+                if profile.promoted_from_etudiant:
+                    profile.promoted_from_etudiant = False
+                    profile.save(update_fields=["promoted_from_etudiant"])
                 return redirect("dashboard_alumni")
             return redirect("mes_posts")
         else:
@@ -73,8 +77,8 @@ def login_view(request):
     return render(request, "login.html")
 
 def register(request):
-    user_type = request.POST.get("user_type", "etudiant")
     if request.method == "POST":
+        user_type = request.POST.get("user_type", "etudiant")
         if user_type == "alumni":
             form = RegisterAlumniForm(request.POST)
         else:
@@ -106,7 +110,10 @@ def register(request):
                     message=f"Nouveau compte en attente de validation : {nom} ({user_type})")
             return render(request, "register.html", {"success": True, "user_type": user_type, "nom_complet": nom})
     else:
-        form = RegisterForm()
+        user_type = request.GET.get("user_type", "etudiant")
+        if user_type not in ("etudiant", "alumni"):
+            user_type = "etudiant"
+        form = RegisterAlumniForm() if user_type == "alumni" else RegisterForm()
     return render(request, "register.html", {"form": form, "user_type": user_type})
 
 @user_passes_test(is_admin)
@@ -263,12 +270,20 @@ def admin_user_change_role(request, user_id):
         nom = user_obj.get_full_name() or user_obj.username
         if profile.role == "etudiant":
             profile.role = "alumni"
+            profile.promoted_from_etudiant = True
             msg = f"{nom} est maintenant Alumni."
+            profile.save()
+            Notification.objects.create(destinataire=request.user, message=msg)
+            Notification.objects.create(
+                destinataire=user_obj,
+                message="Votre compte a été passé en Alumni. Sur la page de connexion, choisissez le type « Alumni » (pas « Étudiant ») avec vos identifiants habituels. Un message détaillé s’affiche si vous vous trompez de type.",
+            )
         else:
             profile.role = "etudiant"
-            msg = f"{nom} est maintenant Etudiant."
-        profile.save()
-        Notification.objects.create(destinataire=request.user, message=msg)
+            profile.promoted_from_etudiant = False
+            msg = f"{nom} est maintenant Étudiant."
+            profile.save()
+            Notification.objects.create(destinataire=request.user, message=msg)
         request.session['notif_message'] = msg
     except Profile.DoesNotExist:
         pass
@@ -413,6 +428,17 @@ def chat_page(request, user_id=None):
         contacts = User.objects.filter(id__in=contact_ids, profile__role='alumni')
     else:
         contacts = User.objects.filter(id__in=contact_ids)
+    contact_entries = []
+    for c in contacts:
+        last = (
+            Message.objects.filter(
+                Q(expediteur=request.user, destinataire=c)
+                | Q(expediteur=c, destinataire=request.user)
+            )
+            .order_by("-date_envoi")
+            .first()
+        )
+        contact_entries.append({"contact": c, "last": last})
     selected_user = None
     conversation = []
     if user_id:
@@ -434,12 +460,16 @@ def chat_page(request, user_id=None):
         profile__role='alumni',
         profile__compte_active=True
     ).exclude(id=request.user.id)
-    return render(request, "blog/chat.html", {
-        "contacts": contacts,
-        "selected_user": selected_user,
-        "conversation": conversation,
-        "tous_alumni": tous_alumni,
-    })
+    return render(
+        request,
+        "blog/chat.html",
+        {
+            "contact_entries": contact_entries,
+            "selected_user": selected_user,
+            "conversation": conversation,
+            "tous_alumni": tous_alumni,
+        },
+    )
 
 @login_required
 def chat_envoyer(request, alumni_id):
@@ -471,15 +501,53 @@ def chat_messages(request, alumni_id):
 
 @login_required
 def offres(request):
-    from .models import Offre
-    offres_list = Offre.objects.filter(status=1).order_by("-date_creation")
+    from .models import CommentOffre, Offre
+
+    offres_qs = (
+        Offre.objects.filter(status=1)
+        .select_related("auteur", "auteur__profile")
+        .order_by("-date_creation")
+    )
+    offres_list = []
+    for offre in offres_qs:
+        offres_list.append(
+            {
+                "type": "offre",
+                "obj": offre,
+                "auteur": offre.auteur,
+                "date": offre.date_creation,
+                "nb_likes_offre": offre.likes.count(),
+                "nb_favoris_offre": offre.favoris.count(),
+                "liked_offre": offre.likes.filter(user=request.user).exists(),
+                "en_favori_offre": offre.favoris.filter(user=request.user).exists(),
+                "comments_offre": CommentOffre.objects.filter(offre=offre, actif=True),
+                "nb_comments_offre": CommentOffre.objects.filter(
+                    offre=offre, actif=True
+                ).count(),
+            }
+        )
     return render(request, "blog/offres.html", {"offres_list": offres_list})
 
 @login_required
 def notifications(request):
-    notifs = Notification.objects.filter(destinataire=request.user).order_by("-date_creation")
-    notifs.update(lue=True)
-    return render(request, "notifications.html", {"notifs": notifs})
+    notifs = list(
+        Notification.objects.filter(destinataire=request.user).order_by("-date_creation")
+    )
+    total_notifs = len(notifs)
+    nb_non_lues = sum(1 for n in notifs if not n.lue)
+    nb_lues = total_notifs - nb_non_lues
+    if nb_non_lues:
+        Notification.objects.filter(destinataire=request.user, lue=False).update(lue=True)
+    return render(
+        request,
+        "notifications.html",
+        {
+            "notifs": notifs,
+            "total_notifs": total_notifs,
+            "nb_non_lues": nb_non_lues,
+            "nb_lues": nb_lues,
+        },
+    )
 
 @login_required
 def dashboard_etudiant(request):
@@ -822,6 +890,135 @@ def posts_etudiant(request):
         "nom_affiche": request.user.get_full_name() or request.user.username,
     })
 
+def _norm_filiere(s):
+    if not s:
+        return ""
+    return s.strip().lower()
+
+
+def _filiere_match(f_etu, f_alu):
+    a, b = _norm_filiere(f_etu), _norm_filiere(f_alu)
+    if not a or not b:
+        return False
+    if a == b:
+        return True
+    return a in b or b in a
+
+
+def _badges_reco(nb_posts, nb_comments, nb_offres, same_filiere, en_poste):
+    badges = []
+    if same_filiere:
+        badges.append({"icon": "fa-graduation-cap", "text": "Même filière que vous"})
+    if nb_posts >= 5:
+        badges.append({"icon": "fa-fire", "text": "Très actif : publications fréquentes"})
+    elif nb_posts >= 1:
+        badges.append({"icon": "fa-newspaper", "text": "Partage des posts sur le réseau"})
+    if nb_comments >= 5:
+        badges.append({"icon": "fa-comments", "text": "Conseils pratiques : répond souvent"})
+    elif nb_comments >= 1:
+        badges.append({"icon": "fa-reply", "text": "Participe aux discussions"})
+    if nb_offres >= 2:
+        badges.append({"icon": "fa-briefcase", "text": "Publie régulièrement des offres"})
+    elif nb_offres >= 1:
+        badges.append({"icon": "fa-hand-holding", "text": "Propose des opportunités"})
+    if en_poste:
+        badges.append({"icon": "fa-building", "text": "En poste"})
+    return badges
+
+
+def _texte_invitation(same_filiere, nb_posts, nb_comments, nom_court):
+    phrases = []
+    if same_filiere:
+        phrases.append(
+            f"{nom_court} a un parcours proche du vôtre (même domaine d’études) : "
+            "cette personne peut particulièrement vous aider sur le métier, les stages et la suite après le diplôme."
+        )
+    if nb_posts >= 3:
+        phrases.append("Ses publications sur le fil sont nombreuses — idéal pour suivre des conseils concrets et l’actualité du secteur.")
+    elif nb_posts >= 1:
+        phrases.append("Vous trouverez sur le fil des posts utiles pour vous inspirer.")
+    if nb_comments >= 3:
+        phrases.append("Elle ou il intervient souvent dans les commentaires avec des réponses concrètes.")
+    elif nb_comments >= 1:
+        phrases.append("Elle ou il échange avec la communauté dans les commentaires.")
+    if not phrases:
+        phrases.append(
+            f"Membre du réseau alumni — contactez {nom_court} par message pour poser vos questions et construire votre parcours."
+        )
+    return " ".join(phrases)
+
+
+@login_required
+def recommandations_etudiant(request):
+    from django.db.models import Count, Q
+
+    try:
+        profile = request.user.profile
+    except Profile.DoesNotExist:
+        profile = Profile.objects.create(user=request.user, role="etudiant", compte_active=True)
+    if profile.role != "etudiant":
+        return redirect("dashboard_alumni")
+
+    filiere_etu = profile.filiere or ""
+    qs = (
+        Profile.objects.filter(role="alumni", compte_active=True)
+        .exclude(user_id=request.user.id)
+        .select_related("user")
+        .annotate(
+            nb_posts=Count("user__posts", filter=Q(user__posts__status=1)),
+            nb_comments_post=Count("user__comment", filter=Q(user__comment__actif=True)),
+            nb_comments_offre=Count("user__commentoffre", filter=Q(user__commentoffre__actif=True)),
+            nb_offres=Count("user__offres", filter=Q(user__offres__status=1)),
+        )
+    )
+
+    alumni_recos = []
+    for p in qs:
+        nb_comments = p.nb_comments_post + p.nb_comments_offre
+        same = _filiere_match(filiere_etu, p.filiere_alumni)
+        score = (
+            (1000 if same else 0)
+            + p.nb_posts * 12
+            + nb_comments * 6
+            + p.nb_offres * 8
+            + (20 if p.en_poste else 0)
+        )
+        nom = p.user.get_full_name() or p.user.username
+        alumni_recos.append(
+            {
+                "profile": p,
+                "user": p.user,
+                "nb_posts": p.nb_posts,
+                "nb_comments": nb_comments,
+                "nb_offres": p.nb_offres,
+                "same_filiere": same,
+                "score": score,
+                "badges": _badges_reco(p.nb_posts, nb_comments, p.nb_offres, same, p.en_poste),
+                "invite": _texte_invitation(same, p.nb_posts, nb_comments, nom),
+                "filiere_label": (p.filiere_alumni or "").strip() or "Filière non renseignée",
+            }
+        )
+
+    alumni_recos.sort(
+        key=lambda x: (
+            -x["score"],
+            -x["nb_posts"],
+            -x["nb_comments"],
+            (x["user"].get_full_name() or x["user"].username).lower(),
+        )
+    )
+    alumni_recos = alumni_recos[:30]
+
+    return render(
+        request,
+        "blog/recommandations.html",
+        {
+            "alumni_recos": alumni_recos,
+            "ma_filiere": filiere_etu.strip(),
+            "filiere_renseignee": bool(_norm_filiere(filiere_etu)),
+        },
+    )
+
 @login_required
 def comment_supprimer(request, comment_id):
     comment = get_object_or_404(Comment, pk=comment_id)
@@ -829,10 +1026,7 @@ def comment_supprimer(request, comment_id):
         comment.delete()
         return JsonResponse({'success': True})
     return JsonResponse({'success': False})
-# ============================================================
-# Colle ces deux fonctions dans ton views.py
-# après ta fonction offre_commenter existante
-# ============================================================
+
 
 @login_required
 def offre_commenter(request, offre_id):

@@ -61,6 +61,8 @@ class Profile(models.Model):
     annee_licence = models.CharField(max_length=10, blank=True, null=True)
     filiere_alumni = models.CharField(max_length=100, blank=True, null=True)
     en_poste = models.BooleanField(default=False)
+    # True après promotion admin étudiant → alumni ; effacé à la 1re connexion réussie en Alumni
+    promoted_from_etudiant = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user.username} ({self.role})"

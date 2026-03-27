@@ -65,4 +65,5 @@ urlpatterns = [
     path("chat/<int:alumni_id>/messages/", views.chat_messages, name="chat_messages"),
     path("fil-alumni/", views.fil_alumni, name="fil_alumni"),
     path("fil-etudiant/", views.fil_etudiant, name="fil_etudiant"),
+    path("recommandations/", views.recommandations_etudiant, name="recommandations_etudiant"),
 ]

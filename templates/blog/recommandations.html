@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+{% block title %}Recommandations — Réseau Alumni{% endblock %}
+{% block topbar_title %}Recommandations{% endblock %}
+
+{% block content %}
+<style>
+  .reco-page { max-width:880px; }
+  .reco-hero {
+    font-family:'Syne',sans-serif;
+    font-size:1.38rem;
+    font-weight:800;
+    background:linear-gradient(90deg,var(--pink),var(--cyan));
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-clip:text;
+    margin-bottom:8px;
+    line-height:1.25;
+  }
+  .reco-sub {
+    font-size:0.9rem;
+    color:rgba(255,255,255,0.52);
+    line-height:1.65;
+    margin-bottom:18px;
+  }
+  body.light-mode .reco-sub { color:rgba(0,0,0,0.52); }
+
+  .reco-hint {
+    background:rgba(76,201,240,0.08);
+    border:1px solid rgba(76,201,240,0.22);
+    border-radius:12px;
+    padding:12px 16px;
+    font-size:0.84rem;
+    color:rgba(255,255,255,0.65);
+    margin-bottom:22px;
+    line-height:1.55;
+  }
+  body.light-mode .reco-hint { background:rgba(58,12,163,0.06); border-color:rgba(58,12,163,0.12); color:rgba(0,0,0,0.6); }
+  .reco-hint strong { color:var(--cyan); }
+  body.light-mode .reco-hint strong { color:var(--blue); }
+
+  .reco-ma-filiere {
+    font-size:0.82rem;
+    color:rgba(255,255,255,0.4);
+    margin-bottom:20px;
+  }
+  .reco-ma-filiere span { color:var(--pink); font-weight:600; }
+
+  .reco-grid {
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+
+  .reco-alumni-card {
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:18px 20px;
+    display:grid;
+    grid-template-columns:auto 1fr auto;
+    gap:16px;
+    align-items:start;
+    transition:border-color 0.2s, box-shadow 0.2s;
+  }
+  @media (max-width:640px) {
+    .reco-alumni-card { grid-template-columns:1fr; }
+  }
+  .reco-alumni-card:hover {
+    border-color:rgba(247,37,133,0.28);
+    box-shadow:0 4px 28px rgba(0,0,0,0.14);
+  }
+  body.light-mode .reco-alumni-card { background:#fff; border-color:rgba(0,0,0,0.08); }
+
+  .reco-av {
+    width:56px; height:56px;
+    border-radius:14px;
+    background:linear-gradient(135deg,var(--pink),var(--purple));
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-weight:800; font-size:1.1rem;
+    overflow:hidden; flex-shrink:0;
+    border:2px solid rgba(247,37,133,0.35);
+  }
+  .reco-av img { width:100%; height:100%; object-fit:cover; }
+
+  .reco-headline {
+    font-family:'Syne',sans-serif;
+    font-size:1.02rem;
+    font-weight:700;
+    color:#fff;
+    margin-bottom:4px;
+  }
+  body.light-mode .reco-headline { color:#1a1a2e; }
+
+  .reco-filiere-line {
+    font-size:0.8rem;
+    color:rgba(255,255,255,0.45);
+    margin-bottom:10px;
+  }
+  body.light-mode .reco-filiere-line { color:rgba(0,0,0,0.45); }
+  .reco-filiere-line strong { color:var(--cyan); font-weight:600; }
+  body.light-mode .reco-filiere-line strong { color:var(--purple); }
+
+  .reco-badges {
+    display:flex; flex-wrap:wrap; gap:6px;
+    margin-bottom:10px;
+  }
+  .reco-badge {
+    display:inline-flex; align-items:center; gap:5px;
+    font-size:0.68rem; font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.4px;
+    padding:4px 10px;
+    border-radius:999px;
+    background:rgba(247,37,133,0.12);
+    border:1px solid rgba(247,37,133,0.25);
+    color:rgba(255,255,255,0.88);
+  }
+  body.light-mode .reco-badge {
+    background:rgba(247,37,133,0.08);
+    color:#1a1a2e;
+    border-color:rgba(247,37,133,0.2);
+  }
+  .reco-badge i { font-size:0.65rem; opacity:0.9; }
+
+  .reco-invite {
+    font-size:0.86rem;
+    color:rgba(255,255,255,0.58);
+    line-height:1.65;
+    margin:0;
+  }
+  body.light-mode .reco-invite { color:rgba(0,0,0,0.58); }
+
+  .reco-actions {
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    align-items:stretch;
+    min-width:132px;
+  }
+  .reco-btn {
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:10px 14px;
+    border-radius:11px;
+    font-size:0.82rem;
+    font-weight:700;
+    text-decoration:none;
+    transition:transform 0.15s, box-shadow 0.15s;
+    white-space:nowrap;
+  }
+  .reco-btn-primary {
+    background:linear-gradient(135deg,var(--pink),var(--purple));
+    color:#fff;
+    border:none;
+    box-shadow:0 4px 16px rgba(247,37,133,0.25);
+  }
+  .reco-btn-primary:hover { transform:translateY(-1px); box-shadow:0 6px 22px rgba(247,37,133,0.35); color:#fff; }
+  .reco-btn-ghost {
+    background:rgba(255,255,255,0.06);
+    border:1px solid var(--border);
+    color:rgba(255,255,255,0.85);
+  }
+  body.light-mode .reco-btn-ghost { background:#fff; border-color:rgba(0,0,0,0.1); color:#1a1a2e; }
+  .reco-btn-ghost:hover { border-color:rgba(247,37,133,0.35); color:var(--pink); }
+
+  .reco-empty {
+    text-align:center;
+    padding:48px 24px;
+    border-radius:16px;
+    border:1px dashed rgba(255,255,255,0.12);
+    color:rgba(255,255,255,0.35);
+    font-size:0.9rem;
+  }
+  body.light-mode .reco-empty { border-color:rgba(0,0,0,0.12); color:rgba(0,0,0,0.4); }
+  .reco-empty i { font-size:2rem; margin-bottom:12px; display:block; color:rgba(247,37,133,0.35); }
+</style>
+
+<div class="reco-page">
+  <h1 class="reco-hero">Alumni qui peuvent vous aider</h1>
+  <p class="reco-sub">
+    Voici des membres du réseau sélectionnés pour vous : même filière lorsque c’est renseigné,
+    activité sur le fil (posts), réponses utiles dans les commentaires, et offres partagées.
+  </p>
+
+  {% if not filiere_renseignee %}
+  <div class="reco-hint">
+    <strong>Astuce :</strong> indiquez votre <strong>filière</strong> sur votre
+    <a href="{% url 'profil_etudiant' %}" style="color:inherit;font-weight:700;text-decoration:underline;">profil étudiant</a>
+    pour prioriser les alumni passés par un parcours proche du vôtre.
+  </div>
+  {% else %}
+  <p class="reco-ma-filiere">Votre filière renseignée : <span>{{ ma_filiere }}</span> — nous mettons en avant les profils compatibles.</p>
+  {% endif %}
+
+  {% if alumni_recos %}
+  <div class="reco-grid">
+    {% for item in alumni_recos %}
+    <article class="reco-alumni-card">
+      <div class="reco-av">
+        {% if item.profile.photo %}
+          <img src="{{ item.profile.photo.url }}" alt="">
+        {% else %}
+          {{ item.user.get_full_name|default:item.user.username|first|upper }}
+        {% endif %}
+      </div>
+      <div>
+        <div class="reco-headline">{{ item.user.get_full_name|default:item.user.username }}</div>
+        <div class="reco-filiere-line">
+          Parcours alumni : <strong>{{ item.filiere_label }}</strong>
+          {% if item.profile.annee_licence %}· diplômé·e {{ item.profile.annee_licence }}{% endif %}
+        </div>
+        {% if item.badges %}
+        <div class="reco-badges">
+          {% for b in item.badges %}
+          <span class="reco-badge"><i class="fas {{ b.icon }}"></i> {{ b.text }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+        <p class="reco-invite">{{ item.invite }}</p>
+      </div>
+      <div class="reco-actions">
+        <a class="reco-btn reco-btn-primary" href="{% url 'chat_avec' item.user.id %}"><i class="fas fa-paper-plane"></i> Contacter</a>
+        <a class="reco-btn reco-btn-ghost" href="{% url 'fil_etudiant' %}"><i class="fas fa-stream"></i> Fil d’actualité</a>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="reco-empty">
+    <i class="fas fa-users"></i>
+    Aucun profil alumni disponible pour le moment. Revenez plus tard ou vérifiez avec l’administration que des comptes alumni sont actifs.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

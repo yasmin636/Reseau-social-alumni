@@ -365,9 +365,10 @@ input::placeholder { color: rgba(255,255,255,0.22); }
 .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
 .divider span { color: rgba(255,255,255,0.25); font-size: 11px; white-space: nowrap; }
 
-.login-link { text-align: center; font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 14px; }
+.login-link { text-align: center; font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 14px; display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
 .login-link a { color: var(--green-glow); font-weight: 600; text-decoration: none; transition: opacity 0.2s; }
 .login-link a:hover { opacity: 0.8; }
+.login-link .login-sep { color: rgba(255,255,255,0.2); user-select: none; }
 
 /* ── SUCCESS ── */
 .success-box { text-align: center; padding: 16px 0; }
@@ -440,6 +441,7 @@ input::placeholder { color: rgba(255,255,255,0.22); }
       </div>
     </a>
     <nav class="topbar-nav">
+      <a href="{% url 'home' %}" class="btn-outline"><i class="fas fa-home"></i> Accueil</a>
       <a href="{% url 'login' %}" class="btn-outline">Se connecter</a>
       <a href="{% url 'register' %}" class="btn-green">Inscription</a>
     </nav>
@@ -635,11 +637,14 @@ input::placeholder { color: rgba(255,255,255,0.22); }
   </form>
 
   <div class="divider"><span>Déjà un compte ?</span></div>
-  <div class="login-link"><a href="{% url 'login' %}">Se connecter</a></div>
+  <div class="login-link">
+    <a href="{% url 'home' %}"><i class="fas fa-home"></i> Accueil</a>
+    <span class="login-sep">·</span>
+    <a href="{% url 'login' %}">Se connecter</a>
+  </div>
 
   {% endif %}
 </div>
-```
 
   </main>
 

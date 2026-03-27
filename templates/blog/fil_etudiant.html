@@ -36,8 +36,6 @@
     .sidebar-nav a:hover { color:rgba(255,255,255,0.8); background:rgba(255,255,255,0.05); }
     .sidebar-nav a.active { color:#fff; background:linear-gradient(90deg,rgba(247,37,133,0.3),rgba(114,9,183,0.2)); border-left:2px solid var(--pink); font-weight:600; }
     .sidebar-divider { height:1px; background:rgba(255,255,255,0.06); margin:14px 0; }
-    .sidebar-nav a.logout { color:rgba(255,100,100,0.6); }
-    .sidebar-nav a.logout:hover { color:#ff6b6b; background:rgba(255,100,100,0.08); }
 
     /* Main */
     .main { flex:1; display:flex; flex-direction:column; overflow:hidden; position:relative; z-index:1; }
@@ -53,6 +51,42 @@
     .user-avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--pink),var(--purple)); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:13px; border:1.5px solid rgba(247,37,133,0.4); overflow:hidden; }
     .user-avatar img { width:100%; height:100%; object-fit:cover; }
     .user-chip span { font-size:0.85rem; color:rgba(255,255,255,0.7); font-weight:500; }
+
+    .theme-toggle {
+        width:34px; height:34px; border-radius:10px;
+        border:1px solid rgba(255,255,255,0.10);
+        background:rgba(255,255,255,0.05);
+        color:rgba(255,255,255,0.6);
+        font-size:0.9rem; cursor:pointer;
+        display:flex; align-items:center; justify-content:center;
+        transition:all 0.2s; flex-shrink:0;
+    }
+    .theme-toggle:hover { background:rgba(247,37,133,0.12); border-color:rgba(247,37,133,0.3); color:var(--pink); }
+    .topbar-dashboard { width:34px; height:34px; border-radius:10px; border:1px solid rgba(255,255,255,0.10); background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.6); font-size:0.9rem; display:flex; align-items:center; justify-content:center; text-decoration:none; transition:all 0.2s; flex-shrink:0; }
+    .topbar-dashboard:hover { background:rgba(247,37,133,0.12); border-color:rgba(247,37,133,0.3); color:var(--pink); }
+    body.light-mode { background:#f4f6f8; color:#1a1a2e; }
+    body.light-mode::before {
+        background:
+            radial-gradient(ellipse 600px 400px at 20% 30%,rgba(247,37,133,0.04) 0%,transparent 70%),
+            radial-gradient(ellipse 500px 500px at 80% 70%,rgba(76,201,240,0.04) 0%,transparent 70%);
+    }
+    body.light-mode .sidebar { background:rgba(255,255,255,0.97); border-right-color:rgba(247,37,133,0.15); }
+    body.light-mode .sidebar-role { color:rgba(0,0,0,0.35); }
+    body.light-mode .sidebar-nav a { color:rgba(0,0,0,0.45); }
+    body.light-mode .sidebar-nav a:hover { color:rgba(0,0,0,0.8); background:rgba(0,0,0,0.04); }
+    body.light-mode .sidebar-nav a.active { color:#1a1a2e; background:linear-gradient(90deg,rgba(247,37,133,0.12),rgba(114,9,183,0.08)); border-left-color:var(--pink); }
+    body.light-mode .sidebar-divider { background:rgba(0,0,0,0.08); }
+    body.light-mode .topbar { background:rgba(255,255,255,0.92); border-bottom-color:rgba(247,37,133,0.12); }
+    body.light-mode .topbar-title { color:rgba(0,0,0,0.75); }
+    body.light-mode .notif-btn { color:rgba(0,0,0,0.45); }
+    body.light-mode .user-chip span { color:rgba(0,0,0,0.65); }
+    body.light-mode .theme-toggle { border-color:rgba(0,0,0,0.12); background:rgba(0,0,0,0.04); color:rgba(0,0,0,0.5); }
+    body.light-mode .theme-toggle:hover { background:rgba(247,37,133,0.08); border-color:rgba(247,37,133,0.25); color:var(--pink); }
+    body.light-mode .topbar-dashboard { border-color:rgba(0,0,0,0.12); background:rgba(0,0,0,0.04); color:rgba(0,0,0,0.5); }
+    body.light-mode .topbar-dashboard:hover { background:rgba(247,37,133,0.08); border-color:rgba(247,37,133,0.25); color:var(--pink); }
+    body.light-mode .badge-count { border-color:#f4f6f8; }
+    body.light-mode .empty-state { color:rgba(0,0,0,0.35); }
+    body.light-mode .empty-state i { color:rgba(247,37,133,0.35); }
 
     .content { flex:1; overflow-y:auto; padding:24px 28px; }
     .content::-webkit-scrollbar { width:4px; }
@@ -186,13 +220,10 @@
         <li><a href="{% url 'offres' %}"><i class="fas fa-briefcase"></i> Offres</a></li>
         <li><a href="{% url 'posts_etudiant' %}"><i class="fas fa-newspaper"></i> Posts</a></li>
         <li><a href="{% url 'favoris' %}"><i class="fas fa-star"></i> Favoris</a></li>
+        <li><a href="{% url 'recommandations_etudiant' %}"><i class="fas fa-lightbulb"></i> Recommandations</a></li>
         <li><a href="{% url 'notifications' %}"><i class="fas fa-bell"></i> Notifications</a></li>
         <li><a href="{% url 'chat_page' %}"><i class="fas fa-comment-dots"></i> Chat</a></li>
         <li><a href="{% url 'profil_etudiant' %}"><i class="fas fa-user"></i> Profil</a></li>
-    </ul>
-    <div class="sidebar-divider"></div>
-    <ul class="sidebar-nav">
-        <li><a href="/logout/" class="logout"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
     </ul>
 </aside>
 
@@ -200,6 +231,8 @@
     <header class="topbar">
         <div class="topbar-title"><strong>Fil d'actualité</strong></div>
         <div class="topbar-right">
+            <button type="button" class="theme-toggle" id="themeToggle" title="Thème clair / sombre" onclick="toggleTheme()" aria-label="Changer le thème"><i class="fas fa-moon" id="themeIcon"></i></button>
+            <a href="{% url 'dashboard_etudiant' %}" class="topbar-dashboard" title="Tableau de bord" aria-label="Retour au tableau de bord étudiant"><i class="fas fa-sign-out-alt"></i></a>
             <a href="{% url 'notifications' %}" class="notif-btn">
                 <i class="fas fa-bell"></i>
                 {% if nb_notifications > 0 %}<span class="badge-count">{{ nb_notifications }}</span>{% endif %}
@@ -271,6 +304,58 @@
                             <i class="fas fa-star"></i>
                             <span id="favori-offre-count-{{ item.obj.id }}">{{ item.nb_favoris_offre }}</span>
                         </button>
+                        <button class="btn-post-action" type="button" onclick="toggleOffreComments({{ item.obj.id }})">
+                            <i class="fas fa-comment-alt"></i>
+                            <span id="comment-offre-count-{{ item.obj.id }}">{{ item.nb_comments_offre|default:0 }}</span>
+                        </button>
+                    </div>
+                    <div class="comments-section" id="offre-comments-{{ item.obj.id }}">
+                        <div id="offre-comments-list-{{ item.obj.id }}">
+                            {% for comment in item.comments_offre %}
+                            <div class="comment-item" data-comment-id="{{ comment.id }}"
+                                 data-mine="{% if comment.auteur == user %}1{% else %}0{% endif %}">
+                                <div class="comment-avatar">{{ comment.auteur.get_full_name|default:comment.auteur.username|first|upper }}</div>
+                                <div class="comment-content"
+                                     onclick="toggleCommentMenu({{ comment.id }}, {% if comment.auteur == user %}true{% else %}false{% endif %}, event)">
+                                    <div class="comment-author">{{ comment.auteur.get_full_name|default:comment.auteur.username }}</div>
+                                    <div class="comment-text">{{ comment.contenu }}</div>
+                                    <div class="comment-date">{{ comment.date_creation|date:"d/m H:i" }}</div>
+                                </div>
+                                {% if comment.auteur == user %}
+                                <div class="comment-menu" id="comment-menu-{{ comment.id }}">
+                                    <button class="comment-menu-item delete"
+                                            type="button"
+                                            onclick="supprimerCommentaireOffre({{ comment.id }}, {{ item.obj.id }}, event)">
+                                        <i class="fas fa-trash-alt"></i> Supprimer
+                                    </button>
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="comment-form">
+                            <div class="comment-input-wrap">
+                                <input type="text"
+                                       id="offre-comment-input-{{ item.obj.id }}"
+                                       placeholder="Écrire un commentaire…"
+                                       onkeydown="if(event.key==='Enter') envoyerCommentaireOffre({{ item.obj.id }})">
+                                <button class="emoji-btn" type="button"
+                                        onclick="toggleEmojiPickerOffre({{ item.obj.id }}, event)">😊</button>
+                                <div class="emoji-picker" id="offre-emoji-picker-{{ item.obj.id }}">
+                                    <div class="emoji-categories">
+                                        <button class="emoji-cat-btn active" type="button" onclick="showEmojiCat('smileys',this)">😊</button>
+                                        <button class="emoji-cat-btn" type="button" onclick="showEmojiCat('gestures',this)">👋</button>
+                                        <button class="emoji-cat-btn" type="button" onclick="showEmojiCat('hearts',this)">❤️</button>
+                                        <button class="emoji-cat-btn" type="button" onclick="showEmojiCat('objects',this)">🎯</button>
+                                        <button class="emoji-cat-btn" type="button" onclick="showEmojiCat('nature',this)">🌿</button>
+                                    </div>
+                                    <div class="emoji-grid" id="offre-emoji-grid-{{ item.obj.id }}"></div>
+                                </div>
+                            </div>
+                            <button class="comment-send-btn" type="button" onclick="envoyerCommentaireOffre({{ item.obj.id }})">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="offre-card-bottom"></div>
@@ -340,7 +425,7 @@
                                 </div>
                                 {% if comment.auteur == user %}
                                 <div class="comment-menu" id="comment-menu-{{ comment.id }}">
-                                    <button class="comment-menu-item delete" onclick="supprimerCommentaire({{ comment.id }}, event)">
+                                    <button type="button" class="comment-menu-item delete" onclick="supprimerCommentaire({{ comment.id }}, {{ item.obj.id }}, event)">
                                         <i class="fas fa-trash-alt"></i> Supprimer
                                     </button>
                                 </div>
@@ -392,24 +477,47 @@ const EMOJIS = {
     objects:['🎯','🏆','🎓','📚','💡','🔥','⭐','✨','🎉','🎊','🎁','🚀','💎','🔑','🎵','🎶','📱','💻','🛡️','⚡'],
     nature:['🌿','🌱','🌸','🌺','🌻','🌹','🍀','🌳','🌊','🌙','☀️','⛅','🌈','❄️','🌴','🌵','🦋','🐬','🦁','🐝'],
 };
-let currentEmojiCat='smileys', activePickerPostId=null;
+let currentEmojiCat='smileys', activePickerPostId=null, activePickerOffreId=null;
 
 function toggleEmojiPicker(postId,e){
     e.stopPropagation();
     const picker=document.getElementById(`emoji-picker-${postId}`);
     if(picker.classList.contains('open')){picker.classList.remove('open');activePickerPostId=null;}
-    else{document.querySelectorAll('.emoji-picker.open').forEach(p=>p.classList.remove('open'));activePickerPostId=postId;renderEmojiGrid(postId,currentEmojiCat);picker.classList.add('open');}
+    else{document.querySelectorAll('.emoji-picker.open').forEach(p=>p.classList.remove('open'));activePickerOffreId=null;activePickerPostId=postId;renderEmojiGrid(postId,currentEmojiCat);picker.classList.add('open');}
+}
+function toggleEmojiPickerOffre(offreId,e){
+    e.stopPropagation();
+    const picker=document.getElementById(`offre-emoji-picker-${offreId}`);
+    if(picker.classList.contains('open')){picker.classList.remove('open');activePickerOffreId=null;}
+    else{document.querySelectorAll('.emoji-picker.open').forEach(p=>p.classList.remove('open'));activePickerPostId=null;activePickerOffreId=offreId;renderEmojiGridOffre(offreId,currentEmojiCat);picker.classList.add('open');}
 }
 function showEmojiCat(cat,btn){
     currentEmojiCat=cat;
     document.querySelectorAll('.emoji-cat-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
     if(activePickerPostId) renderEmojiGrid(activePickerPostId,cat);
+    if(activePickerOffreId) renderEmojiGridOffre(activePickerOffreId,cat);
 }
 function renderEmojiGrid(postId,cat){
     const grid=document.getElementById(`emoji-grid-${postId}`);
+    if(!grid) return;
     grid.innerHTML='';
     (EMOJIS[cat]||[]).forEach(emoji=>{const s=document.createElement('span');s.className='emoji-item';s.textContent=emoji;s.onclick=()=>insertEmoji(postId,emoji);grid.appendChild(s);});
+}
+function renderEmojiGridOffre(offreId,cat){
+    const grid=document.getElementById(`offre-emoji-grid-${offreId}`);
+    if(!grid) return;
+    grid.innerHTML='';
+    (EMOJIS[cat]||[]).forEach(emoji=>{
+        const s=document.createElement('span');s.className='emoji-item';s.textContent=emoji;
+        s.onclick=()=>{
+            const input=document.getElementById(`offre-comment-input-${offreId}`);
+            const pos=input.selectionStart;
+            input.value=input.value.slice(0,pos)+emoji+input.value.slice(pos);
+            input.focus();input.selectionStart=input.selectionEnd=pos+emoji.length;
+        };
+        grid.appendChild(s);
+    });
 }
 function insertEmoji(postId,emoji){
     const input=document.getElementById(`comment-input-${postId}`);
@@ -433,7 +541,7 @@ function closeAllMenus() {
 }
 
 // ══ SUPPRIMER COMMENTAIRE ══
-function supprimerCommentaire(commentId, e) {
+function supprimerCommentaire(commentId, postId, e) {
     e.stopPropagation();
     closeAllMenus();
     fetch(`/comment/${commentId}/supprimer/`, {
@@ -443,7 +551,8 @@ function supprimerCommentaire(commentId, e) {
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            const item = document.querySelector(`[data-comment-id="${commentId}"]`);
+            const list = document.getElementById(`comments-list-${postId}`);
+            const item = list ? list.querySelector(`[data-comment-id="${commentId}"]`) : null;
             if (item) {
                 item.style.transition = 'all 0.3s ease';
                 item.style.opacity = '0';
@@ -462,11 +571,38 @@ function supprimerCommentaire(commentId, e) {
     });
 }
 
+function supprimerCommentaireOffre(commentId, offreId, e) {
+    e.stopPropagation();
+    closeAllMenus();
+    fetch(`/offre/comment/${commentId}/supprimer/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': CSRF }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            const wrap = document.getElementById(`offre-comments-list-${offreId}`);
+            const item = wrap ? wrap.querySelector(`[data-comment-id="${commentId}"]`) : null;
+            if (item) {
+                item.style.transition = 'all 0.3s ease';
+                item.style.opacity = '0';
+                item.style.transform = 'translateX(20px)';
+                setTimeout(() => {
+                    const counter = document.getElementById(`comment-offre-count-${offreId}`);
+                    if (counter) counter.textContent = Math.max(0, parseInt(counter.textContent, 10) - 1);
+                    item.remove();
+                }, 300);
+            }
+        }
+    });
+}
+
 // Fermer menus + emoji au clic extérieur
 document.addEventListener('click', () => {
     closeAllMenus();
     document.querySelectorAll('.emoji-picker.open').forEach(p => p.classList.remove('open'));
     activePickerPostId = null;
+    activePickerOffreId = null;
 });
 
 function toggleLike(postId,btn){
@@ -486,8 +622,10 @@ function toggleFavoriOffre(offreId,btn){
     .then(r=>r.json()).then(data=>{btn.classList.toggle('en-favori',data.favoris);document.getElementById(`favori-offre-count-${offreId}`).textContent=data.total;});
 }
 function toggleComments(postId){document.getElementById(`comments-${postId}`).classList.toggle('open');}
+function toggleOffreComments(offreId){document.getElementById(`offre-comments-${offreId}`).classList.toggle('open');}
 
 const sendingComment = {};
+const sendingOffreComment = {};
 function envoyerCommentaire(postId){
     if(sendingComment[postId]) return;
     const input=document.getElementById(`comment-input-${postId}`);
@@ -505,6 +643,23 @@ function envoyerCommentaire(postId){
     }).finally(()=>{ sendingComment[postId]=false; });
 }
 
+function envoyerCommentaireOffre(offreId){
+    if(sendingOffreComment[offreId]) return;
+    const input=document.getElementById(`offre-comment-input-${offreId}`);
+    const text=input.value.trim();if(!text)return;
+    sendingOffreComment[offreId]=true;
+    document.getElementById(`offre-emoji-picker-${offreId}`)?.classList.remove('open');
+    fetch(`/offre/${offreId}/commenter/`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded','X-CSRFToken':CSRF},body:`contenu=${encodeURIComponent(text)}`})
+    .then(r=>r.json()).then(data=>{
+        if(data.success){
+            appendOffreComment(offreId,data.auteur,data.contenu,data.date,data.id,true);
+            input.value='';
+            const c=document.getElementById(`comment-offre-count-${offreId}`);
+            if(c) c.textContent=parseInt(c.textContent,10)+1;
+        }
+    }).finally(()=>{ sendingOffreComment[offreId]=false; });
+}
+
 function appendComment(postId, auteur, contenu, date, commentId, isMine=false){
     const list=document.getElementById(`comments-list-${postId}`);
     if(!commentId) return;
@@ -515,7 +670,32 @@ function appendComment(postId, auteur, contenu, date, commentId, isMine=false){
     div.setAttribute('data-mine', isMine ? '1' : '0');
     const menuHtml = isMine
         ? `<div class="comment-menu" id="comment-menu-${commentId}">
-               <button class="comment-menu-item delete" onclick="supprimerCommentaire(${commentId}, event)">
+               <button type="button" class="comment-menu-item delete" onclick="supprimerCommentaire(${commentId}, ${postId}, event)">
+                   <i class="fas fa-trash-alt"></i> Supprimer
+               </button>
+           </div>` : '';
+    div.innerHTML=`
+        <div class="comment-avatar">${auteur[0].toUpperCase()}</div>
+        <div class="comment-content" onclick="toggleCommentMenu(${commentId}, ${isMine}, event)">
+            <div class="comment-author">${auteur}</div>
+            <div class="comment-text">${contenu}</div>
+            <div class="comment-date">${date}</div>
+        </div>
+        ${menuHtml}`;
+    list.appendChild(div);
+}
+
+function appendOffreComment(offreId, auteur, contenu, date, commentId, isMine=false){
+    const list=document.getElementById(`offre-comments-list-${offreId}`);
+    if(!commentId||!list) return;
+    if(list.querySelector(`[data-comment-id="${commentId}"]`)) return;
+    const div=document.createElement('div');
+    div.className='comment-item';
+    div.setAttribute('data-comment-id', commentId);
+    div.setAttribute('data-mine', isMine ? '1' : '0');
+    const menuHtml = isMine
+        ? `<div class="comment-menu" id="comment-menu-${commentId}">
+               <button type="button" class="comment-menu-item delete" onclick="supprimerCommentaireOffre(${commentId}, ${offreId}, event)">
                    <i class="fas fa-trash-alt"></i> Supprimer
                </button>
            </div>` : '';
@@ -557,6 +737,22 @@ const postIds=[{% for item in feed %}{% if item.type == 'post' %}{{ item.obj.id 
 function pollAll(){postIds.forEach(id=>refreshPostStats(id));}
 setInterval(pollAll,5000);
 document.addEventListener('DOMContentLoaded',pollAll);
+</script>
+<script>
+function toggleTheme() {
+    var body = document.body;
+    var icon = document.getElementById('themeIcon');
+    var isLight = body.classList.toggle('light-mode');
+    if (icon) icon.className = isLight ? 'fas fa-sun' : 'fas fa-moon';
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+}
+(function() {
+    if (localStorage.getItem('theme') === 'light') {
+        document.body.classList.add('light-mode');
+        var ic = document.getElementById('themeIcon');
+        if (ic) ic.className = 'fas fa-sun';
+    }
+})();
 </script>
 
 </body>

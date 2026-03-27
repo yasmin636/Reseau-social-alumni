@@ -442,6 +442,9 @@ body.dark-mode .btn-approve { color:#6ee7b7; }
                       {% else %}
                         <a href="{% url 'admin_user_toggle_active' u.id %}" class="btn-act btn-activate" onclick="logAction('activate','{{ u.get_full_name|default:u.username|escapejs }}')">✅ Activer</a>
                       {% endif %}
+                      {% if u.profile.role == "etudiant" %}
+                        <a href="{% url 'admin_user_change_role' u.id %}" class="btn-act btn-approve" title="Le compte accède à l'espace Alumni (dashboard, publications, offres)" onclick="logAction('promote_alumni','{{ u.get_full_name|default:u.username|escapejs }}')">🏆 Changer en Alumni</a>
+                      {% endif %}
                       <button class="btn-act btn-delete" onclick="confirmDeleteUser({{ u.id }},'{{ u.get_full_name|default:u.username|escapejs }}')">🗑 Supprimer</button>
                     </div>
                     {% endif %}
@@ -726,6 +729,7 @@ function logAction(type, nom) {
     delete_post:  { emoji:'🗑️', title:'Post supprimé', sub:nom },
     approve_offre:{ emoji:'✅', title:'Offre validée', sub:nom },
     delete_offre: { emoji:'🗑️', title:'Offre supprimée', sub:nom },
+    promote_alumni: { emoji:'🏆', title:'Compte passé en Alumni', sub:nom },
   };
   const n = map[type];
   if (n) addNotif(n.emoji, n.title, n.sub);
